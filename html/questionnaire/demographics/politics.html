@@ -22,6 +22,9 @@ function selectOther() {
     questionnaire.currentAnswer = 5;
 }
 
+function textFilled() {
+    questionnaire.currentAnswerMade = true;
+}
 function allAnswered() {
     for (j = 0; j < numberOfQuestions; ++j) {
         if (!currentAnswersMade[j]) {
@@ -93,7 +96,7 @@ h1.questionExplanation {
                     </table>
                     <div id="divForOther" style="display: none">
                         Specify "Other": <br>
-                        <input type="text", onchange="textFilled()">
+                        <input type="text" onchange="textFilled()" onkeydown="">
                     </div>
                 </p>
                 <p>

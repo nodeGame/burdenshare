@@ -26,18 +26,19 @@ function allAnswered() {
     text-align: center;
 }
 table td {
-    width: 80px;
     word-wrap: break-word;
 }
+table {
+    width: 1000px;
+}
 form.questionForm {
-    width: 720px;
-    font-size: 12px;
+    width: 1000px;
+    font-size: 18px;
 }
 h1.questionExplanation {
     word-wrap: break-word;
-    font-size: 20px;
-}
-</style></head><link rel="stylesheet" href="/burdenRAHR/css/bootstrap.min.css">
+    font-size: 25px;
+}</style><style>th.centeredHead { width: 33.333333333333336%;}</style></head><link rel="stylesheet" href="/burdenRAHR/css/bootstrap.min.css">
 <link rel="stylesheet" href="/stylesheets/fullheight.css">
 <link rel="stylesheet" href="/stylesheets/noscript.css">
 <link rel="stylesheet" href="/stylesheets/player.css"><body><form class="questionForm"><h1 class="questionExplanation">Suppose you are presented with a choice between a sure payment of $50 and a gamble offering even chances at $0 or $100 (double or nothing). Which would you prefer?</h1><p><table><thead><tr><th class="centeredHead">Sure amount (50 USD)</th><th class="centeredHead">Gamble (0 or 100 USD)</th><th class="centeredHead">Indifferent</th></tr></thead><tbody></tbody><tr><td><input type="radio" name="QButton" onclick="makeChoice(0,0)"></td><td><input type="radio" name="QButton" onclick="makeChoice(1,0)"></td><td><input type="radio" name="QButton" onclick="makeChoice(2,0)"></td></tr></table></p><p><input type="button" id="done" value="Submit Answer" class="btn btn-lg btn-primary"></p></form></body>
