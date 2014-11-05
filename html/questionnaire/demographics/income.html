@@ -1,0 +1,22 @@
+<!DOCTYPE html><title></title><head><script>var questionnaire = parent.node.game.questionnaire;
+questionnaire.currentAnswerMade = false;
+function makeChoice(i) {
+    if (i == 0) {
+        questionnaire.currentAnswerMade = false;
+        return;
+    }
+    questionnaire.currentAnswerMade = true;
+    questionnaire.currentAnswer = i;
+}
+</script><style>form.questionForm {
+    width: 720px;
+    font-size: 12px;
+}
+h1.questionExplanation {
+    word-wrap: break-word;
+    font-size: 20px;
+}
+</style></head><link rel="stylesheet" href="/burdenRAHR/css/bootstrap.min.css">
+<link rel="stylesheet" href="/stylesheets/fullheight.css">
+<link rel="stylesheet" href="/stylesheets/noscript.css">
+<link rel="stylesheet" href="/stylesheets/player.css"><body><form class="questionForm"><h1 class="questionExplanation">Thinking back over the last year, what was your household's annual income?</h1><p><select onchange="makeChoice(this.selectedIndex)"><option></option><option>Less than $10000</option></select></p><p><input type="button" id="done" value="Submit Answer" class="btn btn-lg btn-primary"></p></form></body>

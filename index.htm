@@ -2,13 +2,14 @@
 
 <head>
 	<title>Burden</title>
-	
+
 	<!-- Loading  nodeGame libraries and CSS -->
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<script src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript" src="dhtml.js"></script>
 	<script src="/javascripts/nodegame-full.js" charset="utf-8"></script>
 	<script src="./js/gamestate.js" charset="utf-8"></script>
+	<script src="./js/RandomOrderExecutor.js"></script>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link href="css/style.css" rel="stylesheet">
@@ -16,17 +17,17 @@
 	<link rel='stylesheet' href='/stylesheets/player.css'></link>
 	<link rel='stylesheet' href='./css/main.css'></link>
 	<link rel='stylesheet' href='./css/evaluation.css'></link>
-	
+
 	<script type="text/javascript">
-	
-		function Countdown (minutes, seconds){		
+
+		function Countdown (minutes, seconds){
 			var PrevMin = (minutes < 10) ? "0" : ":";
 			var PrevSec = (seconds < 10) ? ":0" : ":";
 			var TimeNow = PrevMin + minutes + PrevSec + seconds;
 			// var Now = new Date();
 			// HoursWaitRoom = Now.getUTCHours();
 			// MinutesWaitRoom = Now.getUTCMinutes();
-				
+
 			if (DHTML) {
 				if (NS4) {
 			    	setContent("id", "Uhr", null, '<span class="Uhr">' + TimeNow + "<\/span>");
@@ -38,14 +39,14 @@
 			    	seconds = 59;
 			    }
 			    else seconds--;
-			    
+
 			    if(minutes == 0 && seconds < 0){clearTimeout(count);}
 			    else{
 			    	count = setTimeout(function(){
 			    		Countdown(minutes, seconds)}, 1000);
 			    }
-		  	}  
-		}	
+		  	}
+		}
 	</script>
 </head>
 
@@ -56,8 +57,8 @@
 	<noscript>
 		Sorry, you need to enable javascript in order to
 		play this game.
-	</noscript>	
-	
+	</noscript>
+
 	<div class="container" id="waitingForPlayers" style="display:;">
 		<div class="jumbotron" id = "startPage">
 			<h1 align="center">Welcome to the experiment!</h1>
@@ -70,7 +71,7 @@
 			</center>
 		</div>
 	</div>
-	
+
 	<script>
 		min = 10;
 		sec = 0;
@@ -80,22 +81,22 @@
 		var nbrPlayerConnected = 0;
 		exitCode = 0;
 		node.on.data('TIME', function(msg){
-			console.log(msg.data);	
+			console.log(msg.data);
 			timeout = msg.data.over;
 			exitCode = msg.data.exit;
 		});
-		
+
 		node.on.data('PLAYERSCONNECTED', function(msg){
 			console.log(msg.data);
 			nbrPlayerConnected = msg.data;
 		});
-		
+
 		node.on.data('CLEAR_COUNTDOWN', function(msg){
 			console.log("Clear CountDown");
 			clearInterval(timeCheck);
 			clearTimeout(count);
 		});
-		
+
 	  	window.onload = function () {
 			// HourLimitWaitRoom = 25;
 			// MinutesLimitWaitRoom = 61;
@@ -107,10 +108,10 @@
 	      	// if(HoursWaitRoom <= HourLimitWaitRoom && MinutesWaitRoom < MinutesLimitWaitRoom){
 	     	if(true){
 			    // Configuring nodegame
-			    node.setup('nodegame', {	
-					// HOST needs to be specified only 
+			    node.setup('nodegame', {
+					// HOST needs to be specified only
 					// if this file is located in another server
-					// host: http://myserver.com,	  
+					// host: http://myserver.com,
 					verbosity: 100,
 					debug : true,
 					window : {
@@ -137,10 +138,11 @@
 				node.connect("/burdenRAHR");
 				timeCheck = setInterval(function(){
 					console.log(timeout);
+
 					// if(HoursWaitRoom <= HourLimitWaitRoom && MinutesWaitRoom < MinutesLimitWaitRoom){
 					if(timeout == "NotEnoughPlayers"){
 						document.getElementById("nbrPlayers").innerHTML = "Number of participants already in the group:  " + nbrPlayerConnected + " of 4";
-						secCount++;					
+						secCount++;
 					}
 					else if(timeout == "Time elapsed!!!"){
 						var timeOut = "<h3 align='center'>Thank you for your patience.<br>";

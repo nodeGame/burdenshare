@@ -25,8 +25,8 @@ stager.setOnInit(function() {
 	node.game.endowment_own = 25;
     node.game.endowment_responder = 0;
     node.game.endowment_proposer = 0;
-    // cost green house gas emmisions, two Versions: 30 or 80 ECU 
-    node.game.costGE = 30; 
+    // cost green house gas emmisions, two Versions: 30 or 80 ECU
+    node.game.costGE = 30;
     // number of rounds including the test round
     node.game.nbrRounds = 4;
     // initialization first round
@@ -46,7 +46,7 @@ stager.setOnInit(function() {
     node.game.proposal = 0;
     // node.game.response is either "accept" or "reject", used at the end of each round in a short question for the participant
     node.game.response = '';
-    
+
     // condition for one of the two game versions
     if(node.game.costGE == 30){
 		node.game.url_bidder = '/burdenRAHR/html/bidder_30.html';
@@ -57,22 +57,22 @@ stager.setOnInit(function() {
     else if(node.game.costGE == 80){
     	node.game.url_bidder = '/burdenRAHR/html/bidder_80.html';
    	 	node.game.url_resp = '/burdenRAHR/html/resp_80.html';
-   	 	node.game.url_initprop = '/burdenRAHR/html/initialSituationProp_80.htm';    
-   		node.game.url_initresp = '/burdenRAHR/html/initialSituationResp_80.htm';  
+   	 	node.game.url_initprop = '/burdenRAHR/html/initialSituationProp_80.htm';
+   		node.game.url_initresp = '/burdenRAHR/html/initialSituationResp_80.htm';
     }
-	
-    console.log('INIT PLAYER!'); 
+
+    console.log('INIT PLAYER!');
 
     //	W.setup('PLAYER');
     if (!W.root) {
 	W.root = document.body;
 	//this.root = this.generateNodeGameRoot();
     }
-    
+
     // Generate header and frame.
    var header = W.generateHeader();
     W.generateFrame();
-    
+
     node.widgets.append('StateOfGame', header);
     node.game.waitScreen = node.widgets.append('WaitScreen');
     //	waitScreen = node.widgets.append('WaitScreen');
@@ -81,12 +81,12 @@ stager.setOnInit(function() {
     node.game.timer = node.widgets.append('VisualTimer', header);
     //node.game.doneb = node.widgets.append('DoneButton', this.header);
     //	node.game.sd 	= node.widgets.append('StateDisplay', W.header);
-    
+
     // indication of current state at the upper left corner of the page
     var newtag = document.createElement("stateinf");
     newtag.id = 'state';
     var my_div = document.getElementById("statedisplay_fieldset");
-    my_div.insertBefore(newtag, my_div.childNodes[0]);		
+    my_div.insertBefore(newtag, my_div.childNodes[0]);
 
     // node.widgets.append('WaitScreen');
 
@@ -94,8 +94,8 @@ stager.setOnInit(function() {
     if (node.conf.host) {
 	W.addCSS(document.body, node.conf.host + '/stylesheets/player.css');
     }
-    
-    
+
+
     //    W.frame = window.frames[W.mainframe]; // there is no document yet
     //	var initPage = W.getBlankPage();
     //	if (W.conf.noEscape) {
@@ -117,13 +117,13 @@ stager.setOnInit(function() {
 	 // Refreshing the dots...
     setInterval(function() {
         if (span_dots.innerHTML !== '......') {
-            span_dots.innerHTML = span_dots.innerHTML + '.';  
+            span_dots.innerHTML = span_dots.innerHTML + '.';
         }
         else {
             span_dots.innerHTML = '.';
         }
     }, 1000);
-    
+
 	node.say('OFFER',node.game.otherID, offer);
     });
 
@@ -136,9 +136,9 @@ stager.setOnInit(function() {
 		    timeInitSituaProp: data.timeInitSituaProp,
 		    timeOffer: data.timeOffer,
 		    timeResultProp: node.game.timeResultProp
-		}; 
+		};
 		// node.set('bsc_gameTime',gameTimeResp);
-		
+
 		// short question at the end of each round
 		W.loadFrame('/burdenRAHR/html/questionRounds_prop.html', function() {
 		    node.game.timequestionsRounds = Date.now();
@@ -151,17 +151,17 @@ stager.setOnInit(function() {
 					var timeInstr = {
 						playerID: {Player_ID: node.game.ownID},
 						add: {TimeQuestionRounds: node.game.timequestionsRounds}
-					};		     
+					};
 			    	// node.set('bsc_instrTimeUpdate',timeInstr);
 					node.game.timer.stop();
 					this.disabled = "disabled";
-					var answerQR = W.getElementById('questRounds').value;	
-					node.game.results.P_QuestRound = answerQR;	
+					var answerQR = W.getElementById('questRounds').value;
+					node.game.results.P_QuestRound = answerQR;
 					//Check if data for playerID and current round already exists
 					var dataExist = {
 						Player_ID: data.Player_ID,
 						Current_Round: node.player.stage.round
-					}; 
+					};
 					// call data base and check existence of data
 					node.set('check_Data', dataExist);
 					node.on("in.say.DATA", function(msg){
@@ -186,7 +186,7 @@ stager.setOnInit(function() {
 		    node.game.timer.init(options);
 		    node.game.timer.updateDisplay();
 		    node.game.timer.start(options);
-		    
+
 		    // show table with initial situation
 			var propEndow = W.getElementById('propEndow');
 			var respEndow = W.getElementById('respEndow');
@@ -194,13 +194,13 @@ stager.setOnInit(function() {
 			var clRiskOwn = W.getElementById('clRiskOwn');
 			var clRiskOther = W.getElementById('clRiskOther');
 			var clRisk = W.getElementById('clRisk');
-			W.write(node.game.endowment_proposer.toString(),propEndow);	
-			W.write(node.game.endowment_responder.toString(),respEndow);	
+			W.write(node.game.endowment_proposer.toString(),propEndow);
+			W.write(node.game.endowment_responder.toString(),respEndow);
 			W.write(node.game.costGE.toString(),costGHGE);
 			W.write(node.game.riskOwn.toString(),clRiskOwn);
 			W.write(node.game.riskOther.toString(),clRiskOther);
 			W.write(node.game.ClimateRisk.toString(),clRisk);
-			
+
 			// show table with result after negatiation has been finished
 			var propOffer = W.getElementById('propOffer');
 			var respToPay = W.getElementById('respToPay');
@@ -209,7 +209,7 @@ stager.setOnInit(function() {
 			var climateCatastrophe = W.getElementById('climateCatastrophe');
 			var remainProp = W.getElementById('remainProp');
 			W.write(node.game.offer,propOffer);
-			W.write(node.game.respPay,respToPay);	 
+			W.write(node.game.respPay,respToPay);
 			W.write(node.game.decision,respDecision);
 			W.write(node.game.agreement,agreement);
 			W.write(node.game.catastrophe,climateCatastrophe);
@@ -229,14 +229,14 @@ stager.setOnInit(function() {
 				// node.set('bsc_instrTimeUpdate',timeInstr);
 				// node.game.timer.stop();
 				// this.disabled = "disabled";
-				var answerQR = W.getElementById('questRounds').value;	
-				node.game.results.P_QuestRound = answerQR;	
+				var answerQR = W.getElementById('questRounds').value;
+				node.game.results.P_QuestRound = answerQR;
 				//Check if data for playerID and current round already exists
 				var dataExist = {
 					Player_ID: data.Player_ID,
 					Current_Round: node.player.stage.round
-				}; 
-				
+				};
+
 				// call data base and check existence of data
 				node.set('check_Data', dataExist);
 				node.on("in.say.DATA", function(msg){
@@ -246,7 +246,7 @@ stager.setOnInit(function() {
 							node.set('bsc_data',node.game.results);
 							node.emit('DONE');
 						}
-		
+
 						else{
 							console.log('Data Exist: ' + dataExist.Player_ID);
 							node.set('delete_data', dataExist);
@@ -259,7 +259,7 @@ stager.setOnInit(function() {
 			};
 		});
     });
-    
+
     // function called as soon as responder has finished the current round
     node.on('RESPONDER_DONE', function(data) {
 		node.game.timeResultResp = Math.round(Math.abs(node.game.timeResultResp - Date.now())/1000);
@@ -272,8 +272,8 @@ stager.setOnInit(function() {
 		};
 		console.log("Time InitResp:" + gameTimeResp.timeInitSituaResp);
 		// node.set('bsc_gameTime',gameTimeResp);
-		
-		//Check if data for playerID and current round already exists		
+
+		//Check if data for playerID and current round already exists
 		W.loadFrame('/burdenRAHR/html/questionRounds_resp.html', function() {
 			node.game.timequestionsRounds = Date.now();
 			var options = {
@@ -283,17 +283,17 @@ stager.setOnInit(function() {
 					var timeInstr = {
 						playerID: {Player_ID: node.game.ownID},
 						add: {TimeQuestionRounds: node.game.timequestionsRounds}
-					};		     
+					};
 			        // node.set('bsc_instrTimeUpdate',timeInstr);
 					node.game.timer.stop();
 					this.disabled = "disabled";
-					var answerQR = W.getElementById('questRounds').value;	
-					node.game.results.R_QuestRound = answerQR;				
+					var answerQR = W.getElementById('questRounds').value;
+					node.game.results.R_QuestRound = answerQR;
 					//Check if data for playerID and current round already exists
 					var dataExist = {
 						Player_ID: data.Player_ID,
 						Current_Round: node.player.stage.round
-					}; 
+					};
 					node.set('check_Data', dataExist);
 					node.on("in.say.DATA", function(msg){
 						if (msg.text == "CheckData") {
@@ -301,7 +301,7 @@ stager.setOnInit(function() {
 							if(msg.data[0] === undefined){
 								node.set('bsc_data',node.game.results);
 								node.emit('DONE');
-							}		
+							}
 							else{
 								console.log('Data Exist: ' + dataExist.Player_ID);
 								node.set('delete_data', dataExist);
@@ -316,21 +316,21 @@ stager.setOnInit(function() {
 		    node.game.timer.init(options);
 		    node.game.timer.updateDisplay();
 		    node.game.timer.start(options);
-		    
-		    // show table with initial situation	
+
+		    // show table with initial situation
 			var propEndow = W.getElementById('propEndow');
 			var respEndow = W.getElementById('respEndow');
 			var costGHGE = W.getElementById('costGHGE');
 			var clRiskOwn = W.getElementById('clRiskOwn');
 			var clRiskOther = W.getElementById('clRiskOther');
 			var clRisk = W.getElementById('clRisk');
-			W.write(node.game.endowment_proposer.toString(),propEndow);	
-			W.write(node.game.endowment_responder.toString(),respEndow);	
+			W.write(node.game.endowment_proposer.toString(),propEndow);
+			W.write(node.game.endowment_responder.toString(),respEndow);
 			W.write(node.game.costGE.toString(),costGHGE);
 			W.write(node.game.riskOwn.toString(),clRiskOwn);
-			W.write(node.game.riskOther.toString(),clRiskOther);    
+			W.write(node.game.riskOther.toString(),clRiskOther);
 			W.write(node.game.ClimateRisk.toString(),clRisk);
-			
+
 			// show table with result after negatiation has been finished
 			var propOffer = W.getElementById('propOffer');
 			var respToPay = W.getElementById('respToPay');
@@ -339,13 +339,13 @@ stager.setOnInit(function() {
 			var climateCatastrophe = W.getElementById('climateCatastrophe');
 			var remainResp = W.getElementById('remainResp');
 			W.write(node.game.offer,propOffer);
-			W.write(node.game.respPay,respToPay);	 
+			W.write(node.game.respPay,respToPay);
 			W.write(node.game.decision,respDecision);
 			W.write(node.game.agreement,agreement);
 			W.write(node.game.catastrophe,climateCatastrophe);
 			W.write(node.game.remainResp,remainResp);
-			 
-			// short question at the end of each round    
+
+			// short question at the end of each round
 			var quest = W.getElementById("quest");
 			var string = 'Why did you ' + node.game.response + ' the proposal ?';
 			W.write(string, quest);
@@ -359,13 +359,13 @@ stager.setOnInit(function() {
 				// node.set('bsc_instrTimeUpdate',timeInstr);
 				// node.game.timer.stop();
 				// this.disabled = "disabled";
-				var answerQR = W.getElementById('questRounds').value;	
-				node.game.results.R_QuestRound = answerQR;			
+				var answerQR = W.getElementById('questRounds').value;
+				node.game.results.R_QuestRound = answerQR;
 				//Check if data for playerID and current round already exists
 				var dataExist = {
 					Player_ID: data.Player_ID,
 					Current_Round: node.player.stage.round
-				}; 
+				};
 				node.set('check_Data', dataExist);
 				node.on("in.say.DATA", function(msg){
 					if (msg.text == "CheckData") {
@@ -382,11 +382,11 @@ stager.setOnInit(function() {
 							node.emit('DONE');
 						}
 					}
-				});	
+				});
 			};
-		});    
+		});
 	});
-    
+
     // node.on('RESPONDER_DONE', function(data) {
 		// node.game.timeResultResp = Math.round(Math.abs(node.game.timeResultResp - Date.now())/1000);
 		// var gameTimeResp = {
@@ -395,17 +395,17 @@ stager.setOnInit(function() {
 		    // timeInitSituaResp: data.timeInitSituaResp,
 		    // timeRespondeResp: data.timeRespondeResp,
 		    // timeResultResp: node.game.timeResultResp,
-		// }; 
+		// };
 		// node.set('bsc_gameTime',gameTimeResp);
 		// //Check if data for playerID and current round already exists
 		// node.set('check_Data', node.game.ownID);
 		// node.set('bsc_data',data);
 		// node.emit('DONE');
     // });
-    
-    
+
+
 	// getting the player ID of the other player and the group number
-	// depending on whether this player is the proposer or the responder in the current round 
+	// depending on whether this player is the proposer or the responder in the current round
     node.on("in.say.DATA", function(msg){
 	if (msg.text == "PROPOSER") {
 	    node.game.role = "PROPOSER";
@@ -417,7 +417,7 @@ stager.setOnInit(function() {
 	    node.game.otherID = msg.data.proposer;
 	    node.game.nbrGroup = msg.data.groupP;
 	}
-	node.emit('GROUP_DONE', 'DONE', node.game.ownID);	
+	node.emit('GROUP_DONE', 'DONE', node.game.ownID);
     });
 
 	// function called as soon as responder made his descision (accept or reject the offer)
@@ -425,16 +425,16 @@ stager.setOnInit(function() {
 		node.game.timeResponse = Math.round(Math.abs(node.game.timeResponse - Date.now())/1000);
 		// var timeResponse = {timeResponse: node.game.timeResponse};
 	    // node.set('bsc_time',timeResponse);
-	
+
 		W.loadFrame('/burdenRAHR/html/resultResponder.html', function() {
 			if(node.player.stage.round == 1){
 				// Test Round
 				var practice3 = W.getElementById('practice3');
 				practice3.style.display = '';
 			}
-			else{}	
+			else{}
 		    node.game.timeResultResp = Date.now();
-	
+
 		    // Start the timer.
 		    var options = {
 				milliseconds: 120000, // 120000 ms is equivalent to 2 minutes
@@ -445,23 +445,23 @@ stager.setOnInit(function() {
 				}
 		    };
 		    node.game.timer.restart(options);
-	
+
 		    var result1 = W.getElementById('result1');
 		    var result2 = W.getElementById('result2');
 		    var result3 = W.getElementById('result3');
-		    var propOffer = W.getElementById('propOffer'); 
+		    var propOffer = W.getElementById('propOffer');
 		    node.game.offer = offer.toString();
 		    W.write(offer.toString(),propOffer);
 		    var resp = node.game.costGE - offer;
-		    var respToPay = W.getElementById('respToPay'); 
+		    var respToPay = W.getElementById('respToPay');
 		    node.game.respPay =  resp.toString();
-		    W.write(resp.toString(),respToPay);	
-	
+		    W.write(resp.toString(),respToPay);
+
 		    var catastrNo = {
 			cc: 0,
 			offer: offer
-		    };			
-	
+		    };
+
 		    var proceed = W.getElementById('continue');
 		    if(response == 'ACCEPT'){
 				node.say('ACCEPT',node.game.otherID, catastrNo);
@@ -473,25 +473,25 @@ stager.setOnInit(function() {
 				var respDecision = W.getElementById('respDecision');
 				node.game.decision =  'Accept';
 				W.write('Accept',respDecision);
-				var agreement = W.getElementById('agreement'); 
+				var agreement = W.getElementById('agreement');
 				W.write('Yes',agreement);
-				var climateCatastrophe = W.getElementById('climateCatastrophe'); 
+				var climateCatastrophe = W.getElementById('climateCatastrophe');
 				W.write('No',climateCatastrophe);
 				var remain = node.game.endowment_responder - resp;
 				if(remain < 0){remain = 0;} else{}
 				node.game.remainResp = remain.toString();
-				var remainResp = W.getElementById('remainResp'); 
+				var remainResp = W.getElementById('remainResp');
 				W.write(remain.toString(),remainResp);
-				
+
 				remProp = node.game.endowment_proposer - offer;
 				if(remProp < 0){remProp = 0;} else{}
-				var remainProp = W.getElementById('remainProp'); 
-				W.write(remProp.toString(),remainProp);		
+				var remainProp = W.getElementById('remainProp');
+				W.write(remProp.toString(),remainProp);
 				acceptPlayer = 1;
 				cc = 0;
 				remaining = remain;
 		    }
-	
+
 		    else{
 				acceptPlayer = 0;
 				W.write('You have rejected the offer.',result1);
@@ -499,9 +499,9 @@ stager.setOnInit(function() {
 				/////////////////////////////////////////////
 				// Offer rejected
 				// A climate catastrophe will happen with a
-				// probability of node.game.ClimateRisk % 
+				// probability of node.game.ClimateRisk %
 				///////////////////////////////////////////
-				
+
 				var clim_cat = Math.random();
 				if(clim_cat <= (node.game.ClimateRisk/100)){
 					// climate catastrophy happened
@@ -511,7 +511,7 @@ stager.setOnInit(function() {
 					// climate catastrophy did not happen
 					catastrophe = 0;
 				}
-				
+
 				// climate catastrophy happened
 				if(catastrophe){
 				    W.write('A climate catastrophe has happened and destroyed a part of your endowment.', result3);
@@ -523,11 +523,11 @@ stager.setOnInit(function() {
 				    };
 				    cc = 1;
 				    node.say('REJECT',node.game.otherID, catastrYes);
-				    var climateCatastrophe = W.getElementById('climateCatastrophe'); 
+				    var climateCatastrophe = W.getElementById('climateCatastrophe');
 				    W.write('Yes',climateCatastrophe);
 					node.game.catastrophe =  'Yes';
 					remProp = node.game.endowment_proposer / 2;
-					var remainProp = W.getElementById('remainProp'); 
+					var remainProp = W.getElementById('remainProp');
 					W.write(remProp.toString(),remainProp);
 				}
 				else{
@@ -539,26 +539,26 @@ stager.setOnInit(function() {
 				    cc = 0;
 				    var result3 = W.getElementById('result3');
 				    W.write('However, no climate catastrophe has happened.', result3);
-				    var climateCatastrophe = W.getElementById('climateCatastrophe'); 
+				    var climateCatastrophe = W.getElementById('climateCatastrophe');
 					node.game.catastrophe =  'No';
 				    W.write('No',climateCatastrophe);
 				    node.say('REJECT',node.game.otherID, catastrYes);
 				    remProp = node.game.endowment_proposer;
-					var remainProp = W.getElementById('remainProp'); 
+					var remainProp = W.getElementById('remainProp');
 					W.write(remProp.toString(),remainProp);
 				}
 				node.game.decision =  'Reject';
 				node.game.agreement =  'No';
-				var respDecision = W.getElementById('respDecision'); 
+				var respDecision = W.getElementById('respDecision');
 				W.write('Reject',respDecision);
-				var agreement = W.getElementById('agreement'); 
+				var agreement = W.getElementById('agreement');
 				W.write('No',agreement);
 				var remainResp = W.getElementById('remainResp');
-				node.game.remainResp = catastrYes.remainEndowResp.toString(); 
-				W.write(catastrYes.remainEndowResp.toString(),remainResp);	
+				node.game.remainResp = catastrYes.remainEndowResp.toString();
+				W.write(catastrYes.remainEndowResp.toString(),remainResp);
 				remaining = catastrYes.remainEndowResp;
 		    }
-	
+
 			// these values are stored in the mongoDB data base table called bsc_data
 		    node.game.results = {
 				Current_Round: node.player.stage.round,
@@ -575,14 +575,14 @@ stager.setOnInit(function() {
 				R_QuestRound: '',
 				Endow_Resp: node.game.endowment_responder,
 				RiskContrib_R: node.game.riskOwn,
-				GroupRisk: (node.game.riskOwn + node.game.riskOther + 15)			
+				GroupRisk: (node.game.riskOwn + node.game.riskOther + 15)
 		    };
-					
+
 		    proceed.onclick = function(){
 			node.game.timer.stop();
 			this.disabled = "disabled";
-			node.emit('RESPONDER_DONE', node.game.results, node.game.ownID);	
-		    };	
+			node.emit('RESPONDER_DONE', node.game.results, node.game.ownID);
+		    };
 		});
     });
 
@@ -611,10 +611,10 @@ stager.setOnInit(function() {
     * accepted = 1: offer accepted
     * accepted = 0: offer rejected
     *
-    * @param {object} dataResp 
+    * @param {object} dataResp
     * @param {number} other The player ID of the other player
     *
-	*/ 
+	*/
     this.randomAccept = function(dataResp, other) {
 		var accepted = Math.round(Math.random());
 		console.log('randomaccept');
@@ -645,7 +645,7 @@ stager.setOnInit(function() {
 	n = parseInt(n);
 	return !isNaN(n) && isFinite(n) && n >= 0 && n <= node.game.costGE;
     };
-	
+
 });
 
 ///// STAGES and STEPS
@@ -667,12 +667,145 @@ function precache() {
 
 
 function instructions() {
-	
+
+
 	var waitingForPlayers =  W.getElementById('waitingForPlayers');
 	waitingForPlayers.style.display = 'none';
 	// Set state in Header
 	document.getElementById('state').innerHTML = "Instruction";
 	console.log('instructions');
+
+	// TODO: REMOVE: TESTING RandomOrderExecutorb
+    var randomBlockExecutor;
+    var socialValueOrientation, newEcologicalParadigm, risk;
+
+    // Initializing storage.
+    node.game.questionnaire = {
+        socialValueOrientation: {},
+        newEcologicalParadigm: {},
+        risk: {},
+        demographics: {}
+    };
+
+    function makePageLoad(block, page) {
+        return function(executor) {
+            W.loadFrame('/burdenRAHR/html/questionnaire/'+ block + '/' +
+                page + '.html', function() {
+                    W.getElementById('done').onclick = function() {
+                        var questionnaire = node.game.questionnaire;
+                        if (questionnaire.currentAnswerMade) {
+                            questionnaire[block][page] =
+                                    questionnaire.currentAnswer;
+                            executor.next();
+                        }
+                        else {
+                            alert('Please select an option.');
+                        }
+                    };
+            });
+        };
+    }
+
+    function makeBlockArray(block, pages) {
+        var i, result = [];
+        for (i = 0; i < pages.length; ++i) {
+            result.push(makePageLoad(block,pages[i]));
+        }
+        return result;
+    }
+
+    randomBlockExecutor = new RandomOrderExecutor();
+
+    socialValueOrientation = function(randomBlockExecutor) {
+        var randomPageExecutor = new RandomOrderExecutor();
+        randomPageExecutor.setCallbacks(
+            makeBlockArray('socialValueOrientation',
+                ['1', '2', '3', '4', '5', '6'])
+        );
+        randomPageExecutor.setOnDone(function() {
+            randomBlockExecutor.next();
+        });
+
+        W.loadFrame('/burdenRAHR/html/questionnaire/socialValueOrientation/' +
+            'instructions.html', function() {
+                W.getElementById('done').onclick = function() {
+                    randomPageExecutor.execute();
+                }
+            }
+        );
+
+    };
+
+    newEcologicalParadigm = function(randomBlockExecutor) {
+        var randomPageExecutor = new RandomOrderExecutor();
+        randomPageExecutor.setCallbacks(
+            makeBlockArray('newEcologicalParadigm', ['limit','modify',
+                'interfere', 'ingenuity', 'abusing', 'plenty', 'plants',
+                'balance', 'crisis', 'spaceship', 'rule', 'control',
+                'catastrophe', 'laws', 'upset'])
+        );
+        randomPageExecutor.setOnDone(function() {
+            randomBlockExecutor.next();
+        });
+
+        W.loadFrame('/burdenRAHR/html/questionnaire/newEcologicalParadigm/' +
+            'instructions.html', function() {
+                W.getElementById('done').onclick = function() {
+                    randomPageExecutor.execute();
+                }
+            }
+        );
+    };
+
+    risk = function(randomBlockExecutor) {
+        var randomPageExecutor = new RandomOrderExecutor();
+
+        randomPageExecutor.setCallbacks(
+            makeBlockArray('risk', ['doubleOrNothing','gambles', 'patience',
+                'riskTaking', 'trusting','charity'])
+        );
+        randomPageExecutor.setOnDone(function () {
+            randomBlockExecutor.next();
+        });
+
+        randomPageExecutor.execute();
+    }
+
+    demographics = function() {
+        var linearPageExecutor = {
+            execute: function() {
+                this.index = 0;
+                this.callbacks[0](this);
+            },
+            next: function() {
+                if (this.index < this.callbacks.length) {
+                    this.callbacks[++this.index](this);
+                }
+                else {
+                    this.done();
+                }
+            },
+            done: function() {
+                // store stuff
+                node.done();
+            }
+        };
+
+        linearPageExecutor.callbacks = makeBlockArray('demographics', [
+            'gender', 'education', 'dateOfBirth', 'politics', 'income',
+            'occupation', 'participation']);
+        linearPageExecutor.execute();
+    }
+    randomBlockExecutor.execute([
+        risk], function() {
+            demographics();
+        }
+    );
+
+    return;
+
+    // TODO: REMOVE ABOVE
+
 	W.loadFrame('/burdenRAHR/html/instructions.html', function() {
 	    node.game.timeInstruction = Date.now();
 		var options = {
@@ -692,10 +825,10 @@ function instructions() {
 	    node.game.timer.init(options);
 	    node.game.timer.updateDisplay();
 	    node.game.timer.start(options);
-	    
+
 	    console.log('burdenSharingControl');
 	    W.getElementById("cost").innerHTML = node.game.costGE;
-	    
+
         var next;
 	    next = W.getElementById("continue");
 	    next.onclick = function() {
@@ -711,7 +844,7 @@ function instructions() {
 			instructions2();
 	    };
 	});
-	
+
 	function instructions2(){
 		W.loadFrame('/burdenRAHR/html/instructions2.html', function() {
 		    node.game.timeInstruction2 = Date.now();
@@ -722,7 +855,7 @@ function instructions() {
 					var timeInstr = {
 						playerID: {Player_ID: node.game.ownID},
 						add: {TimeInstruction_2: node.game.timeInstruction2}
-					};		    
+					};
 			        // node.set('bsc_instrTimeUpdate',timeInstr);
 					node.game.timer.stop();
 					this.disabled = "disabled";
@@ -732,10 +865,10 @@ function instructions() {
 		    node.game.timer.init(options);
 		    node.game.timer.updateDisplay();
 		    node.game.timer.start(options);
-		    
+
 		    console.log('Instructions Page 2');
 		    W.getElementById("cost").innerHTML = node.game.costGE;
-		    
+
 	        var next;
 		    next = W.getElementById("continue");
 		    next.onclick = function() {
@@ -743,7 +876,7 @@ function instructions() {
 				var timeInstr = {
 					playerID: {Player_ID: node.game.ownID},
 					add: {TimeInstruction_2: node.game.timeInstruction2}
-				};		    
+				};
 		        // node.set('bsc_instrTimeUpdate',timeInstr);
 				node.game.timer.stop();
 				this.disabled = "disabled";
@@ -751,7 +884,7 @@ function instructions() {
 		    };
 		});
 	}
-	
+
 	function instructions3(){
 		W.loadFrame('/burdenRAHR/html/instructions3.html', function() {
 		    node.game.timeInstruction3 = Date.now();
@@ -762,7 +895,7 @@ function instructions() {
 					var timeInstr = {
 						playerID: {Player_ID: node.game.ownID},
 						add: {TimeInstruction_3: node.game.timeInstruction3}
-					};		     
+					};
 			        // node.set('bsc_instrTimeUpdate',timeInstr);
 					node.game.timer.stop();
 					this.disabled = "disabled";
@@ -774,7 +907,7 @@ function instructions() {
 		    node.game.timer.updateDisplay();
 		    node.game.timer.start(options);
 		    console.log('Instructions Page 2');
-		    
+
 	        var next;
 		    next = W.getElementById("continue");
 		    next.onclick = function() {
@@ -782,15 +915,15 @@ function instructions() {
 				var timeInstr = {
 					playerID: {Player_ID: node.game.ownID},
 					add: {TimeInstruction_3: node.game.timeInstruction3}
-				};		    		    
+				};
 		        // node.set('bsc_instrTimeUpdate',timeInstr);
 				node.game.timer.stop();
 				this.disabled = "disabled";
 				EconGrowthAndRisk()
 		    };
 		});
-	}	
-	
+	}
+
 	/**
     * ## EconGrowthAndRisk
     *
@@ -823,7 +956,7 @@ function instructions() {
 		node.set('initEndow',initEndow);
 		node.emit('DONE');
 	}
-		
+
 	return true;
 };
 
@@ -835,7 +968,7 @@ function initialSituation() {
 	var IDs = {
 		ownPlayerId: node.game.ownID,
 		otherPlayerId: node.game.otherID
-	};	
+	};
 	node.set('get_InitEndow', IDs);
 	node.on("in.say.DATA", function(msg){
 		if(msg.text == "Endow") {
@@ -846,7 +979,7 @@ function initialSituation() {
 		    if(node.game.role == 'PROPOSER'){
     			node.game.endowment_responder = initialEndow;
     			node.game.endowment_proposer = node.game.endowment_own;
-    			
+
 				W.loadFrame(node.game.url_initprop, function() {
 					var initText1 = "Due to economic growth, you have received " + (node.game.endowment_own-25) + " ECU which will be added ";
 					initText1 = initText1 + "to your initial endowment.";
@@ -857,13 +990,13 @@ function initialSituation() {
 						var practice1 = W.getElementById('practice1');
 			   			practice1.style.display = '';
 						var text1 = W.getElementById('inform1');
-						W.write(initText1,text1);	
+						W.write(initText1,text1);
 						var text2 = W.getElementById('inform2');
 						W.write(initText2, text2);
 					}
 					else if(node.player.stage.round == 2){
 						var text1 = W.getElementById('inform1');
-						W.write(initText1,text1);	
+						W.write(initText1,text1);
 						var text2 = W.getElementById('inform2');
 						W.write(initText2, text2);
 					}
@@ -879,22 +1012,22 @@ function initialSituation() {
 					// },
 				    // };
 				    // node.game.timer.restart(options);
-				    
-			
+
+
 				    var propEndow = W.getElementById('propEndow');
 				    var respEndow = W.getElementById('respEndow');
 				    var costGHGE = W.getElementById('costGHGE');
 				    var clRiskOwn = W.getElementById('clRiskOwn');
 				    var clRiskOther = W.getElementById('clRiskOther');
 				    var clRisk = W.getElementById('clRisk');
-				    W.write(node.game.endowment_proposer.toString(),propEndow);	
-				    W.write(node.game.endowment_responder.toString(),respEndow);	
+				    W.write(node.game.endowment_proposer.toString(),propEndow);
+				    W.write(node.game.endowment_responder.toString(),respEndow);
 				    W.write(node.game.costGE.toString(),costGHGE);
 				    W.write(node.game.riskOwn.toString(),clRiskOwn);
 				    W.write(node.game.riskOther.toString(),clRiskOther);
 				    W.write(node.game.ClimateRisk.toString(),clRisk);
 				    var proceed = W.getElementById('continue');
-			
+
 				    proceed.onclick = function() {
 						node.game.timer.stop();
 						node.game.timeInitialSituation = Math.round(Math.abs(node.game.timeInitialSituation - Date.now())/1000);
@@ -905,11 +1038,11 @@ function initialSituation() {
 				    };
 				});
 		    }
-		
+
 		    else if(node.game.role == 'RESPONDENT'){
 		        node.game.endowment_proposer = initialEndow;
 		        node.game.endowment_responder = node.game.endowment_own;
-		        
+
 				W.loadFrame(node.game.url_initresp, function() {
 					var initText1 = "Due to economic growth, you have received " + (node.game.endowment_own-25) + " ECU which will be added ";
 					initText1 = initText1 + "to your initial endowment.";
@@ -920,13 +1053,13 @@ function initialSituation() {
 						var practice1 = W.getElementById('practice1');
 			   			practice1.style.display = '';
 						var text1 = W.getElementById('inform1');
-						W.write(initText1,text1);	
+						W.write(initText1,text1);
 						var text2 = W.getElementById('inform2');
 						W.write(initText2, text2);
 					}
 					else if(node.player.stage.round == 2){
 						var text1 = W.getElementById('inform1');
-						W.write(initText1,text1);	
+						W.write(initText1,text1);
 						var text2 = W.getElementById('inform2');
 						W.write(initText2, text2);
 					}
@@ -941,16 +1074,16 @@ function initialSituation() {
 						    // node.emit('DONE');
 						// },
 				    // };
-				    // node.game.timer.restart(options);				
-			
+				    // node.game.timer.restart(options);
+
 				    var propEndow = W.getElementById('propEndow');
 				    var respEndow = W.getElementById('respEndow');
 				    var costGHGE = W.getElementById('costGHGE');
 				    var clRiskOwn = W.getElementById('clRiskOwn');
 				    var clRiskOther = W.getElementById('clRiskOther');
 				    var clRisk = W.getElementById('clRisk');
-				    W.write(node.game.endowment_proposer.toString(),propEndow);	
-				    W.write(node.game.endowment_responder.toString(),respEndow);	
+				    W.write(node.game.endowment_proposer.toString(),propEndow);
+				    W.write(node.game.endowment_responder.toString(),respEndow);
 				    W.write(node.game.costGE.toString(),costGHGE);
 				    W.write(node.game.riskOwn.toString(),clRiskOwn);
 				    W.write(node.game.riskOther.toString(),clRiskOther);
@@ -971,7 +1104,7 @@ function initialSituation() {
 };
 
 function decision() {
-	
+
 	/**
     * ## checkID
     *
@@ -998,35 +1131,35 @@ function decision() {
 //			      callback: function() {
 //				  		var saveId = {
 //								Player_ID: 666
-//						}; 
+//						};
 //				  		node.emit('player_id',saveId);
 //						<!-- node.set('player_id',saveId); -->
-//						
+//
 //			    	  location.href="http://localhost:8080/pairs/";
 //			      }
 //			    },
 			  }
 		});
-	};	
+	};
     var that = this;
 
     /////////////////////////////////// PROPOSER ///////////////////////////////////
 
     if(node.game.role == 'PROPOSER'){
-	
+
 		W.loadFrame(node.game.url_bidder, function() {
 			if(node.player.stage.round == 1){
 				// Test Round
 				var practice1 = W.getElementById('practice1');
 			    practice1.style.display = '';
 			}
-			else{}	
+			else{}
 		    W.getElementById("offer").selectedIndex = -1;
 		    node.game.timeMakingOffer = Date.now();
 		    var options = {
 				milliseconds: 90000, // 120000 ms is equivalent to 2 minutes
 				timeup: function(){
-				    W.getElementById("fieldset").disabled = true; 
+				    W.getElementById("fieldset").disabled = true;
 				    node.game.timer.stop();
 				    var randnum = Math.floor(1+Math.random()*node.game.costGE);
 				    var offer = W.getElementById('offer');
@@ -1037,20 +1170,20 @@ function decision() {
 				}
 		    };
 		    node.game.timer.restart(options);
-			
+
 			var propEndow = W.getElementById('propEndow');
 			var respEndow = W.getElementById('respEndow');
 			var costGHGE = W.getElementById('costGHGE');
 			var clRiskOwn = W.getElementById('clRiskOwn');
 			var clRiskOther = W.getElementById('clRiskOther');
 			var clRisk = W.getElementById('clRisk');
-			W.write(node.game.endowment_proposer.toString(),propEndow);	
-			W.write(node.game.endowment_responder.toString(),respEndow);	
+			W.write(node.game.endowment_proposer.toString(),propEndow);
+			W.write(node.game.endowment_responder.toString(),respEndow);
 			W.write(node.game.costGE.toString(),costGHGE);
 			W.write(node.game.riskOwn.toString(),clRiskOwn);
 			W.write(node.game.riskOther.toString(),clRiskOther);
 			W.write(node.game.ClimateRisk.toString(),clRisk);
-	
+
 		    var submitoffer = W.getElementById('submitOffer');
 		    submitoffer.onclick = function() {
 				var offer = W.getElementById('offer');
@@ -1062,11 +1195,11 @@ function decision() {
 				}
 				node.game.timer.stop();
 				node.game.timer.setToZero();
-				W.getElementById("fieldset").disabled = true; 
+				W.getElementById("fieldset").disabled = true;
 		        node.game.decisionOffer = 1;
 				node.emit('BID_DONE', offer.value, node.game.otherID)
 		    };
-		    
+
 		    node.on("in.say.DATA", function(msg){
 				if (msg.text == "ACCEPT") {
 				    W.loadFrame('/burdenRAHR/html/resultProposer.html', function() {
@@ -1075,7 +1208,7 @@ function decision() {
 						var practice3 = W.getElementById('practice3');
 						practice3.style.display = '';
 					}
-					else{}	
+					else{}
 						node.game.timeResultProp = Date.now();
 						// Start the timer.
 						var options = {
@@ -1083,7 +1216,7 @@ function decision() {
 						    timeup: function(){
 							node.game.timer.stop();
 							this.disabled = "disabled";
-							node.emit('PROPOSER_DONE', node.game.results, node.game.ownID);	
+							node.emit('PROPOSER_DONE', node.game.results, node.game.ownID);
 			                                //									profitPeriods[node.game.currentRound - 1] = node.game.results.profit;
 						    }
 						};
@@ -1093,35 +1226,35 @@ function decision() {
 						var result3 = W.getElementById('result3');
 						var proceed = W.getElementById('continue');
 						var propOffer = W.getElementById('propOffer');
-						node.game.offer = msg.data.offer.toString(); 
+						node.game.offer = msg.data.offer.toString();
 						W.write(msg.data.offer.toString(),propOffer);
 						var resp = node.game.costGE - msg.data.offer;
 						var respToPay = W.getElementById('respToPay');
-						node.game.respPay =  resp.toString(); 
-						W.write(resp.toString(),respToPay);	
+						node.game.respPay =  resp.toString();
+						W.write(resp.toString(),respToPay);
 						W.write('The other player has accepted your offer.',result1);
 						W.write('You have successfully reached an agreement against global warming.',result2);
-			
+
 						node.game.decision =  'Accept';
 						node.game.agreement =  'Yes';
 						node.game.catastrophe =  'No';
-					
-						var respDecision = W.getElementById('respDecision'); 
+
+						var respDecision = W.getElementById('respDecision');
 						W.write('Accept',respDecision);
-						var agreement = W.getElementById('agreement'); 
+						var agreement = W.getElementById('agreement');
 						W.write('Yes',agreement);
-						var climateCatastrophe = W.getElementById('climateCatastrophe'); 
+						var climateCatastrophe = W.getElementById('climateCatastrophe');
 						W.write('No',climateCatastrophe);
 						var remain = node.game.endowment_proposer - msg.data.offer;
 						if(remain < 0){remain = 0;} else{}
 						node.game.remainProp = remain.toString();
-						var remainProp = W.getElementById('remainProp'); 
+						var remainProp = W.getElementById('remainProp');
 						W.write(remain.toString(),remainProp);
-						var remainResp = W.getElementById('remainResp'); 
+						var remainResp = W.getElementById('remainResp');
 						remResp = node.game.endowment_responder - resp;
 						if(remResp < 0){remResp = 0;} else{}
-						W.write(remResp.toString(),remainResp);		
-			
+						W.write(remResp.toString(),remainResp);
+
 						node.game.results = {
 						    Current_Round: node.player.stage.round,
 						    Player_ID: node.game.ownID,
@@ -1137,14 +1270,14 @@ function decision() {
 							P_QuestRound: '',
 							Endow_Prop: node.game.endowment_proposer,
 							RiskContrib_P: node.game.riskOwn,
-							GroupRisk: (node.game.riskOwn + node.game.riskOther + 15)				
+							GroupRisk: (node.game.riskOwn + node.game.riskOther + 15)
 						};
 						proceed.onclick = function(){
 						    node.game.timer.stop();
 						    this.disabled = "disabled";
 						    node.emit('PROPOSER_DONE', node.game.results, node.game.ownID);
 			                // profitPeriods[node.game.currentRound - 1] = node.game.results.profit;
-						};	
+						};
 				    });
 				}
 				else if(msg.text == "REJECT") {
@@ -1161,7 +1294,7 @@ function decision() {
 						    }
 						};
 						node.game.timer.restart(options);
-			
+
 						var result1 = W.getElementById('result1');
 						var result2 = W.getElementById('result2');
 						var result3 = W.getElementById('result3');
@@ -1170,44 +1303,44 @@ function decision() {
 						node.game.offer =  msg.data.offer.toString();
 						W.write(msg.data.offer.toString(),propOffer);
 						var resp = node.game.costGE - msg.data.offer;
-						var respToPay = W.getElementById('respToPay'); 
+						var respToPay = W.getElementById('respToPay');
 						node.game.respPay =  resp.toString();
-						W.write(resp.toString(),respToPay);	
+						W.write(resp.toString(),respToPay);
 						W.write('The other player has rejected your offer.', result1);
 						W.write('You have not been able to reach an agreement against global warming.', result2);
 						if(msg.data.cc == 0){
 						    W.write('However, no climate catastrophe has happened.', result3);
 						    var climateCatastrophe = W.getElementById('climateCatastrophe');
-							node.game.catastrophe =  'No'; 
+							node.game.catastrophe =  'No';
 						    W.write('No',climateCatastrophe);
-						    var remainProp = W.getElementById('remainProp'); 
+						    var remainProp = W.getElementById('remainProp');
 						    remaining = node.game.endowment_proposer;
 						    node.game.remainProp = remaining.toString();
 						    W.write(remaining.toString(),remainProp);
-						    var remainResp = W.getElementById('remainResp'); 
+						    var remainResp = W.getElementById('remainResp');
 							remResp = node.game.endowment_responder;
-							W.write(remResp.toString(),remainResp)	
+							W.write(remResp.toString(),remainResp)
 						}
 						else{
 						    W.write('A climate catastrophe has happened and destroyed a part of your endowment.', result3);
-						    var climateCatastrophe = W.getElementById('climateCatastrophe'); 
+						    var climateCatastrophe = W.getElementById('climateCatastrophe');
 							node.game.catastrophe =  'Yes';
 						    W.write('Yes',climateCatastrophe);
-						    var remainProp = W.getElementById('remainProp'); 
+						    var remainProp = W.getElementById('remainProp');
 						    remaining = node.game.endowment_proposer/2;
 						    node.game.remainProp = remaining.toString();
 						    W.write(remaining,remainProp);
-						    var remainResp = W.getElementById('remainResp'); 
+						    var remainResp = W.getElementById('remainResp');
 							remResp = node.game.endowment_responder / 2;
-							W.write(remResp.toString(),remainResp)	
+							W.write(remResp.toString(),remainResp)
 						}
 						node.game.decision =  'Reject';
 						node.game.agreement =  'No';
-						var respDecision = W.getElementById('respDecision'); 
+						var respDecision = W.getElementById('respDecision');
 						W.write('Reject',respDecision);
-						var agreement = W.getElementById('agreement'); 
+						var agreement = W.getElementById('agreement');
 						W.write('No',agreement);
-			
+
 						node.game.results = {
 						    Current_Round: node.player.stage.round,
 						    Player_ID: node.game.ownID,
@@ -1230,14 +1363,14 @@ function decision() {
 						    this.disabled = "disabled";
 						    node.emit('PROPOSER_DONE', node.game.results, node.game.ownID);
 			                // profitPeriods[node.game.currentRound - 1] = node.game.results.profit;
-						};	
+						};
 				    });
 				}
 		    });
 		});
     }
-    				 
-    /////////////////////////////////// RESPONDENT ///////////////////////////////////	
+
+    /////////////////////////////////// RESPONDENT ///////////////////////////////////
     else if(node.game.role == 'RESPONDENT'){
 
 		W.loadFrame(node.game.url_resp, function() {
@@ -1246,31 +1379,31 @@ function decision() {
 				var practice2 = W.getElementById('practice2');
 			    practice2.style.display = '';
 			}
-			else{}	
+			else{}
 		    var span_dot = W.getElementById('span_dot');
 			 // Refreshing the dots...
 		    setInterval(function() {
 		        if (span_dot.innerHTML !== '......') {
-		            span_dot.innerHTML = span_dot.innerHTML + '.';  
+		            span_dot.innerHTML = span_dot.innerHTML + '.';
 		        }
 		        else {
 		            span_dot.innerHTML = '.';
 		        }
 		    }, 1000);
-	 
+
 			var propEndow = W.getElementById('propEndow');
 			var respEndow = W.getElementById('respEndow');
 			var costGHGE = W.getElementById('costGHGE');
 			var clRiskOwn = W.getElementById('clRiskOwn');
 			var clRiskOther = W.getElementById('clRiskOther');
 			var clRisk = W.getElementById('clRisk');
-			W.write(node.game.endowment_proposer.toString(),propEndow);	
-			W.write(node.game.endowment_responder.toString(),respEndow);	
+			W.write(node.game.endowment_proposer.toString(),propEndow);
+			W.write(node.game.endowment_responder.toString(),respEndow);
 			W.write(node.game.costGE.toString(),costGHGE);
 			W.write(node.game.riskOwn.toString(),clRiskOwn);
 			W.write(node.game.riskOther.toString(),clRiskOther);
 			W.write(node.game.ClimateRisk.toString(),clRisk);
-				
+
 		    node.on("in.say.DATA", function(msg){
 			   	node.game.timeResponse = Date.now();
 				if (msg.text == "OFFER") {
@@ -1283,8 +1416,8 @@ function decision() {
 				    };
 				    node.game.timer.init(options);
 				    node.game.timer.updateDisplay();
-				    node.game.timer.start(options);		
-					
+				    node.game.timer.start(options);
+
 					var dots =  W.getElementById('dots');
 				    dots.style.display = 'none';
 				    var text =  W.getElementById('text');
@@ -1296,23 +1429,23 @@ function decision() {
 				    var respPay = node.game.costGE - msg.data;
 				    W.write(msg.data.toString(), proposer);
 				    W.write(respPay.toString(), respondent);
-		
+
 				    var accept = W.getElementById('accept');
 				    var reject = W.getElementById('reject');
-		
+
 				    accept.onclick = function() {
 				    node.game.response = 'accept';
 					node.game.timer.stop();
 					node.game.decisionResponse = 1;
 					node.emit('RESPONSE_DONE', 'ACCEPT', msg.data, node.game.otherID);
 				    };
-		
+
 				    reject.onclick = function() {
 				    node.game.response = 'reject';
 					node.game.timer.stop();
 					node.game.decisionResponse = 1;
 					node.emit('RESPONSE_DONE', 'REJECT', msg.data, node.game.otherID);
-				    };						   	
+				    };
 				}
 		    });
 		});
@@ -1321,35 +1454,35 @@ function decision() {
 };
 
 
-////////////////////////////QUESTIONAIRE //////////////////////////// 
+////////////////////////////QUESTIONAIRE ////////////////////////////
 
 function questionnaire() {
-	
+
 	function round(value, exp) {
 	  if (typeof exp === 'undefined' || +exp === 0)
 	    return Math.round(value);
-	
+
 	  value = +value;
 	  exp  = +exp;
-	
+
 	  if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0))
 	    return NaN;
-	
+
 	  // Shift
 	  value = value.toString().split('e');
 	  value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp)));
-	
+
 	  // Shift back
 	  value = value.toString().split('e');
 	  return +(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp));
 	}
-	
+
 	// shows last page if dk.checkout has been called
 
     document.getElementById('state').innerHTML = "End of Game - Questionnaire";
-		
+
     node.set('get_Profit',node.game.ownID);
-    
+
     node.on.data("win", function(msg) {
 	// W.clearFrame();
 		function showWin() {
@@ -1358,10 +1491,10 @@ function questionnaire() {
 					node.game.timer.stop();
 					node.game.timer.setToZero();
 				});
-		}		
+		}
 		setTimeout(function(){showWin();}, 500);
-	});	
-        
+	});
+
     node.on("in.say.DATA", function(msg){
     	// if(msg.text == "win"){}
     	console.log(msg.text);
@@ -1369,23 +1502,23 @@ function questionnaire() {
 			console.log("Payout round: " + msg.data.Payout_Round);
 			console.log("Profit: " + msg.data.Profit);
 			var bonus;
-			
-	
+
+
 			if (msg.data.Payout_Round != "none"){
 				node.game.bonus = round((msg.data.Profit/50),2);
 				console.log("Bonus: " + node.game.bonus);
-			    W.loadFrame('/burdenRAHR/html/questionnaire1.html', function(){ 
-				    var payoutText = W.getElementById("payout") 	
+			    W.loadFrame('/burdenRAHR/html/questionnaire1.html', function(){
+				    var payoutText = W.getElementById("payout")
 				    W.write("You will be paid out the amount you earned in round " + msg.data.Payout_Round, payoutText);
 				    var round = W.getElementById("payoutRound");
 				    W.write(msg.data.Payout_Round , round);
 				    var amountUCE = W.getElementById("amountECU");
-				    W.write(msg.data.Profit + " ECU" , amountUCE);    
+				    W.write(msg.data.Profit + " ECU" , amountUCE);
 				    var amountUSD = W.getElementById("amountUSD");
 				    var profitUSD = node.game.bonus+1.0;
 				    console.log("Profit" + profitUSD);
-				    W.write(profitUSD + " $" , amountUSD); 
-				    
+				    W.write(profitUSD + " $" , amountUSD);
+
 					node.game.timeResult = Date.now();
 					var options = {
 					    milliseconds: 60000, // 30000 ms is equivalent to 30 seconds
@@ -1402,9 +1535,9 @@ function questionnaire() {
 					node.game.timer.init(options);
 					node.game.timer.updateDisplay();
 					node.game.timer.start(options);
-				
-					var quest2 = W.getElementById('continue');			
-					quest2.onclick = function (){	
+
+					var quest2 = W.getElementById('continue');
+					quest2.onclick = function (){
 						node.game.timeResult = Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
 					    var timeResultProp = {
 							Player_ID : node.game.ownID,
@@ -1416,13 +1549,13 @@ function questionnaire() {
 					};
 			    });
    			}
-   	
+
 			else{
 				node.game.bonus = 0.0;
-			    W.loadFrame('/burdenRAHR/html/questionnaire12.html', function(){ 
-				    var payoutText = W.getElementById("payout") 	
+			    W.loadFrame('/burdenRAHR/html/questionnaire12.html', function(){
+				    var payoutText = W.getElementById("payout")
 				    W.write("Unfortunately you did not complete any of the 3 rounds (excluding the test round) to be played. For your participation in the experiment you will be paid out a fixed amount of 1.00 $.", payoutText);
-				    
+
 					node.game.timeResult = Date.now();
 					var options = {
 					    milliseconds: 60000, // 30000 ms is equivalent to 30 seconds
@@ -1439,8 +1572,8 @@ function questionnaire() {
 					node.game.timer.init(options);
 					node.game.timer.updateDisplay();
 					node.game.timer.start(options);
-				
-					var quest2 = W.getElementById('continue');			
+
+					var quest2 = W.getElementById('continue');
 					quest2.onclick = function (){
 					    node.game.timeResult = Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
 					    var timeResultProp = {
@@ -1451,11 +1584,11 @@ function questionnaire() {
 					    node.game.timer.stop();
 					    questionnaire(0);
 					};
-			    });	   	
+			    });
 		   	}
-    
+
 		    console.log('Postgame including Questionaire');
-		    
+
 			function checkID(msg){
 				bootbox.dialog({
 					  message: msg,
@@ -1472,17 +1605,17 @@ function questionnaire() {
 		//			      callback: function() {
 		//				  		var saveId = {
 		//								Player_ID: 666
-		//						}; 
+		//						};
 		//				  		node.emit('player_id',saveId);
 		//						<!-- node.set('player_id',saveId); -->
-		//						
+		//
 		//			    	  location.href="http://localhost:8080/pairs/";
 		//			      }
 		//			    },
 					  }
 				});
-			};  
-			
+			};
+
 		    // Qualtrix Questionaire iframe
 		    function questionnaire(timeout){
 				var url = '/burdenRAHR/html/questionnaire.html';
@@ -1490,7 +1623,7 @@ function questionnaire() {
 				W.loadFrame(url, function(){
 				    node.game.timeQuest1 = Date.now();
 				    var options = {
-						milliseconds: 1800000, // 1200000 ms is equivalent to 20 minutes 
+						milliseconds: 1800000, // 1200000 ms is equivalent to 20 minutes
 						timeup: function() {
 						    node.game.timeQuest1 = Math.round(Math.abs(node.game.timeQuest1 - Date.now())/1000);
 						    // node.game.comment6 = W.getElementById('comment7').value;
@@ -1506,17 +1639,17 @@ function questionnaire() {
 				    node.game.timer.init(options);
 				    node.game.timer.updateDisplay();
 				    node.game.timer.start(options);
-			
-				    var quest = W.getElementById('continue');			
+
+				    var quest = W.getElementById('continue');
 				    quest.onclick = function() {
-					    var qualtrixID = W.getElementById("qualtrix").value;	
+					    var qualtrixID = W.getElementById("qualtrix").value;
 					   	if(qualtrixID.substring(0, 1) == "R" && qualtrixID.substring(1, 2) == "_"){
 						   	var surveyID = {
 							    playerID : {Player_ID: node.game.ownID},
-							    add: {Survey_ID: qualtrixID} 
+							    add: {Survey_ID: qualtrixID}
 							};
 						   	node.set('bsc_surveyID', surveyID);
-						   		
+
 							node.game.timeQuest1 = Math.round(Math.abs(node.game.timeQuest1 - Date.now())/1000);
 							node.game.timer.stop();
 							var timeResultProp = {
@@ -1535,8 +1668,8 @@ function questionnaire() {
 				    };
 				});
 				return;
-		    };  
-		    
+		    };
+
 
 // Included Questionnaire from the old version !!!
 // Not working any more! Was replaced by qualtrix survey in an iframe.
@@ -1568,8 +1701,8 @@ function questionnaire() {
 	    // node.game.timer.init(options);
 	    // node.game.timer.updateDisplay();
 	    // node.game.timer.start(options);
-// 
-	    // var quest3 = W.getElementById('continue');	
+//
+	    // var quest3 = W.getElementById('continue');
 	    // quest3.onclick = function() {
 			// node.game.timeQuest1 = Math.round(Math.abs(node.game.timeQuest1 - Date.now())/1000);
 			// var doneOtherExp = -1;
@@ -1598,7 +1731,7 @@ function questionnaire() {
 	// });
 	// return;
     // };
-// 
+//
     // // Questionaire Page 3 - Data Processing
     // function questionnaire3(timeout){
 	// var url = '/burdenRAHR/html/questionnaire3.html';
@@ -1611,9 +1744,9 @@ function questionnaire() {
 		    // node.game.node.game.timeQuest2 = Math.round(Math.abs(node.game.timeQuest2 - Date.now())/1000);
 		    // var fairestOffer1 = W.getElementById('offer').value;
 		    // var fairestOffer = parseInt(fairestOffer1);
-		    // node.game.question21 = W.getElementById('q31').value;		
-		    // node.game.question22 = W.getElementById('q32').value;		
-		    // node.game.question23 = W.getElementById('q33').value;	
+		    // node.game.question21 = W.getElementById('q31').value;
+		    // node.game.question22 = W.getElementById('q32').value;
+		    // node.game.question23 = W.getElementById('q33').value;
 		    // if(!isNaN(fairestOffer) && isFinite(fairestOffer) && fairestOffer >= 0 && fairestOffer <= 10 && fairestOffer1 % 1 == 0){
 			// node.game.fairestOfferGood = fairestOffer1;
 		    // }
@@ -1622,7 +1755,7 @@ function questionnaire() {
 		    // }
 		    // var timeResultProp = {
 			// playerID : {Player_ID: node.game.ownID},
-			// add: {timeQuest2: node.game.timeQuest2,Question2: node.game.fairestOfferGood, 
+			// add: {timeQuest2: node.game.timeQuest2,Question2: node.game.fairestOfferGood,
 				  // Question21: node.game.question21, Question22: node.game.question22, Question23: node.game.question23},
 		    // };
 		    // node.set('bsc_questTime',timeResultProp);
@@ -1632,24 +1765,24 @@ function questionnaire() {
 	    // node.game.timer.init(options);
 	    // node.game.timer.updateDisplay();
 	    // node.game.timer.start(options);
-// 
-	    // var quest4 = W.getElementById('continue');			
+//
+	    // var quest4 = W.getElementById('continue');
 	    // quest4.onclick = function() {
 			// node.game.timeQuest2 = Math.round(Math.abs(node.game.timeQuest2 - Date.now())/1000);
-// 	
+//
 			// var fairestOffer1 = W.getElementById('offer').value;
 			// var fairestOffer = parseInt(fairestOffer1);
-			// node.game.question21 = W.getElementById('q31').value;		
-			// node.game.question22 = W.getElementById('q32').value;		
-			// node.game.question23 = W.getElementById('q33').value;	
+			// node.game.question21 = W.getElementById('q31').value;
+			// node.game.question22 = W.getElementById('q32').value;
+			// node.game.question23 = W.getElementById('q33').value;
 			// if(!isNaN(fairestOffer) && isFinite(fairestOffer) && fairestOffer >= 0 && fairestOffer <= 10 && fairestOffer1 % 1 == 0){
 			    // node.game.fairestOfferGood = fairestOffer1;
 			    // node.game.timer.stop();
 			    // var timeResultProp = {
 				// playerID : {Player_ID: node.game.ownID},
-				// add: {timeQuest2: node.game.timeQuest2,Question2: node.game.fairestOfferGood, 
-					  // Question21: node.game.question21, 
-					  // Question22: node.game.question22, 
+				// add: {timeQuest2: node.game.timeQuest2,Question2: node.game.fairestOfferGood,
+					  // Question21: node.game.question21,
+					  // Question22: node.game.question22,
 					  // Question23: node.game.question23}
 			    // };
 			    // node.set('bsc_questTime',timeResultProp);
@@ -1663,7 +1796,7 @@ function questionnaire() {
 	// });
 	// return;
     // };
-// 
+//
     // // Questionaire Page 4 - Data Processing
     // function questionnaire4(timeout){
 	// var url = '/burdenRAHR/html/questionnaire4.html';
@@ -1709,8 +1842,8 @@ function questionnaire() {
 	    // node.game.timer.init(options);
 	    // node.game.timer.updateDisplay();
 	    // node.game.timer.start(options);
-// 
-	    // var quest4 = W.getElementById('continue');			
+//
+	    // var quest4 = W.getElementById('continue');
 	    // quest4.onclick = function() {
 		// node.game.timeQuest3 = Math.round(Math.abs(node.game.timeQuest3 - Date.now())/1000);
 		// for(var j = 1; j <= 2; j++){
@@ -1749,11 +1882,11 @@ function questionnaire() {
 	// });
 	// return;
     // };
-// 
+//
     // // Questionaire Page 5 - Data Processing
     // function questionnaire5(timeout){
 	// var url = '/burdenRAHR/html/questionnaire5.html';
-// 
+//
 	// W.loadFrame(url, function(){
 	    // node.game.timeQuest4 = Date.now();
 	    // var options = {
@@ -1761,62 +1894,62 @@ function questionnaire() {
 		// timeup: function() {
 		    // node.game.timeQuest4 = Math.round(Math.abs(node.game.timeQuest4 - Date.now())/1000);
 			// if(W.getElementById("q511").checked){
-				// node.game.quest411 = 1; 
+				// node.game.quest411 = 1;
 			// }
 			// else{ node.game.quest411 = 0; }
 			// if(W.getElementById("q512").checked){
-				// node.game.quest412 = 1; 
+				// node.game.quest412 = 1;
 			// }
 			// else{ node.game.quest412 = 0; }
 			// if(W.getElementById("q513").checked){
-				// node.game.quest413 = 1; 
+				// node.game.quest413 = 1;
 			// }
 			// else{ node.game.quest413 = 0; }
 			// if(W.getElementById("q514").checked){
-				// node.game.quest414 = 1; 
+				// node.game.quest414 = 1;
 			// }
 			// else{ node.game.quest414 = 0; }
 			// if(W.getElementById("q515").checked){
-				// node.game.quest415 = 1; 
+				// node.game.quest415 = 1;
 			// }
 			// else{ node.game.quest415 = 0; }
 			// if(W.getElementById("q516").checked){
-				// node.game.quest416 = 1; 
+				// node.game.quest416 = 1;
 			// }
 			// else{ node.game.quest416 = 0; }
 			// if(W.getElementById("q517").checked){
-				// node.game.quest417 = 1; 
+				// node.game.quest417 = 1;
 			// }
-			// else{ node.game.quest417 = 0; }			
-// 			
+			// else{ node.game.quest417 = 0; }
+//
 			// // Question q521 ...q526
 			// if(W.getElementById("q521").checked){
-				// node.game.quest421 = 1; 
+				// node.game.quest421 = 1;
 			// }
 			// else{ node.game.quest421 = 0; }
 			// if(W.getElementById("q522").checked){
-				// node.game.quest422 = 1; 
+				// node.game.quest422 = 1;
 			// }
 			// else{ node.game.quest422 = 0; }
 			// if(W.getElementById("q523").checked){
-				// node.game.quest423 = 1; 
+				// node.game.quest423 = 1;
 			// }
 			// else{ node.game.quest423 = 0; }
 			// if(W.getElementById("q524").checked){
-				// node.game.quest424 = 1; 
+				// node.game.quest424 = 1;
 			// }
 			// else{ node.game.quest424 = 0; }
 			// if(W.getElementById("q525").checked){
-				// node.game.quest425 = 1; 
+				// node.game.quest425 = 1;
 			// }
 			// else{ node.game.quest425 = 0; }
 			// if(W.getElementById("q526").checked){
-				// node.game.quest426 = 1; 
+				// node.game.quest426 = 1;
 			// }
 			// else{ node.game.quest426 = 0; }
-// 				
-// 			
-// // 			
+//
+//
+// //
 			// // var qu51 = 0;
 		    // // var qu52 = 0;
 		    // // var question41 = new Array();
@@ -1837,18 +1970,18 @@ function questionnaire() {
 			    // // qu52++;
 			// // }
 		    // // };
-// 		    
+//
 		    // var timeResultProp = {
 			// playerID : {Player_ID: node.game.ownID},
 			// add: {
-				// timeQuest4: node.game.timeQuest4, 
+				// timeQuest4: node.game.timeQuest4,
 				// question411: node.game.quest411,
 				// question412: node.game.quest412,
 				// question413: node.game.quest413,
 				// question414: node.game.quest414,
 				// question415: node.game.quest415,
 				// question416: node.game.quest416,
-				// question417: node.game.quest417, 
+				// question417: node.game.quest417,
 				// question421: node.game.quest421,
 				// question422: node.game.quest422,
 				// question423: node.game.quest423,
@@ -1864,66 +1997,66 @@ function questionnaire() {
 	    // node.game.timer.init(options);
 	    // node.game.timer.updateDisplay();
 	    // node.game.timer.start(options);
-// 
-	    // var quest5 = W.getElementById('continue');			
+//
+	    // var quest5 = W.getElementById('continue');
 	    // quest5.onclick = function() {
 		// node.game.timeQuest4 = Math.round(Math.abs(node.game.timeQuest4 - Date.now())/1000);
 			// if(W.getElementById("q511").checked){
-				// node.game.quest411 = 1; 
+				// node.game.quest411 = 1;
 			// }
 			// else{ node.game.quest411 = 0; }
 			// if(W.getElementById("q512").checked){
-				// node.game.quest412 = 1; 
+				// node.game.quest412 = 1;
 			// }
 			// else{ node.game.quest412 = 0; }
 			// if(W.getElementById("q513").checked){
-				// node.game.quest413 = 1; 
+				// node.game.quest413 = 1;
 			// }
 			// else{ node.game.quest413 = 0; }
 			// if(W.getElementById("q514").checked){
-				// node.game.quest414 = 1; 
+				// node.game.quest414 = 1;
 			// }
 			// else{ node.game.quest414 = 0; }
 			// if(W.getElementById("q515").checked){
-				// node.game.quest415 = 1; 
+				// node.game.quest415 = 1;
 			// }
 			// else{ node.game.quest415 = 0; }
 			// if(W.getElementById("q516").checked){
-				// node.game.quest416 = 1; 
+				// node.game.quest416 = 1;
 			// }
 			// else{ node.game.quest416 = 0; }
 			// if(W.getElementById("q517").checked){
-				// node.game.quest417 = 1; 
+				// node.game.quest417 = 1;
 			// }
-			// else{ node.game.quest417 = 0; }			
-// 			
+			// else{ node.game.quest417 = 0; }
+//
 			// // Question q521 ...q526
 			// if(W.getElementById("q521").checked){
-				// node.game.quest421 = 1; 
+				// node.game.quest421 = 1;
 			// }
 			// else{ node.game.quest421 = 0; }
 			// if(W.getElementById("q522").checked){
-				// node.game.quest422 = 1; 
+				// node.game.quest422 = 1;
 			// }
 			// else{ node.game.quest422 = 0; }
 			// if(W.getElementById("q523").checked){
-				// node.game.quest423 = 1; 
+				// node.game.quest423 = 1;
 			// }
 			// else{ node.game.quest423 = 0; }
 			// if(W.getElementById("q524").checked){
-				// node.game.quest424 = 1; 
+				// node.game.quest424 = 1;
 			// }
 			// else{ node.game.quest424 = 0; }
 			// if(W.getElementById("q525").checked){
-				// node.game.quest425 = 1; 
+				// node.game.quest425 = 1;
 			// }
 			// else{ node.game.quest425 = 0; }
 			// if(W.getElementById("q526").checked){
-				// node.game.quest426 = 1; 
+				// node.game.quest426 = 1;
 			// }
 			// else{ node.game.quest426 = 0; }
-// 			
-// // 			
+//
+// //
 		// // var qu51 = 0;
 		// // var qu52 = 0;
 		// // var question41 = new Array();
@@ -1948,14 +2081,14 @@ function questionnaire() {
 		// var timeResultProp = {
 		    // playerID : {Player_ID: node.game.ownID,},
 			// add: {
-				// timeQuest4: node.game.timeQuest4, 
+				// timeQuest4: node.game.timeQuest4,
 				// question411: node.game.quest411,
 				// question412: node.game.quest412,
 				// question413: node.game.quest413,
 				// question414: node.game.quest414,
 				// question415: node.game.quest415,
 				// question416: node.game.quest416,
-				// question417: node.game.quest417, 
+				// question417: node.game.quest417,
 				// question421: node.game.quest421,
 				// question422: node.game.quest422,
 				// question423: node.game.quest423,
@@ -1970,11 +2103,11 @@ function questionnaire() {
 	// });
 	// return;
     // };
-// 
+//
     // // Questionaire Page 6 - Data Processing
     // function questionnaire6(timeout){
 	// var url = '/burdenRAHR/html/questionnaire6.html';
-// 
+//
 	// W.loadFrame(url, function(){
 	    // node.game.timeQuest5 = Date.now();
 	    // var options = {
@@ -1991,7 +2124,7 @@ function questionnaire() {
 			// }
 		    // };
 		    // node.game.comment51 = W.getElementById('comment61').value;
-		    // node.game.comment52 = W.getElementById('comment62').value;		
+		    // node.game.comment52 = W.getElementById('comment62').value;
 		    // if(!isNaN(age) && isFinite(age) && age >= 0 && age <= 100 && age1 % 1 == 0){
 			// ageGood = age1;
 		    // }
@@ -2010,8 +2143,8 @@ function questionnaire() {
 	    // node.game.timer.init(options);
 	    // node.game.timer.updateDisplay();
 	    // node.game.timer.start(options);
-// 
-	    // var quest6 = W.getElementById('continue');			
+//
+	    // var quest6 = W.getElementById('continue');
 	    // quest6.onclick = function() {
 		// node.game.timeQuest5 = Math.round(Math.abs(node.game.timeQuest5 - Date.now())/1000);
 		// var age1 = W.getElementById('age').value;
@@ -2024,7 +2157,7 @@ function questionnaire() {
 		    // }
 		// };
 		// node.game.comment51 = W.getElementById('comment61').value;
-		// node.game.comment52 = W.getElementById('comment62').value;		
+		// node.game.comment52 = W.getElementById('comment62').value;
 		// if(!isNaN(age) && isFinite(age) && age >= 0 && age <= 100 && age1 % 1 == 0){
 		    // node.game.ageGood = age1;
 		    // node.game.timer.stop();
@@ -2044,7 +2177,7 @@ function questionnaire() {
 	// });
 	// return;
     // };
-// 
+//
     // // Questionaire Page 7 - Data Processing
     // function questionnaire7(timeout){
 		// var url = '/burdenRAHR/html/questionnaire7.html';
@@ -2052,7 +2185,7 @@ function questionnaire() {
 		// W.loadFrame(url, function(){
 		    // node.game.timeQuest6 = Date.now();
 		    // var options = {
-			// milliseconds: 240000, // 1200000 ms is equivalent to 20 minutes 
+			// milliseconds: 240000, // 1200000 ms is equivalent to 20 minutes
 			// timeup: function() {
 			    // node.game.timeQuest6 = Math.round(Math.abs(node.game.timeQuest6 - Date.now())/1000);
 			    // node.game.comment6 = W.getElementById('comment7').value;
@@ -2068,8 +2201,8 @@ function questionnaire() {
 		    // node.game.timer.init(options);
 		    // node.game.timer.updateDisplay();
 		    // node.game.timer.start(options);
-// 	
-		    // var quest7 = W.getElementById('continue');			
+//
+		    // var quest7 = W.getElementById('continue');
 		    // quest7.onclick = function() {
 			// node.game.timeQuest6 = Math.round(Math.abs(node.game.timeQuest6 - Date.now())/1000);
 			// node.game.timer.stop();
@@ -2081,7 +2214,7 @@ function questionnaire() {
 			// node.set('bsc_questTime',timeResultProp);
 			// // debugger;
 			// node.say("QUEST_DONE", "SERVER", bonus);
-// 	
+//
 			// //node.say("questionnaire_done", "SERVER");
 			// // node.emit('DONE');
 		    // };
@@ -2090,8 +2223,8 @@ function questionnaire() {
     // };
 
 
-		    
-		    
+
+
     	}
 	});
 	return;
@@ -2126,7 +2259,7 @@ stager.addStage({
     cb: instructions,
     minPlayers: [ 4, notEnoughPlayers ],
     steprule: stepRules.SYNC_STAGE,
-    syncOnLoaded: false, 
+    syncOnLoaded: false,
     done: clearFrame,
     // timer: {
 		// milliseconds: 5000, // 240000 ms is equivalent to 6 minutes (reading time approximately 2 minutes times 2)
@@ -2177,7 +2310,7 @@ stager.addStep({
 		    to: 'ALL',
 		    text: 'Round_Over',
 		    data: node.player.stage.round
-		}));  
+		}));
 		node.on('GROUP_DONE', function(msg) {
 		    node.emit("DONE");
 		});
@@ -2191,7 +2324,7 @@ stager.addStage({
     steps: ["syncGroups", "initialSituation", "decision"],
     //	steps: ["initialSituation", "decision"],
     minPlayers: [ 4, notEnoughPlayers ],
-    //	minPlayers: [ 4, function() { 
+    //	minPlayers: [ 4, function() {
     //		// node.game.pause();
     //		alert('Not enough players');
     //	} ],
@@ -2215,7 +2348,7 @@ function syncGroup(stage, myStageLevel, pl, game) {
 		    return true;
 		}
     }
-} 
+}
 
 // stager.addStage({
     // id: 'endOfExperiment',
@@ -2233,7 +2366,7 @@ function syncGroup(stage, myStageLevel, pl, game) {
 		    // node.game.timer.init(options);
 		    // node.game.timer.updateDisplay();
 		    // node.game.timer.restart(options);
-// 	
+//
 		// });
 		// return true;
     // }
