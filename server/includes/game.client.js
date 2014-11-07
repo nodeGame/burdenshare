@@ -687,22 +687,29 @@ function instructions() {
         demographics: {}
     };
 
-    function makePageLoad(block, page) {
+    function makePageLoad(block, page, extensionCallback) {
         return function(executor) {
             W.loadFrame('/burdenRAHR/html/questionnaire/'+ block + '/' +
                 page + '.html', function() {
+                    var initTime = 1; // TODO: INIT TIME
                     W.getElementById('done').onclick = function() {
                         var questionnaire = node.game.questionnaire;
+                        if (extensionCallback) {
+                            extensionCallback();
+                        }
                         if (questionnaire.currentAnswerMade) {
-                            questionnaire[block][page] =
-                                    questionnaire.currentAnswer;
+                            questionnaire[block][page] = {
+                                answer: questionnaire.currentAnswer,
+                                time: 23 - initTime
+                            };
                             executor.next();
                         }
                         else {
                             alert('Please select an option.');
                         }
                     };
-            });
+                }
+            );
         };
     }
 
@@ -774,12 +781,12 @@ function instructions() {
     demographics = function() {
         var linearPageExecutor = {
             execute: function() {
-                this.index = 0;
+                this.index = 1;
                 this.callbacks[0](this);
             },
             next: function() {
                 if (this.index < this.callbacks.length) {
-                    this.callbacks[++this.index](this);
+                    this.callbacks[this.index++](this);
                 }
                 else {
                     this.done();
@@ -787,17 +794,30 @@ function instructions() {
             },
             done: function() {
                 // store stuff
-                node.done();
+                node.emit('DONE');
             }
         };
 
         linearPageExecutor.callbacks = makeBlockArray('demographics', [
-            'gender', 'education', 'dateOfBirth', 'politics', 'income',
+            'gender', 'education', 'dateOfBirth', 'income',
             'occupation', 'participation']);
+
+        // Add politics page.
+        linearPageExecutor.callbacks.splice(3,0,
+            makePageLoad('demographics','politics', function() {
+                if (node.game.questionnaire.currentAnswer == 5) {
+                    if (W.getElementById('textForOther').value !== "") {
+                        node.game.questionnaire.currentAnswer =
+                            W.getElementById('textForOther').value;
+                        node.game.questionnaire.currentAnswerMade = true;
+                    }
+                }
+            })
+        );
         linearPageExecutor.execute();
     }
-    randomBlockExecutor.execute([
-        risk], function() {
+    randomBlockExecutor.execute([socialValueOrientation, risk,
+        newEcologicalParadigm], function() {
             demographics();
         }
     );
