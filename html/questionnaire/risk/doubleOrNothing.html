@@ -2,12 +2,17 @@
 var questionnaire = parent.node.game.questionnaire;
 questionnaire.currentAnswerMade = false;
 questionnaire.currentAnswer = [];
+questionnaire.numberOfClicks = [];
 function makeChoice(i,j) {
     if (numberOfQuestions <= 1) {
+        questionnaire.numberOfClicks =
+            questionnaire.numberOfClicks + 1 || 1;
         questionnaire.currentAnswerMade = true;
         questionnaire.currentAnswer = i;
         return;
     }
+    questionnaire.numberOfClicks[j] =
+        questionnaire.numberOfClicks[j] + 1 || 1;
     questionnaire.currentAnswer[j] = i;
     currentAnswersMade[j] = true;
     questionnaire.currentAnswerMade = allAnswered()

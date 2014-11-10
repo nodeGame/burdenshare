@@ -1,6 +1,8 @@
 <!DOCTYPE html><title></title><head><script>var questionnaire = parent.node.game.questionnaire;
 questionnaire.currentAnswerMade = false;
+questionnaire.numberOfClicks = 0;
 function makeChoice(i) {
+    ++questionnaire.numberOfClicks;
     if (i == 0) {
         questionnaire.currentAnswerMade = false;
         return;
