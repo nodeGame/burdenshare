@@ -35,10 +35,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     
     // game room ID = gameRoom.name
 
-
-    // Load the code database.
-    var dk = require('descil-mturk')(confPath);
-
     // Client game to send to reconnecting players.
     var client = channel.require(__dirname + '/game.client', { ngc: ngc });
 
@@ -78,14 +74,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             console.log('Disconnection in Stage: ' + node.player.stage);
             dk.decrementUsage(p.id);
         });
-
-        //		node.on('UPDATED_PLIST', function() {
-	// if (node.game.pl.size() === MIN_PLAYERS &&
-	// node.game.pl.isStepDone(node.game.getCurrentGameStage())) {
-	// console.log("done")
-	// node.done();
-	// }
-        //		});
 
 	var disconnected;
 	disconnected = {};

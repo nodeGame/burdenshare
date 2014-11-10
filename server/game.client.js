@@ -73,13 +73,15 @@ module.exports = function(gameRoom, treatmentName, settings) {
         var header = W.generateHeader();
         W.generateFrame();
 
-        node.widgets.append('StateOfGame', header);
+        node.game.stateofgame = node.widgets.append('StateOfGame', header);
         node.game.timer = node.widgets.append('VisualTimer', header);
 
         // indication of current state at the upper left corner of the page
         var newtag = document.createElement("stateinf");
         newtag.id = 'state';
-        var my_div = document.getElementById("statedisplay_fieldset");
+
+        var my_div = node.game.stateofgame.bodyDiv;
+
         my_div.insertBefore(newtag, my_div.childNodes[0]);
 
 	// function called as soon as proposer made his offer (bid)

@@ -203,8 +203,6 @@ module.exports = function(node, channel, gameRoom) {
 		}
 	    };
 
-
-
 	    console.log('-----------We have four players-----Game Room ID: ' + counter);
 
 	    tmpPlayerList = wRoom.shuffle().limit(NPLAYERS);
@@ -222,9 +220,8 @@ module.exports = function(node, channel, gameRoom) {
                 gameName: 'burdenRAHR'
             });
 
-
-            gameRoom.setupGame();
-            gameRoom.startGame(true, []);
+            room.setupGame();
+            room.startGame(true, tmpPlayerList.id.getAllKeys());
 
 //	    // Setting metadata, settings, and plot
 //	    tmpPlayerList.each(function (p) {
