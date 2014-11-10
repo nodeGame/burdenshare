@@ -13,11 +13,11 @@ module.exports = [
 
     // Game channel.
     {
-        name: 'burdenshare',
+        name: 'burdenRAHR',
 
-        admin: 'burdenshare/admin',
+        admin: 'burdenRAHR/admin',
 
-        player: 'burdenshare',
+        player: 'burdenRAHR',
 
         verbosity: 100,
 
@@ -26,7 +26,7 @@ module.exports = [
         
         // Unauthorized clients will be redirected here.
         // (defaults: "/pages/accessdenied.htm")
-        accessDeniedUrl: '/burdenshare/unauth.htm',
+        accessDeniedUrl: '/burdenRAHR/unauth.htm',
         
         // Channel Waiting Room configuration.
         waitingRoom: {

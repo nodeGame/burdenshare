@@ -14,13 +14,13 @@
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link href="css/style.css" rel="stylesheet">
 	<link rel='stylesheet' href='/stylesheets/fullheight.css'></link>
-	<link rel='stylesheet' href='/stylesheets/player.css'></link>
+	<link rel='stylesheet' href='/stylesheets/nodegame.css'></link>
 	<link rel='stylesheet' href='./css/main.css'></link>
 	<link rel='stylesheet' href='./css/evaluation.css'></link>
 
 	<script type="text/javascript">
 
-		function Countdown (minutes, seconds){
+		function Countdown (minutes, seconds) {
 			var PrevMin = (minutes < 10) ? "0" : ":";
 			var PrevSec = (seconds < 10) ? ":0" : ":";
 			var TimeNow = PrevMin + minutes + PrevSec + seconds;
@@ -34,15 +34,15 @@
 			    } else {
 			    	setContent("id", "Uhr", null, TimeNow);
 			    }
-			   	if(minutes > 0 && seconds == 0){
+			   	if (minutes > 0 && seconds == 0) {
 			    	minutes--;
 			    	seconds = 59;
 			    }
 			    else seconds--;
 
-			    if(minutes == 0 && seconds < 0){clearTimeout(count);}
+			    if (minutes == 0 && seconds < 0) {clearTimeout(count);}
 			    else{
-			    	count = setTimeout(function(){
+			    	count = setTimeout(function() {
 			    		Countdown(minutes, seconds)}, 1000);
 			    }
 		  	}
@@ -80,18 +80,18 @@
 		var secCount = 0;
 		var nbrPlayerConnected = 0;
 		exitCode = 0;
-		node.on.data('TIME', function(msg){
+		node.on.data('TIME', function(msg) {
 			console.log(msg.data);
 			timeout = msg.data.over;
 			exitCode = msg.data.exit;
 		});
 
-		node.on.data('PLAYERSCONNECTED', function(msg){
+		node.on.data('PLAYERSCONNECTED', function(msg) {
 			console.log(msg.data);
 			nbrPlayerConnected = msg.data;
 		});
 
-		node.on.data('CLEAR_COUNTDOWN', function(msg){
+		node.on.data('CLEAR_COUNTDOWN', function(msg) {
 			console.log("Clear CountDown");
 			clearInterval(timeCheck);
 			clearTimeout(count);
@@ -105,26 +105,18 @@
 			// document.getElementById("join").innerHTML =instWait + "Participants can join until " + HourLimitWaitRoom + ":" + MinutesLimitWaitRoom + " (UTC - Coordinated Universal Time).";
 			document.getElementById("join").innerHTML = instWait;
 			// check wether the participant is too late
-	      	// if(HoursWaitRoom <= HourLimitWaitRoom && MinutesWaitRoom < MinutesLimitWaitRoom){
-	     	if(true){
+	      	// if (HoursWaitRoom <= HourLimitWaitRoom && MinutesWaitRoom < MinutesLimitWaitRoom) {
+	     	if (true) {
 			    // Configuring nodegame
 			    node.setup('nodegame', {
-					// HOST needs to be specified only
-					// if this file is located in another server
-					// host: http://myserver.com,
 					verbosity: 100,
 					debug : true,
 					window : {
 						promptOnleave : false
-						//transitions: true // not used for now (transitions are on by default)
 					},
 					env : {
 						auto : false,
 						debug : false
-					},
-					player : {
-						name : "NodeGame Player",
-						id : 'nodegame player id'
 					},
 					events : {
 						dumpEvents : true
@@ -134,17 +126,20 @@
 						reconnect : false
 					}
 				});
+
 				// connecting
+
 				node.connect("/burdenRAHR");
-				timeCheck = setInterval(function(){
+
+				timeCheck = setInterval(function() {
 					console.log(timeout);
 
-					// if(HoursWaitRoom <= HourLimitWaitRoom && MinutesWaitRoom < MinutesLimitWaitRoom){
-					if(timeout == "NotEnoughPlayers"){
+					// if (HoursWaitRoom <= HourLimitWaitRoom && MinutesWaitRoom < MinutesLimitWaitRoom) {
+					if (timeout == "NotEnoughPlayers") {
 						document.getElementById("nbrPlayers").innerHTML = "Number of participants already in the group:  " + nbrPlayerConnected + " of 4";
 						secCount++;
 					}
-					else if(timeout == "Time elapsed!!!"){
+					else if (timeout == "Time elapsed!!!") {
 						var timeOut = "<h3 align='center'>Thank you for your patience.<br>";
 						timeOut += "Unfortunately there are not enough participants in your group to start the experiment.<br>";
 						timeOut += "You will be payed out a fix amount for your participation up to this point.<br><br>";
@@ -155,7 +150,7 @@
 						clearInterval(timeCheck);
 						document.getElementById("startPage").innerHTML = timeOut;
 					}
-					if(secCount >= ((min*60) + sec) && timeout == "NotEnoughPlayers"){
+					if (secCount >= ((min*60) + sec) && timeout == "NotEnoughPlayers") {
 						var timeOut = "<h3 align='center'>Thank you for your patience.<br><br>";
 						timeOut += "Unfortunately a server error occured.<br>";
 						timeOut += "Please go back to Amazon Mechanical Turk web site and file a trouble ticket.<br><br>";

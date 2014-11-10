@@ -9,10 +9,10 @@
  */
 module.exports = function(node, channel, room) {
 
-    var path = require('path');
-    
-    // Reads in descil-mturk configuration.
-    var confPath = path.resolve(__dirname, 'descil.conf.js');
+    // Reads in descil-mturk configuration.    
+    var basedir = channel.resolveGameDir('burdenRAHR');
+    var confPath = basedir + '/auth/descil.conf.js';
+
     var dk = require('descil-mturk')(confPath);
 
     // Creates a stager object to define the game stages.
