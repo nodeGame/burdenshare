@@ -662,168 +662,168 @@ module.exports = function(gameRoom, treatmentName, settings) {
         node.game.questionnaire = {};
 
 
-        // Makes a callback which loads a single questionnaire page and listens to
-        // onclick of the element with id 'done', to write currentAnswer to
-        // database and advance the executor.
-        function makePageLoad(block, page, extensionCallback) {
-            return function(executor) {
-                W.loadFrame('/burdenRAHR/html/questionnaire/'+ block + '/' +
-                            page + '.html', function() {
-                                node.timer.setTimestamp(block + '/' + page);
-                                W.getElementById('done').onclick = function() {
-                                    var questionnaire = node.game.questionnaire;
-                                    if (extensionCallback) {
-                                        extensionCallback();
-                                    }
-                                    if (questionnaire.currentAnswerMade) {
-					node.set('bsc_data',{
-					    player: node.player.sid,
-                                            question: block + '/' + page,
-                                            answer: questionnaire.currentAnswer,
-                                            timeElapsed: node.timer.getTimeSince(block + '/' + page),
-                                            clicks: questionnaire.numberOfClicks
-                                        });
-                                        executor.next();
-                                    }
-                                    else {
-                                        alert('Please select an option.');
-                                    }
-                                };
-                            }
-                           );
-            };
-        }
-
-        // Makes an array of page load callbacks
-        function makeBlockArray(block, pages) {
-            var i, result = [];
-            for (i = 0; i < pages.length; ++i) {
-                result.push(makePageLoad(block,pages[i]));
-            }
-            return result;
-        }
-
-
-        randomBlockExecutor = new RandomOrderExecutor();
-
-        // Callback for the Social Value Orientation block.
-        // Loads all of the SVO questions in an random order.
-        socialValueOrientation = function(randomBlockExecutor) {
-            var randomPageExecutor = new RandomOrderExecutor();
-            randomPageExecutor.setCallbacks(
-                makeBlockArray('socialValueOrientation',
-                               ['1', '2', '3', '4', '5', '6'])
-            );
-            randomPageExecutor.setOnDone(function() {
-                randomBlockExecutor.next();
-            });
-
-            // At the beginning of the block is an instructions page.
-            W.loadFrame('/burdenRAHR/html/questionnaire/socialValueOrientation/' +
-                        'instructions.html', function() {
-                            W.getElementById('done').onclick = function() {
-                                randomPageExecutor.execute();
-                            }
-                        }
-                       );
-
-        };
-
-        // Callback for the New Ecological Paradigm block.
-        // Loads all of the NEP questions in an random order.
-        newEcologicalParadigm = function(randomBlockExecutor) {
-            var randomPageExecutor = new RandomOrderExecutor();
-            randomPageExecutor.setCallbacks(
-                makeBlockArray('newEcologicalParadigm', ['limit','modify',
-                                                         'interfere', 'ingenuity', 'abusing', 'plenty', 'plants',
-                                                         'balance', 'crisis', 'spaceship', 'rule', 'control',
-                                                         'catastrophe', 'laws', 'upset'])
-            );
-            randomPageExecutor.setOnDone(function() {
-                randomBlockExecutor.next();
-            });
-
-            // At the beginning of the block is an instructions page.
-            W.loadFrame('/burdenRAHR/html/questionnaire/newEcologicalParadigm/' +
-                        'instructions.html', function() {
-                            W.getElementById('done').onclick = function() {
-                                randomPageExecutor.execute();
-                            }
-                        }
-                       );
-        };
-
-        // Callback for the Risk block.
-        risk = function(randomBlockExecutor) {
-            var randomPageExecutor = new RandomOrderExecutor();
-
-            randomPageExecutor.setCallbacks(
-                makeBlockArray('risk', ['doubleOrNothing','gambles', 'patience',
-                                        'riskTaking', 'trusting','charity'])
-            );
-            randomPageExecutor.setOnDone(function () {
-                randomBlockExecutor.next();
-            });
-
-            randomPageExecutor.execute();
-        };
-
-        // Callback for the demographics block. This block is NOT randomized!
-        demographics = function() {
-            var linearPageExecutor = {
-                // Begin execution of the callbacks.
-                execute: function() {
-                    this.index = 1;
-                    this.callbacks[0](this);
-                },
-                // Advance to net callback or call done.
-                next: function() {
-                    if (this.index < this.callbacks.length) {
-                        this.callbacks[this.index++](this);
-                    }
-                    else {
-                        this.done();
-                    }
-                },
-                // Final operation
-                done: function() {
-                    // store stuff
-                    node.emit('DONE');
-                }
-            };
-
-            linearPageExecutor.callbacks = makeBlockArray('demographics', [
-                'gender', 'education', 'dateOfBirth', 'income',
-                'occupation', 'participation']);
-
-            // Add politics page. (Because of the textfield it requires special
-            // treatement)
-            linearPageExecutor.callbacks.splice(3,0,
-                                                makePageLoad('demographics','politics', function() {
-                                                    // If option 'other' is selected
-                                                    if (node.game.questionnaire.currentAnswer == 5) {
-                                                        // And there has been text entered in the text field.
-                                                        if (W.getElementById('textForOther').value !== "") {
-                                                            node.game.questionnaire.currentAnswer =
-                                                                W.getElementById('textForOther').value;
-                                                            node.game.questionnaire.currentAnswerMade = true;
-                                                        }
-                                                    }
-                                                })
-                                               );
-
-            linearPageExecutor.execute();
-        };
-
-        // Execute the SVO, NEP and RISK block in random order, then execute
-        // demographics.
-        randomBlockExecutor.execute([socialValueOrientation, risk,
-                                     newEcologicalParadigm], function() {
-                                         demographics();
-                                     }
-                                   );
-
-        return;
+ //       // Makes a callback which loads a single questionnaire page and listens to
+ //       // onclick of the element with id 'done', to write currentAnswer to
+ //       // database and advance the executor.
+ //       function makePageLoad(block, page, extensionCallback) {
+ //           return function(executor) {
+ //               W.loadFrame('/burdenRAHR/html/questionnaire/'+ block + '/' +
+ //                           page + '.html', function() {
+ //                               node.timer.setTimestamp(block + '/' + page);
+ //                               W.getElementById('done').onclick = function() {
+ //                                   var questionnaire = node.game.questionnaire;
+ //                                   if (extensionCallback) {
+ //                                       extensionCallback();
+ //                                   }
+ //                                   if (questionnaire.currentAnswerMade) {
+ //       				node.set('bsc_data',{
+ //       				    player: node.player.sid,
+ //                                           question: block + '/' + page,
+ //                                           answer: questionnaire.currentAnswer,
+ //                                           timeElapsed: node.timer.getTimeSince(block + '/' + page),
+ //                                           clicks: questionnaire.numberOfClicks
+ //                                       });
+ //                                       executor.next();
+ //                                   }
+ //                                   else {
+ //                                       alert('Please select an option.');
+ //                                   }
+ //                               };
+ //                           }
+ //                          );
+ //           };
+ //       }
+ //
+ //       // Makes an array of page load callbacks
+ //       function makeBlockArray(block, pages) {
+ //           var i, result = [];
+ //           for (i = 0; i < pages.length; ++i) {
+ //               result.push(makePageLoad(block,pages[i]));
+ //           }
+ //           return result;
+ //       }
+ //
+ //
+ //       randomBlockExecutor = new RandomOrderExecutor();
+ //
+ //       // Callback for the Social Value Orientation block.
+ //       // Loads all of the SVO questions in an random order.
+ //       socialValueOrientation = function(randomBlockExecutor) {
+ //           var randomPageExecutor = new RandomOrderExecutor();
+ //           randomPageExecutor.setCallbacks(
+ //               makeBlockArray('socialValueOrientation',
+ //                              ['1', '2', '3', '4', '5', '6'])
+ //           );
+ //           randomPageExecutor.setOnDone(function() {
+ //               randomBlockExecutor.next();
+ //           });
+ //
+ //           // At the beginning of the block is an instructions page.
+ //           W.loadFrame('/burdenRAHR/html/questionnaire/socialValueOrientation/' +
+ //                       'instructions.html', function() {
+ //                           W.getElementById('done').onclick = function() {
+ //                               randomPageExecutor.execute();
+ //                           }
+ //                       }
+ //                      );
+ //
+ //       };
+ //
+ //       // Callback for the New Ecological Paradigm block.
+ //       // Loads all of the NEP questions in an random order.
+ //       newEcologicalParadigm = function(randomBlockExecutor) {
+ //           var randomPageExecutor = new RandomOrderExecutor();
+ //           randomPageExecutor.setCallbacks(
+ //               makeBlockArray('newEcologicalParadigm', ['limit','modify',
+ //                                                        'interfere', 'ingenuity', 'abusing', 'plenty', 'plants',
+ //                                                        'balance', 'crisis', 'spaceship', 'rule', 'control',
+ //                                                        'catastrophe', 'laws', 'upset'])
+ //           );
+ //           randomPageExecutor.setOnDone(function() {
+ //               randomBlockExecutor.next();
+ //           });
+ //
+ //           // At the beginning of the block is an instructions page.
+ //           W.loadFrame('/burdenRAHR/html/questionnaire/newEcologicalParadigm/' +
+ //                       'instructions.html', function() {
+ //                           W.getElementById('done').onclick = function() {
+ //                               randomPageExecutor.execute();
+ //                           }
+ //                       }
+ //                      );
+ //       };
+ //
+ //       // Callback for the Risk block.
+ //       risk = function(randomBlockExecutor) {
+ //           var randomPageExecutor = new RandomOrderExecutor();
+ //
+ //           randomPageExecutor.setCallbacks(
+ //               makeBlockArray('risk', ['doubleOrNothing','gambles', 'patience',
+ //                                       'riskTaking', 'trusting','charity'])
+ //           );
+ //           randomPageExecutor.setOnDone(function () {
+ //               randomBlockExecutor.next();
+ //           });
+ //
+ //           randomPageExecutor.execute();
+ //       };
+ //
+ //       // Callback for the demographics block. This block is NOT randomized!
+ //       demographics = function() {
+ //           var linearPageExecutor = {
+ //               // Begin execution of the callbacks.
+ //               execute: function() {
+ //                   this.index = 1;
+ //                   this.callbacks[0](this);
+ //               },
+ //               // Advance to net callback or call done.
+ //               next: function() {
+ //                   if (this.index < this.callbacks.length) {
+ //                       this.callbacks[this.index++](this);
+ //                   }
+ //                   else {
+ //                       this.done();
+ //                   }
+ //               },
+ //               // Final operation
+ //               done: function() {
+ //                   // store stuff
+ //                   node.emit('DONE');
+ //               }
+ //           };
+ //
+ //           linearPageExecutor.callbacks = makeBlockArray('demographics', [
+ //               'gender', 'education', 'dateOfBirth', 'income',
+ //               'occupation', 'participation']);
+ //
+ //           // Add politics page. (Because of the textfield it requires special
+ //           // treatement)
+ //           linearPageExecutor.callbacks.splice(3,0,
+ //                                               makePageLoad('demographics','politics', function() {
+ //                                                   // If option 'other' is selected
+ //                                                   if (node.game.questionnaire.currentAnswer == 5) {
+ //                                                       // And there has been text entered in the text field.
+ //                                                       if (W.getElementById('textForOther').value !== "") {
+ //                                                           node.game.questionnaire.currentAnswer =
+ //                                                               W.getElementById('textForOther').value;
+ //                                                           node.game.questionnaire.currentAnswerMade = true;
+ //                                                       }
+ //                                                   }
+ //                                               })
+ //                                              );
+ //
+ //           linearPageExecutor.execute();
+ //       };
+ //
+ //       // Execute the SVO, NEP and RISK block in random order, then execute
+ //       // demographics.
+ //       randomBlockExecutor.execute([socialValueOrientation, risk,
+ //                                    newEcologicalParadigm], function() {
+ //                                        demographics();
+ //                                    }
+ //                                  );
+ //
+ //       return;
 
         // TODO: REMOVE ABOVE
 
@@ -1816,28 +1816,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
         }
     }
 
-    // stager.addStage({
-    // id: 'endOfExperiment',
-    // cb: function() {
-    // W.loadFrame('/burden/html/ended.html', function() {
-    // console.log('End of Experiment');
-    // document.getElementById('state').innerHTML = "End of Experiment";
-    // var options = {
-    // milliseconds: 30000,
-    // update: 1000,
-    // timeup: function() {
-    // //					node.DONE();
-    // },
-    // };
-    // node.game.timer.init(options);
-    // node.game.timer.updateDisplay();
-    // node.game.timer.restart(options);
-    //
-    // });
-    // return true;
-    // }
-    // //	timer: 330000
-    // });
 
     //Now that all the stages have been added,
     //we can build the game plot
