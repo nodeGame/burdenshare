@@ -13,6 +13,8 @@ module.exports = {
     gamePaths: {
         logic:  "game.logic.js",
         player: "game.client.js"
-    }
+    },
+
+    REPEAT: 4
 
 };

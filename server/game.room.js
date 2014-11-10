@@ -23,7 +23,7 @@ module.exports = function(node, channel, gameRoom) {
             throw new Error('game.room: no codes found.');
         }
     });
-    
+
     // If NO authorization is found, local codes will be used,
     // and assigned automatically.
     var noAuthCounter = -1;
@@ -165,15 +165,14 @@ module.exports = function(node, channel, gameRoom) {
 	    var room, wRoom;
 	    var NPLAYERS = 4;
 	    var code;
-            var i;            
+            var i;
 
-            debugger
             code = dk.codes.id.get(p.id);
 	    dk.checkIn(code.AccessCode);
 
 	    console.log('-----------Player connected ' + p.id);
 	    wRoom = channel.waitingRoom.clients.player;
-	    // console.log(channel.waitingRoom.clients.player);
+
 	    for (i = 0; i < wRoom.size(); i++) {
 		// console.log(wRoom.db[i].id);
 		node.say("PLAYERSCONNECTED", wRoom.db[i].id, wRoom.size());
@@ -181,9 +180,10 @@ module.exports = function(node, channel, gameRoom) {
 
 	    TimeOut(p.id, wRoom.size());
 
+            // Wait for all players to connect.
 	    if (wRoom.size() < NPLAYERS) return;
 
-	    for (var i = 0; i < wRoom.size(); i++) {
+	    for (i = 0; i < wRoom.size(); i++) {
 		var timeOutData = {
 		    over: "AllPlayersConnected",
 		    exit: 0
@@ -209,26 +209,32 @@ module.exports = function(node, channel, gameRoom) {
 
 	    tmpPlayerList = wRoom.shuffle().limit(NPLAYERS);
 
-	    room = channel.createGameRoom({
-		group: 'burdenRAHR',
-		clients: tmpPlayerList,
-		channel: channel,
-		logicPath: logicPath
-	    });
+// 	    room = channel.createGameRoom({
+// 		group: 'burdenRAHR',
+// 		clients: tmpPlayerList,
+// 		channel: channel,
+// 		logicPath: logicPath
+// 	    });
 
-	    // Setting metadata, settings, and plot
-	    tmpPlayerList.each(function (p) {
-		node.remoteSetup('game_metadata',  p.id, client.metadata);
-		node.remoteSetup('game_settings', p.id, client.settings);
-		node.remoteSetup('plot', p.id, client.plot);
-		node.remoteSetup('env', p.id, client.env);
-                // STE: commented, makes easier to debug
-		// node.remoteSetup('verbosity', p.id, 0);
+            room = channel.createGameRoom({
+                group: 'burdensahre',
+                clients: tmpPlayerList,
+                gameName: 'burdenRAHR'
+            });
 
-		node.remoteCommand('start', p.id);
-	    });
 
-	    room.startGame();
+            gameRoom.setupGame();
+            gameRoom.startGame(true, []);
+
+//	    // Setting metadata, settings, and plot
+//	    tmpPlayerList.each(function (p) {
+//		node.remoteSetup('game_metadata',  p.id, client.metadata);
+//		node.remoteSetup('game_settings', p.id, client.settings);
+//		node.remoteSetup('plot', p.id, client.plot);
+//		node.remoteSetup('env', p.id, client.env);
+//		node.remoteCommand('start', p.id);
+//	    });
+//	    room.startGame();
 
 	    // Send room number to admin
 	    channel.admin.socket.send2roomAdmins(node.msg.create({
@@ -309,7 +315,7 @@ module.exports = function(node, channel, gameRoom) {
 	nodename: 'wroom',
 	game_metadata: {
 	    name: 'wroom',
-	    version: '0.0.1'
+	    version: '0.1.0'
 	},
 	game_settings: {
 	    publishLevel: 0
