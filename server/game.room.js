@@ -35,12 +35,12 @@ module.exports = function(node, channel, gameRoom) {
 	var mdb = ngdb.getLayer('MongoDB');
 
 	var stager = new node.Stager();
-	var logicPath = __dirname + '/includes/game.logic';
+	var logicPath = __dirname + '/game.logic';
 
 	var ngc = require('nodegame-client');
 
 	// second parameter makes available to the required file its properties
-	var client = channel.require(__dirname + '/includes/game.client', {
+	var client = channel.require(__dirname + '/game.client', {
 		ngc: ngc
 	});
 

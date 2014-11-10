@@ -19,7 +19,7 @@ module.exports = [
 
         player: 'burdenshare',
 
-        verbosity: 100
+        verbosity: 100,
 
         // If TRUE, players can invoke GET commands on admins.
         getFromAdmins: true,

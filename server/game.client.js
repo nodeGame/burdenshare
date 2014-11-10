@@ -3,15 +3,16 @@
  * that will be sent to each connecting player.
  */
 
-var ngc = module.parent.exports.ngc;
-var Stager = ngc.Stager;
+var ngc = require('nodegame-client');
 var stepRules = ngc.stepRules;
 var constants = ngc.constants;
 
-var stager = new Stager();
+
+var stager = ngc.getStager();
 var game = {};
 
 module.exports = game;
+
 
 //GLOBALS
 
