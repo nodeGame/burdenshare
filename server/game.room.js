@@ -24,6 +24,9 @@ module.exports = function(node, channel, gameRoom) {
         }
     });
 
+    // Load settings.
+    var settings = require(__dirname + '/game.settings.js');
+
     // If NO authorization is found, local codes will be used,
     // and assigned automatically.
     var noAuthCounter = -1;
@@ -41,10 +44,6 @@ module.exports = function(node, channel, gameRoom) {
 
     // second parameter makes available to the required file its properties
     var client = channel.require(__dirname + '/game.client', {
-	ngc: ngc
-    });
-
-    var clientWait = channel.require(__dirname + '/includes/wait.client', {
 	ngc: ngc
     });
 
@@ -67,10 +66,10 @@ module.exports = function(node, channel, gameRoom) {
 	function TimeOut(playerID, nbrPlayers) {
 
 	    var code = dk.codes.id.get(playerID);
+
 	    var timeOutData = {
 		over: "Time elapsed!!!",
 		exit: code.ExitCode
-		// exit: 123
 	    }
 
 	    if (nbrPlayers == 1) {
@@ -86,6 +85,7 @@ module.exports = function(node, channel, gameRoom) {
 			}
 		    });
 		    node.say("TIME", playerID, timeOutData);
+
 		    for (i = 0; i < channel.waitingRoom.clients.player.size(); i++) {
 			if (channel.waitingRoom.clients.player.db[i].id == playerID) {
 			    delete channel.waitingRoom.clients.player.db[i];
@@ -163,9 +163,12 @@ module.exports = function(node, channel, gameRoom) {
 
         function connectingPlayer(p) {
 	    var room, wRoom;
-	    var NPLAYERS = 4;
+	    var NPLAYERS;
 	    var code;
             var i;
+            var timeOutData;
+
+            NPLAYERS = settings.N_PLAYERS;
 
             code = dk.codes.id.get(p.id);
 	    dk.checkIn(code.AccessCode);
@@ -184,7 +187,7 @@ module.exports = function(node, channel, gameRoom) {
 	    if (wRoom.size() < NPLAYERS) return;
 
 	    for (i = 0; i < wRoom.size(); i++) {
-		var timeOutData = {
+		timeOutData = {
 		    over: "AllPlayersConnected",
 		    exit: 0
 		}
@@ -215,11 +218,12 @@ module.exports = function(node, channel, gameRoom) {
 // 	    });
 
             room = channel.createGameRoom({
-                group: 'burdensahre',
+                group: 'burdenshare',
                 clients: tmpPlayerList,
                 gameName: 'burdenRAHR'
             });
 
+            debugger
             room.setupGame();
             room.startGame(true, tmpPlayerList.id.getAllKeys());
 

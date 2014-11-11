@@ -15,6 +15,8 @@ module.exports = {
         player: "game.client.js"
     },
 
-    REPEAT: 4
+    REPEAT: 4,
+
+    N_PLAYERS: 4
 
 };

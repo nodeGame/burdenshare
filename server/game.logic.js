@@ -13,7 +13,6 @@ var counter = 0;
 var PLAYING_STAGE = 1;
 var MIN_PLAYERS = 4;
 //Round 1 of 4 is a test round
-var REPEAT = 4;
 
 var DUMP_DIR = path.resolve(__dirname, '..', '/data');
 
@@ -32,7 +31,10 @@ mdbgetInitEndow, mdbInstrTime;
 // - channel: the ServerChannel object in which this logic will be running.
 // - gameRoom: the GameRoom object in which this logic will be running.
 module.exports = function(node, channel, gameRoom, treatmentName, settings) {
-    
+
+
+    var cbs = require(__dirname + '/includes/logic.callbacks.js')
+
     // game room ID = gameRoom.name
 
     // Client game to send to reconnecting players.
@@ -55,12 +57,18 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 	}
     });
 
+    // Settings variables.
+
+    REPEAT = settings.REPEAT;
+
     //The stages / steps of the logic are defined here
     // but could be loaded from the database
     stager.setOnInit(function() {
-        console.log('********************** Burden-Sharing-Control - SessionID: ' + gameRoom.name + '**********************');
+        console.log('********************** Burden-Sharing-Control - SessionID: ' + gameRoom.name);
 	++counter;
+
 	var disconnectedState;
+
 	MIN_PLAYERS = 4;
 
         // Register player disconnection, and wait for him...
@@ -77,6 +85,11 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
 	var disconnected;
 	disconnected = {};
+
+        // Clearing timeout on the client's browser window.
+        node.on.pconnect(function(p) {
+            node.say("CLEAR_COUNTDOWN", p.id, 'clearCountDown');
+        });
 
 	// Player reconnecting.
 	// Reconnections must be handled by the game developer.
@@ -178,8 +191,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 	    // Move logic to previous stage.
 	    node.game.gotoStep(RECON_STAGE);
 
-	    if (!GameStage.compare(node.player.stage, '3.1.1'))
-	    {
+	    if (!GameStage.compare(node.player.stage, '3.1.1')) {
 	        node.remoteCommand('goto_step', p.id, RECON_STAGE);
 
 	        // IF ALREADY CHECKOUT
@@ -189,7 +201,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 		}
 	    }
 
-	    else{
+	    else {
 		// Will send all the players to current stage
 		// (also those who were there already).
 		// node.remoteCommand('goto_step', 'ALL', node.player.stage);
@@ -224,60 +236,86 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 		collectionName: 'bsc_idData'
 	    });
 
+            cbs.decorateMongoObj(mdbWrite_idData);
+
 	    mdbWrite = ngdb.getLayer('MongoDB', {
 		dbName: 'burden_sharing_rahr80',
 		collectionName: 'bsc_data'
 	    });
+
+            cbs.decorateMongoObj(mdbWrite);
 
 	    mdbWrite_questTime = ngdb.getLayer('MongoDB', {
 		dbName: 'burden_sharing_rahr80',
 		collectionName: 'bsc_questTime'
 	    });
 
+            cbs.decorateMongoObj(mdbWrite_questTime);
+
 	    mdbWrite_gameTime = ngdb.getLayer('MongoDB', {
 		dbName: 'burden_sharing_rahr80',
 		collectionName: 'bsc_gameTime'
 	    });
+
+            cbs.decorateMongoObj(mdbWrite_gameTime);
 
 	    mdbGetProfit = ngdb.getLayer('MongoDB', {
 		dbName: 'burden_sharing_rahr80',
 		collectionName: 'bsc_data'
 	    });
 
+            cbs.decorateMongoObj(mdbGetProfit);
+
 	    mdbCheckData = ngdb.getLayer('MongoDB', {
 		dbName: 'burden_sharing_rahr80',
 		collectionName: 'bsc_data'
 	    });
+
+            cbs.decorateMongoObj(mdbCheckData);
 
 	    mdbDelet = ngdb.getLayer('MongoDB', {
 		dbName: 'burden_sharing_rahr80',
 		collectionName: 'bsc_data'
 	    });
 
+            cbs.decorateMongoObj(mdbDelet);
+
+
 	    mdbDeletTime = ngdb.getLayer('MongoDB', {
 		dbName: 'burden_sharing_rahr80',
 		collectionName: 'bsc_gameTime'
 	    });
+
+
+            cbs.decorateMongoObj(mdbDeletTime);
 
 	    mdbWriteProfit = ngdb.getLayer('MongoDB', {
 		dbName: 'burden_sharing_rahr80',
 		collectionName: 'bsc_profit'
 	    });
 
+            cbs.decorateMongoObj(mdbWriteProfit);
+
 	    mdbCheckProfit = ngdb.getLayer('MongoDB', {
 		dbName: 'burden_sharing_rahr80',
 		collectionName: 'bsc_profit'
 	    });
+
+            cbs.decorateMongoObj(mdbCheckProfit);
 
 	    mdbgetInitEndow = ngdb.getLayer('MongoDB', {
 		dbName: 'burden_sharing_rahr80',
 		collectionName: 'bsc_idData'
 	    });
 
+            cbs.decorateMongoObj(mdbgetInitEndow);
+
 	    mdbInstrTime = ngdb.getLayer('MongoDB', {
 		dbName: 'burden_sharing_rahr80',
 		collectionName: 'bsc_instrTime'
 	    });
+
+            cbs.decorateMongoObj(mdbInstrTime);
 
 	    // Opening the database for writing the profit data.
 	    mdbWriteProfit.connect(function() {});
@@ -302,7 +340,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 		if (currentRound == '') {
 		    mdbInstrTime.store(msg.data);
 		}
-		else{
+		else {
 		    // if data already exists do nothing
 		}
 	    });
@@ -379,7 +417,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 		    }));
 		}
 
-		else{
+		else {
 		    bsc_data_table = mdbGetProfit.getCollectionObj(msg.data, function(rows, items) {
 			var profit = items;
 			console.log(profit);
@@ -390,7 +428,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 			else if (profit.length > 4) {
 			    nbrRounds = 4 - 1;
 			}
-			else{
+			else {
 			    nbrRounds = 0;
 			}
 			console.log("Number Rounds: " + nbrRounds);
@@ -417,7 +455,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 				data: profit_data
 			    }));
 			}
-			else{
+			else {
 			    var write_profit = {
 				Player_ID: msg.data,
 				Payout_Round: "none",
@@ -453,7 +491,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 		if (currentRound == '') {
 		    mdbWrite_gameTime.store(msg.data);
 		}
-		else{
+		else {
 		    // first delete and then save new data
 		    mdbDeletTime.deleting(msg.data.Player_ID, msg.data.Current_Round);
 		    mdbWrite_gameTime.store(msg.data);
@@ -495,7 +533,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 			data: init_vals
 		    }));
 		}
-		else{
+		else {
 		    node.socket.send(node.msg.create({
 			text:'Endow',
 			to: msg.data.ownPlayerId,
@@ -585,7 +623,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     stager.addStage({
 	id: 'instructions',
 	cb: function() {
-	    console.log('********************** Instructions - SessionID: ' + gameRoom.name + ' **********************');
+	    console.log('********************** Instructions - SessionID: ' + gameRoom.name);
 
 	    var players, groups, proposer, respondent;
 	    //            players = node.game.pl.fetch();
@@ -612,11 +650,13 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     stager.addStep({
 	id: 'syncGroups',
 	cb: function() {
-	    console.log('********************** Syncing all Players - SessionID: ' + gameRoom.name + ' **********************');
+	    console.log('********************** Syncing all Players - SessionID: ' + gameRoom.name);
 	    node.on('in.say.DATA', function(msg) {
+                debugger
 		if (msg.text === 'Round_Over') {
 		    console.log("Round: " + msg.data);
-		    // Round 1 is a testround for the player (The same matching of players and groups in round 1 will be repeated in round 4)
+		    // Round 1 is a testround for the player 
+                    // (The same matching of players and groups in round 1 will be repeated in round 4)
 		    // Round 1 will be evaluated
 		    if (msg.data == 1) {
 			node.game.groups[0][0] = node.game.playerID[0];
@@ -793,7 +833,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 	.next('instructions')
 	.repeat('burdenSharingControl', REPEAT)
 	.next('questionnaire');
-
+    
     return {
 	nodename: 'lgc' + counter,
 	game_metadata: {

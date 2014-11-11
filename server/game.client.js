@@ -12,12 +12,14 @@ var constants = ngc.constants;
 // its options.
 module.exports = function(gameRoom, treatmentName, settings) {
 
-    var stager = ngc.getStager();
+    var gameSequence, stager;
+
+    // Import the stager.
+    gameSequence = require(__dirname + '/game.stages.js')(settings);
+    stager = ngc.getStager(gameSequence);
+
     var game = {};
-
-    //Number of Rounds, Change also node.game.nbrRounds below
-    var REPEAT = 4;
-
+    
     //INIT and GAMEOVER
     stager.setOnInit(function() {
         
@@ -628,22 +630,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
     });
 
     ///// STAGES and STEPS
-
-    function precache() {
-        //    W.lockScreen('Loading...');
-        W.preCache([
-            '/burdenRAHR/html/instructions.html',
-            //        '/ultimatum/html/quiz.html',
-            //'/ultimatum/html/bidder.html',  // these two are cached by following
-            //'/ultimatum/html/resp.html',    // loadFrame calls (for demonstration)
-            '/burdenRAHR/html/questionnaire1.html',
-            '/burdenRAHR/html/ended.html'
-        ], function() {
-            // Pre-Caching done; proceed to the next stage.
-            node.emit('DONE');
-        });
-    }
-
 
     function instructions() {
 
@@ -1709,40 +1695,21 @@ module.exports = function(gameRoom, treatmentName, settings) {
                      ' he or she reconnects. If there is no reconnection within 60 seconds the game will be terminated and you will be forwarded to the questionnaire.');
     }
 
-    stager.addStage({
-        id: 'precache',
-        cb: precache,
-        // `minPlayers` triggers the execution of a callback in the case
-        // the number of players (including this client) falls the below
-        // the chosen threshold. Related: `maxPlayers`, and `exactPlayers`.
-        minPlayers: [ 4, notEnoughPlayers ],
-        syncOnLoaded: true,
-        done: clearFrame
-    });
+    function syncGroup(stage, myStageLevel, pl, game) {
+        var p = node.game.pl.get(node.game.otherID);
+        if (p.stageLevel === node.constants.stageLevels.DONE) {
+	    if (myStageLevel === node.constants.stageLevels.DONE) {
+		return true;
+	    }
+        }
+    }
 
-    stager.addStage({
-        id: 'instructions',
+    stager.extendStep('instructions', {
         cb: instructions,
         minPlayers: [ 4, notEnoughPlayers ],
         steprule: stepRules.SYNC_STAGE,
         syncOnLoaded: false,
-        done: clearFrame,
-        // timer: {
-	// milliseconds: 5000, // 240000 ms is equivalent to 6 minutes (reading time approximately 2 minutes times 2)
-	// update: 1000,
-	// timeup: function() {
-	// node.game.timer.stop();
-	// this.disabled = "disabled";
-	// node.game.timeInstruction = Math.round(Math.abs(node.game.timeInstruction - Date.now())/1000);
-	// var timeInstr = {
-	// Player_ID: node.game.ownID,
-	// Current_Round: "Instructions",
-	// TimeInstruction: node.game.timeInstruction
-	// };
-	// node.set('bsc_instrTime',timeInstr);
-	// node.emit('DONE');
-	// },
-        // }
+        done: clearFrame
     });
 
     stager.addStep({
@@ -1784,48 +1751,16 @@ module.exports = function(gameRoom, treatmentName, settings) {
         stepRule: syncGroup
     });
 
-
-    stager.addStage({
-        id: 'burdenSharingControl',
+    stager.extendStage('burdenSharingControl', {
         steps: ["syncGroups", "initialSituation", "decision"],
-        //	steps: ["initialSituation", "decision"],
         minPlayers: [ 4, notEnoughPlayers ],
-        //	minPlayers: [ 4, function() {
-        //		// node.game.pause();
-        //		alert('Not enough players');
-        //	} ],
         steprule: stepRules.SYNC_STEP,
-        // syncOnLoaded: true,
         done: clearFrame
-        //	timer: 330000
     });
 
-    stager.addStage({
-        id: 'questionnaire',
+    stager.extendStep('questionnaire', {
         cb: questionnaire
-        // steprule: stepRules.SYNC_STAGE,
-        //	timer: 330000
     });
-
-    function syncGroup(stage, myStageLevel, pl, game) {
-        var p = node.game.pl.get(node.game.otherID);
-        if (p.stageLevel === node.constants.stageLevels.DONE) {
-	    if (myStageLevel === node.constants.stageLevels.DONE) {
-		return true;
-	    }
-        }
-    }
-
-
-    //Now that all the stages have been added,
-    //we can build the game plot
-
-    stager.init()
-    //	.next('precache')
-        .next('instructions')
-        .repeat('burdenSharingControl', REPEAT)
-        .next('questionnaire');
-    //.next('endOfExperiment');
 
     //We serialize the game sequence before sending it
     game.plot = stager.getState();
@@ -1838,7 +1773,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
         description: 'no descr'
     };
 
-
     //Other settings, optional
     game.settings = {
         publishLevel: 2
@@ -1850,5 +1784,4 @@ module.exports = function(gameRoom, treatmentName, settings) {
     };
 
     return game;
-
 };
