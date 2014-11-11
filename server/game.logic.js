@@ -11,7 +11,7 @@ var stager = new Stager();
 
 var counter = 0;
 var PLAYING_STAGE = 1;
-var MIN_PLAYERS = 4;
+
 //Round 1 of 4 is a test round
 
 var DUMP_DIR = path.resolve(__dirname, '..', '/data');
@@ -32,6 +32,7 @@ mdbgetInitEndow, mdbInstrTime;
 // - gameRoom: the GameRoom object in which this logic will be running.
 module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
+    var REPEAT, MIN_PLAYERS;
 
     var cbs = require(__dirname + '/includes/logic.callbacks.js')
 
@@ -60,16 +61,17 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     // Settings variables.
 
     REPEAT = settings.REPEAT;
+    MIN_PLAYERS = settings.N_PLAYERS;
 
     //The stages / steps of the logic are defined here
     // but could be loaded from the database
     stager.setOnInit(function() {
-        console.log('********************** Burden-Sharing-Control - SessionID: ' + gameRoom.name);
+        console.log('********************** Burden-Sharing-Control - SessionID: ' +
+                    gameRoom.name);
+
 	++counter;
 
 	var disconnectedState;
-
-	MIN_PLAYERS = 4;
 
         // Register player disconnection, and wait for him...
         node.on.pdisconnect(function(p) {
@@ -225,6 +227,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
 	console.log('init');
 
+        // Open DB connections only when the first LOGIC client is created.
 	if (!mdbWrite_idData) {
 	    /////////////////////////// mongoDB ///////////////////////////
 	    // 1. Setting up database connection.
@@ -285,7 +288,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 		dbName: 'burden_sharing_rahr80',
 		collectionName: 'bsc_gameTime'
 	    });
-
 
             cbs.decorateMongoObj(mdbDeletTime);
 
@@ -399,7 +401,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 	    mdbDelet.deleting(msg.data.Player_ID, msg.data.Current_Round);
 	});
 
-	// Check whether profit data has been saved already. If not than save it, otherwise ignore it
+	// Check whether profit data has been saved already. 
+        // If not than save it, otherwise ignore it
 	node.on.data('get_Profit',function(msg) {
 
 	    bsc_check_profit = mdbCheckProfit.checkProfit(msg.data, function(rows, items) {
@@ -593,7 +596,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
 
     function precache() {
-	console.log('********************** Pre-Cache - SessionID: ' + gameRoom.name + ' **********************');
+	console.log('********************** Pre-Cache - SessionID: ' +
+                    gameRoom.name);
     }
 
 
@@ -623,7 +627,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     stager.addStage({
 	id: 'instructions',
 	cb: function() {
-	    console.log('********************** Instructions - SessionID: ' + gameRoom.name);
+	    console.log('********************** Instructions - SessionID: ' +
+                        gameRoom.name);
 
 	    var players, groups, proposer, respondent;
 	    //            players = node.game.pl.fetch();
@@ -650,14 +655,18 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     stager.addStep({
 	id: 'syncGroups',
 	cb: function() {
-	    console.log('********************** Syncing all Players - SessionID: ' + gameRoom.name);
+	    console.log('********************** Syncing all Players - SessionID: ' +
+                        gameRoom.name);
+
 	    node.on('in.say.DATA', function(msg) {
-                debugger
 		if (msg.text === 'Round_Over') {
 		    console.log("Round: " + msg.data);
+
 		    // Round 1 is a testround for the player 
-                    // (The same matching of players and groups in round 1 will be repeated in round 4)
+                    // (The same matching of players and groups in 
+                    // round 1 will be repeated in round 4)
 		    // Round 1 will be evaluated
+
 		    if (msg.data == 1) {
 			node.game.groups[0][0] = node.game.playerID[0];
 			node.game.groups[0][1] = node.game.playerID[1];
@@ -689,6 +698,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 			    }));
 			}
 		    }
+
 		    else if (msg.data == 2) {
 			node.game.groups[0][0] = node.game.playerID[0];
 			node.game.groups[0][1] = node.game.playerID[2];
@@ -720,6 +730,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 			    }));
 			}
 		    }
+
 		    else if (msg.data == 3) {
 			node.game.groups[0][0] = node.game.playerID[3];
 			node.game.groups[0][1] = node.game.playerID[0];
@@ -793,7 +804,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     stager.addStep({
 	id: "initialSituation",
 	cb: function() {
-	    console.log('********************** Initial Situation - SessionID: ' + gameRoom.name + ' **********************');
+	    console.log('********************** Initial Situation - SessionID: ' +
+                        gameRoom.name);
 	},
     });
 
@@ -801,7 +813,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 	id: "decision",
 	cb: function() {
 	    var round = node.player.stage.round;
-	    console.log('********************** Burden-Sharing-Control stage ' + round + ' - SessionID: ' + gameRoom.name + ' **********************');
+	    console.log('********************** Burden-Sharing-Control stage ' +
+                        round + ' - SessionID: ' + gameRoom.name);
 	}
     });
 
@@ -824,12 +837,12 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 		    node.say("win", msg.from, code.ExitCode);
 		}
 	    });
-	    console.log('********************** Questionaire - SessionID: ' + gameRoom.name + ' **********************');
+	    console.log('********************** Questionaire - SessionID: ' +
+                        gameRoom.name);
 	}
     });
 
     stager.init()
-    //	.next('precache')
 	.next('instructions')
 	.repeat('burdenSharingControl', REPEAT)
 	.next('questionnaire');
