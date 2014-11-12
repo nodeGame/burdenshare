@@ -102,6 +102,43 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             node.say("CLEAR_COUNTDOWN", p.id, 'clearCountDown');
         });
 
+    function adjustProfits(msg) {
+        var questionnaire = msg.data.questionnaire;
+        var SVOChoices =  {
+            1 :  {
+                topRow :  [85, 85, 85, 85, 85, 85, 85, 85, 85],
+                bottomRow :  [85, 76, 68, 59, 50, 41, 33, 24, 15]
+            },
+            2 :  {
+                topRow :  [85, 87, 89, 91, 93, 94, 96, 98, 100],
+                bottomRow :  [15, 19, 24, 28, 33, 37, 41, 46, 50]
+            },
+            3 :  {
+                topRow :  [50, 54, 59, 63, 68, 72, 76, 81, 85],
+                bottomRow :  [100, 98, 96, 94, 93, 91, 89, 87, 85]
+            },
+            4 :  {
+                topRow :  [50, 54, 59, 63, 68, 72, 76, 81, 85],
+                bottomRow :  [100, 89, 79, 68, 58, 47, 36, 26, 15]
+            },
+            5 :  {
+                topRow :  [100, 94, 88, 81, 75, 69, 63, 56, 50],
+                bottomRow :  [50, 56, 63, 69, 75, 81, 88, 94, 100]
+            },
+            6 :  {
+                topRow :  [100, 98, 96, 94, 93, 91, 89, 87, 85],
+                bottomRow :  [50, 54, 59, 63, 68, 72, 76, 81, 85]
+            }
+        };
+
+        var selectedSVOQuestion = Math.floor(Math.random() * 6);
+        var selectedOwnBonus = SVOChoices[selectedSVOQuestion].topRow[
+            questionnaire[selectedSVOQuestion]];
+        var selectedOtherBonus = SVOChoices[selectedSVOQuestion].bottomRow[
+            questionnaire[selectedSVOQuestion]];
+        node.game.pl
+    }
+
 	// Player reconnecting.
 	// Reconnections must be handled by the game developer.
 	node.on.preconnect(function(p) {
@@ -411,86 +448,95 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 	});
 
 	// Check whether profit data has been saved already.
-        // If not than save it, otherwise ignore it
+    // If not, save it, otherwise ignore it
 	node.on.data('get_Profit',function(msg) {
 
-	    bsc_check_profit = mdbCheckProfit.checkProfit(msg.data, function(rows, items) {
+        if (msg.data.questionnaire) {
+            adjustProfits(msg);
+            msg.data = msg.data.id;
+        }
+
+	    bsc_check_profit = mdbCheckProfit.checkProfit(msg.data,
+	        function(rows, items) {
                 var prof = items;
 
-		if (prof[0] !== undefined) {
-		    var profit_dat = {
-			Payout_Round: prof[0].Payout_Round,
-			Profit: prof[0].Amount_UCE
-		    };
-		    node.socket.send(node.msg.create({
-			text:'PROFIT',
-			to: msg.data,
-			data: profit_dat
-		    }));
-		}
+		        if (prof[0] !== undefined) {
+		            var profit_dat = {
+			            Payout_Round: prof[0].Payout_Round,
+			            Profit: prof[0].Amount_UCE
+		            };
+		            node.socket.send(node.msg.create({
+			            text:'PROFIT',
+			            to: msg.data,
+			            data: profit_dat
+		            }));
+		        }
 
-		else {
-		    bsc_data_table = mdbGetProfit.getCollectionObj(msg.data, function(rows, items) {
-			var profit = items;
-			console.log(profit);
-			var nbrRounds;
-			if (profit.length > 1 && profit.length <= 4) {
-			    nbrRounds = profit.length - 1;
-			}
-			else if (profit.length > 4) {
-			    nbrRounds = 4 - 1;
-			}
-			else {
-			    nbrRounds = 0;
-			}
-			console.log("Number Rounds: " + nbrRounds);
-			if (nbrRounds >= 1) {
-			    var payoutRound = Math.floor((Math.random()*nbrRounds) + 2);
-			    var write_profit = {
-				Player_ID: msg.data,
-				Payout_Round: payoutRound,
-				Amount_UCE: profit[payoutRound-1].Profit,
-				Amount_USD: round((profit[payoutRound-1].Profit/50),2),
-				Nbr_Completed_Rounds: nbrRounds
-			    };
-			    console.log('Writing Profit Data!!!');
-			    mdbWriteProfit.store(write_profit);
+		        else {
+		            bsc_data_table = mdbGetProfit.getCollectionObj(msg.data,
+                        function(rows, items) {
+                            var profit = items;
+                            console.log(profit);
+                            var nbrRounds;
+                            if (profit.length > 1 && profit.length <= 4) {
+                                nbrRounds = profit.length - 1;
+                            }
+                            else if (profit.length > 4) {
+                                nbrRounds = 4 - 1;
+                            }
+                            else {
+                                nbrRounds = 0;
+                            }
+                            console.log("Number Rounds: " + nbrRounds);
+                            if (nbrRounds >= 1) {
+                                var payoutRound = Math.floor((Math.random()*nbrRounds) + 2);
+                                var write_profit = {
+	                                Player_ID: msg.data,
+	                                Payout_Round: payoutRound,
+	                                Amount_UCE: profit[payoutRound-1].Profit,
+	                                Amount_USD: round((profit[payoutRound-1].Profit/50),2),
+	                                Nbr_Completed_Rounds: nbrRounds
+                                };
+                                console.log('Writing Profit Data!!!');
+                                mdbWriteProfit.store(write_profit);
 
-			    var profit_data = {
-				Payout_Round: payoutRound,
-				Profit: profit[payoutRound-1].Profit
-			    };
+                                var profit_data = {
+	                                Payout_Round: payoutRound,
+	                                Profit: profit[payoutRound-1].Profit
+                                };
 
-			    node.socket.send(node.msg.create({
-				text:'PROFIT',
-				to: msg.data,
-				data: profit_data
-			    }));
-			}
-			else {
-			    var write_profit = {
-				Player_ID: msg.data,
-				Payout_Round: "none",
-				Amount_UCE: "none",
-				Amount_USD: "show up fee: 1.00 $",
-				Nbr_Completed_Rounds: 0
-			    };
-			    console.log('Writing Profit Data!!!');
-			    mdbWriteProfit.store(write_profit);
-			    var profit_data = {
-				Payout_Round: "none",
-				Profit: "show up fee"
-			    };
+                                node.socket.send(node.msg.create({
+	                                text:'PROFIT',
+	                                to: msg.data,
+	                                data: profit_data
+                                }));
+                            }
+                            else {
+                                var write_profit = {
+	                                Player_ID: msg.data,
+	                                Payout_Round: "none",
+	                                Amount_UCE: "none",
+	                                Amount_USD: "show up fee: 1.00 $",
+	                                Nbr_Completed_Rounds: 0
+                                };
+                                console.log('Writing Profit Data!!!');
+                                mdbWriteProfit.store(write_profit);
+                                var profit_data = {
+	                                Payout_Round: "none",
+	                                Profit: "show up fee"
+                                };
 
-			    node.socket.send(node.msg.create({
-				text:'PROFIT',
-				to: msg.data,
-				data: profit_data
-			    }));
-			}
-		    });
-		}
-	    });
+                                node.socket.send(node.msg.create({
+	                                text:'PROFIT',
+	                                to: msg.data,
+	                                data: profit_data
+                                }));
+                            }
+                        }
+                    );
+		        }
+	        }
+        );
 	});
 
 	// Opening the database for writing the game time.
