@@ -23,21 +23,27 @@ module.exports = [
 
         // If TRUE, players can invoke GET commands on admins.
         getFromAdmins: true,
-        
+
         // Unauthorized clients will be redirected here.
         // (defaults: "/pages/accessdenied.htm")
         accessDeniedUrl: '/burdenRAHR/unauth.htm',
-        
+
         // Channel Waiting Room configuration.
         waitingRoom: {
             // Relative path from server/ directory.
             logicPath:  'game.room.js',
             name:       'waitRoom'
+        },
+        notify: {
+            onStageUpdate: true,
+
+            // A client changes stageLevel (e.g. INIT, CALLBACK_EXECUTED);
+            onStageLevelUpdate: true,
         }
     }
-    
+
     ,
-    
+
     // Requirements channel.
     {
         name: 'requirements',
@@ -49,7 +55,7 @@ module.exports = [
         verbosity: 100,
 
         getFromAdmins: true,
-        
+
         waitingRoom: {
             logicPath: 'requirements.room.js',
             name: 'requirementsBurden'
