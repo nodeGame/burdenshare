@@ -44,7 +44,21 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     // Reads in descil-mturk configuration.
     var basedir = channel.resolveGameDir('burdenRAHR');
     var confPath = basedir + '/auth/descil.conf.js';
-    var dk = require('descil-mturk')(confPath);
+    var dk;
+
+    // Try to get descil.conf.js
+    try {
+        dk = require('descil-mturk')(confPath);
+    }
+    catch (e) {
+        throw new Error('requirements.room: ' +
+            'Cannot locate /auth/descil.conf.js! \n' +
+            'Provide /auth/descil.conf.js with the following content: \n' +
+            'module.exports.key = \"YOUR_KEY_HERE\"; \n' +
+            'module.exports.project = \"YOUR_PROJECT_NAME_HERE\"; \n' +
+            'module.exports.uri = \"YOUR_AUTH_SERVER_HERE\"; \n' +
+            'module.exports.file = __dirname + \'/\' + \'auth_codes.js\';');
+    }
 
 //    dk.getCodes(function() {
 //	if (!dk.codes.size()) {
@@ -401,7 +415,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 	    mdbDelet.deleting(msg.data.Player_ID, msg.data.Current_Round);
 	});
 
-	// Check whether profit data has been saved already. 
+	// Check whether profit data has been saved already.
         // If not than save it, otherwise ignore it
 	node.on.data('get_Profit',function(msg) {
 
@@ -662,8 +676,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 		if (msg.text === 'Round_Over') {
 		    console.log("Round: " + msg.data);
 
-		    // Round 1 is a testround for the player 
-                    // (The same matching of players and groups in 
+		    // Round 1 is a testround for the player
+                    // (The same matching of players and groups in
                     // round 1 will be repeated in round 4)
 		    // Round 1 will be evaluated
 
@@ -846,7 +860,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 	.next('instructions')
 	.repeat('burdenSharingControl', REPEAT)
 	.next('questionnaire');
-    
+
     return {
 	nodename: 'lgc' + counter,
 	game_metadata: {

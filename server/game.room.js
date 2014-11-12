@@ -10,7 +10,22 @@ module.exports = function(node, channel, gameRoom) {
     var confPath = basedir + '/auth/descil.conf.js';
 
     // Load the code database.
-    var dk = require('descil-mturk')(confPath);
+    var dk;
+
+
+    // Try to get descil.conf.js
+    try {
+     dk = require('descil-mturk')(confPath);
+    }
+    catch (e) {
+        throw new Error('requirements.room: ' +
+            'Cannot locate /auth/descil.conf.js! \n' +
+            'Provide /auth/descil.conf.js with the following content: \n' +
+            'module.exports.key = \"YOUR_KEY_HERE\"; \n' +
+            'module.exports.project = \"YOUR_PROJECT_NAME_HERE\"; \n' +
+            'module.exports.uri = \"YOUR_AUTH_SERVER_HERE\"; \n' +
+            'module.exports.file = __dirname + \'/\' + \'auth_codes.js\';');
+    }
 
     //   dk.getCodes(function() {
     //       if (!dk.codes.size()) {
