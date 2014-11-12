@@ -1,13 +1,9 @@
 var path = require('path');
 var channel = module.parent.exports.channel;
 var ngc = require('nodegame-client');
-var Stager = ngc.Stager;
 var stepRules = ngc.stepRules;
 var GameStage = ngc.GameStage;
 var J = ngc.JSUS;
-
-
-var stager = new Stager();
 
 var counter = 0;
 var PLAYING_STAGE = 1;
@@ -36,10 +32,11 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
     var cbs = require(__dirname + '/includes/logic.callbacks.js')
 
-    // game room ID = gameRoom.name
-
     // Client game to send to reconnecting players.
-    var client = channel.require(__dirname + '/game.client', { ngc: ngc });
+    var client = require(gameRoom.gamePaths.player)(gameRoom,
+                                                    treatmentName,
+                                                    settings);
+
 
     // Reads in descil-mturk configuration.
     var basedir = channel.resolveGameDir('burdenRAHR');
@@ -57,6 +54,10 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 	    throw new Error('requirements.room: no codes found.');
 	}
     });
+
+    // Import the stager.
+    var gameSequence = require(__dirname + '/game.stages.js')(settings);
+    var stager = ngc.getStager(gameSequence);
 
     // Settings variables.
 
@@ -441,7 +442,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 				Player_ID: msg.data,
 				Payout_Round: payoutRound,
 				Amount_UCE: profit[payoutRound-1].Profit,
-				Amount_USD: round((profit[payoutRound-1].Profit/50),2),
+				Amount_USD: cbs.round((profit[payoutRound-1].Profit/50),2),
 				Nbr_Completed_Rounds: nbrRounds
 			    };
 			    console.log('Writing Profit Data!!!');
@@ -566,39 +567,10 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
     });
 
-    /**
-     * ## round
-     *
-     * rounds a given number to a specified number of decimal places
-     *
-     * @param {number} value the floating point number to be rounded
-     * @param {number} exp the number of decimal places
-     *
-     */
-    function round(value, exp) {
-	if (typeof exp === 'undefined' || +exp === 0)
-	    return Math.round(value);
-
-	value = +value;
-	exp  = +exp;
-
-	if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0))
-	    return NaN;
-
-	// Shift
-	value = value.toString().split('e');
-	value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp)));
-
-	// Shift back
-	value = value.toString().split('e');
-	return +(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp));
-    }
-
-
-    function precache() {
-	console.log('********************** Pre-Cache - SessionID: ' +
-                    gameRoom.name);
-    }
+//    stager.init()
+//	.next('instructions')
+//	.repeat('burdenSharingControl', REPEAT)
+//	.next('questionnaire');
 
 
     function notEnoughPlayers() {
@@ -616,16 +588,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     // Set default step rule.
     stager.setDefaultStepRule(stepRules.OTHERS_SYNC_STEP);
 
-    // Adding the stages. We can later on define the rules and order that
-    // will determine their execution.
-    stager.addStage({
-	id: 'precache',
-	cb: precache,
-	minPlayers: [ 4, notEnoughPlayers ]
-    });
-
-    stager.addStage({
-	id: 'instructions',
+    stager.extendStep('instructions', {
 	cb: function() {
 	    console.log('********************** Instructions - SessionID: ' +
                         gameRoom.name);
@@ -649,7 +612,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 	    console.log(node.game.groups[1][0]);
 	    console.log(node.game.groups[1][1]);
 	},
-	minPlayers: [ 4, notEnoughPlayers ]
+	minPlayers: [ MIN_PLAYERS, notEnoughPlayers ]
     });
 
     stager.addStep({
@@ -818,15 +781,13 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 	}
     });
 
-    stager.addStage({
-	id: 'burdenSharingControl',
+    stager.extendStage('burdenSharingControl', {
 	steps: ["syncGroups", "initialSituation", "decision"],
-	minPlayers: [ 4, notEnoughPlayers ],
+	minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
 	stepRule: node.stepRules.SYNC_STAGE
     });
 
-    stager.addStage({
-	id: 'questionnaire',
+    stager.extendStep('questionnaire', {
 	cb: function() {
 	    node.on("in.say.DATA", function(msg) {
 		if (msg.text === "QUEST_DONE") {
@@ -841,11 +802,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                         gameRoom.name);
 	}
     });
-
-    stager.init()
-	.next('instructions')
-	.repeat('burdenSharingControl', REPEAT)
-	.next('questionnaire');
     
     return {
 	nodename: 'lgc' + counter,
