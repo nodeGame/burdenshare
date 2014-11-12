@@ -44,33 +44,28 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     // Reads in descil-mturk configuration.
     var basedir = channel.resolveGameDir('burdenRAHR');
     var confPath = basedir + '/auth/descil.conf.js';
-    var dk;
+    var dk = require('descil-mturk')();
+    var settings = require(basedir + '/server/game.settings.js');
 
-    // Try to get descil.conf.js
-    try {
-        dk = require('descil-mturk')(confPath);
+
+    // Load code database
+    if (settings.AUTH !== 'none') {
+        dk.readConfiguration(confPath);
+        if (settings.AUTH === 'remote') {
+            dk.getCodes(function() {
+                if (!dk.codes.size()) {
+                    throw new Error('requirements.room: no codes found.');
+                }
+            });
+        }
+        else {
+            dk.readCodes(function() {
+                if (!dk.codes.size()) {
+                    throw new Error('requirements.room: no codes found.');
+                }
+            });
+        }
     }
-    catch (e) {
-        throw new Error('requirements.room: ' +
-            'Cannot locate /auth/descil.conf.js! \n' +
-            'Provide /auth/descil.conf.js with the following content: \n' +
-            'module.exports.key = \"YOUR_KEY_HERE\"; \n' +
-            'module.exports.project = \"YOUR_PROJECT_NAME_HERE\"; \n' +
-            'module.exports.uri = \"YOUR_AUTH_SERVER_HERE\"; \n' +
-            'module.exports.file = __dirname + \'/\' + \'auth_codes.js\';');
-    }
-
-//    dk.getCodes(function() {
-//	if (!dk.codes.size()) {
-//    	    throw new Error('game.logic: no codes found.');
-//    	}
-//    });
-
-    dk.readCodes(function() {
-	if (!dk.codes.size()) {
-	    throw new Error('requirements.room: no codes found.');
-	}
-    });
 
     // Settings variables.
 

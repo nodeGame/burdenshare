@@ -13,25 +13,12 @@ module.exports = function(node, channel, room) {
     var basedir = channel.resolveGameDir('burdenRAHR');
     var confPath = basedir + '/auth/descil.conf.js';
 
-    var dk;
+    var settings = require(basedir + '/server/game.settings.js');
+    var dk = require('descil-mturk')(confPath);
 
     // Creates a stager object to define the game stages.
     var stager = new node.Stager();
 
-
-    // Try to get descil.conf.js
-    try {
-        dk = require('descil-mturk')(confPath);
-    }
-    catch (e) {
-        throw new Error('requirements.room: ' +
-            'Cannot locate /auth/descil.conf.js! \n' +
-            'Provide /auth/descil.conf.js with the following content: \n' +
-            'module.exports.key = \"YOUR_KEY_HERE\"; \n' +
-            'module.exports.project = \"YOUR_PROJECT_NAME_HERE\"; \n' +
-            'module.exports.uri = \"YOUR_AUTH_SERVER_HERE\"; \n' +
-            'module.exports.file = __dirname + \'/\' + \'auth_codes.js\';');
-    }
 
     // Functions
 
@@ -41,16 +28,20 @@ module.exports = function(node, channel, room) {
         console.log('********Requirements Room Created*****************');
 
         // Load code database
-//        dk.getCodes(function() {
-//            if (!dk.codes.size()) {
-//                throw new Error('requirements.room: no codes found.');
-//            }
-//        });
-        dk.readCodes(function() {
-            if (!dk.codes.size()) {
-                throw new Error('requirements.room: no codes found.');
-            }
-        });
+        if (settings.AUTH === 'remote') {
+            dk.getCodes(function() {
+                if (!dk.codes.size()) {
+                    throw new Error('requirements.room: no codes found.');
+                }
+            });
+        }
+        else {
+            dk.readCodes(function() {
+                if (!dk.codes.size()) {
+                    throw new Error('requirements.room: no codes found.');
+                }
+            });
+        }
 
 	node.on.preconnect(function(player) {
             console.log('Player connected to Requirements room.');
@@ -63,7 +54,7 @@ module.exports = function(node, channel, room) {
             node.remoteCommand('start', player.id);
 	});
 
-        node.on('MTID', function(msg) {
+        node.on('get.MTID', function(msg) {
             var mtid, errUri, code;
 
             console.log('MTID');
