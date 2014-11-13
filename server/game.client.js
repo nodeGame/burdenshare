@@ -19,10 +19,10 @@ module.exports = function(gameRoom, treatmentName, settings) {
     stager = ngc.getStager(gameSequence);
 
     var game = {};
-    
+
     //INIT and GAMEOVER
     stager.setOnInit(function() {
-        
+
         // basic amount of own endowment (here 25)
         node.game.endowment_own = 25;
         node.game.endowment_responder = 0;
@@ -639,179 +639,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
 	// Set state in Header
 	document.getElementById('state').innerHTML = "Instruction";
 	console.log('instructions');
-
-	// TODO: REMOVE: TESTING RandomOrderExecutorb
-        var randomBlockExecutor;
-        var socialValueOrientation, newEcologicalParadigm, risk;
-
-        // Initializing storage.
-        node.game.questionnaire = {};
-
-
- //       // Makes a callback which loads a single questionnaire page and listens to
- //       // onclick of the element with id 'done', to write currentAnswer to
- //       // database and advance the executor.
- //       function makePageLoad(block, page, extensionCallback) {
- //           return function(executor) {
- //               W.loadFrame('/burdenRAHR/html/questionnaire/'+ block + '/' +
- //                           page + '.html', function() {
- //                               node.timer.setTimestamp(block + '/' + page);
- //                               W.getElementById('done').onclick = function() {
- //                                   var questionnaire = node.game.questionnaire;
- //                                   if (extensionCallback) {
- //                                       extensionCallback();
- //                                   }
- //                                   if (questionnaire.currentAnswerMade) {
- //       				node.set('bsc_data',{
- //       				    player: node.player.sid,
- //                                           question: block + '/' + page,
- //                                           answer: questionnaire.currentAnswer,
- //                                           timeElapsed: node.timer.getTimeSince(block + '/' + page),
- //                                           clicks: questionnaire.numberOfClicks
- //                                       });
- //                                       executor.next();
- //                                   }
- //                                   else {
- //                                       alert('Please select an option.');
- //                                   }
- //                               };
- //                           }
- //                          );
- //           };
- //       }
- //
- //       // Makes an array of page load callbacks
- //       function makeBlockArray(block, pages) {
- //           var i, result = [];
- //           for (i = 0; i < pages.length; ++i) {
- //               result.push(makePageLoad(block,pages[i]));
- //           }
- //           return result;
- //       }
- //
- //
- //       randomBlockExecutor = new RandomOrderExecutor();
- //
- //       // Callback for the Social Value Orientation block.
- //       // Loads all of the SVO questions in an random order.
- //       socialValueOrientation = function(randomBlockExecutor) {
- //           var randomPageExecutor = new RandomOrderExecutor();
- //           randomPageExecutor.setCallbacks(
- //               makeBlockArray('socialValueOrientation',
- //                              ['1', '2', '3', '4', '5', '6'])
- //           );
- //           randomPageExecutor.setOnDone(function() {
- //               randomBlockExecutor.next();
- //           });
- //
- //           // At the beginning of the block is an instructions page.
- //           W.loadFrame('/burdenRAHR/html/questionnaire/socialValueOrientation/' +
- //                       'instructions.html', function() {
- //                           W.getElementById('done').onclick = function() {
- //                               randomPageExecutor.execute();
- //                           }
- //                       }
- //                      );
- //
- //       };
- //
- //       // Callback for the New Ecological Paradigm block.
- //       // Loads all of the NEP questions in an random order.
- //       newEcologicalParadigm = function(randomBlockExecutor) {
- //           var randomPageExecutor = new RandomOrderExecutor();
- //           randomPageExecutor.setCallbacks(
- //               makeBlockArray('newEcologicalParadigm', ['limit','modify',
- //                                                        'interfere', 'ingenuity', 'abusing', 'plenty', 'plants',
- //                                                        'balance', 'crisis', 'spaceship', 'rule', 'control',
- //                                                        'catastrophe', 'laws', 'upset'])
- //           );
- //           randomPageExecutor.setOnDone(function() {
- //               randomBlockExecutor.next();
- //           });
- //
- //           // At the beginning of the block is an instructions page.
- //           W.loadFrame('/burdenRAHR/html/questionnaire/newEcologicalParadigm/' +
- //                       'instructions.html', function() {
- //                           W.getElementById('done').onclick = function() {
- //                               randomPageExecutor.execute();
- //                           }
- //                       }
- //                      );
- //       };
- //
- //       // Callback for the Risk block.
- //       risk = function(randomBlockExecutor) {
- //           var randomPageExecutor = new RandomOrderExecutor();
- //
- //           randomPageExecutor.setCallbacks(
- //               makeBlockArray('risk', ['doubleOrNothing','gambles', 'patience',
- //                                       'riskTaking', 'trusting','charity'])
- //           );
- //           randomPageExecutor.setOnDone(function () {
- //               randomBlockExecutor.next();
- //           });
- //
- //           randomPageExecutor.execute();
- //       };
- //
- //       // Callback for the demographics block. This block is NOT randomized!
- //       demographics = function() {
- //           var linearPageExecutor = {
- //               // Begin execution of the callbacks.
- //               execute: function() {
- //                   this.index = 1;
- //                   this.callbacks[0](this);
- //               },
- //               // Advance to net callback or call done.
- //               next: function() {
- //                   if (this.index < this.callbacks.length) {
- //                       this.callbacks[this.index++](this);
- //                   }
- //                   else {
- //                       this.done();
- //                   }
- //               },
- //               // Final operation
- //               done: function() {
- //                   // store stuff
- //                   node.emit('DONE');
- //               }
- //           };
- //
- //           linearPageExecutor.callbacks = makeBlockArray('demographics', [
- //               'gender', 'education', 'dateOfBirth', 'income',
- //               'occupation', 'participation']);
- //
- //           // Add politics page. (Because of the textfield it requires special
- //           // treatement)
- //           linearPageExecutor.callbacks.splice(3,0,
- //                                               makePageLoad('demographics','politics', function() {
- //                                                   // If option 'other' is selected
- //                                                   if (node.game.questionnaire.currentAnswer == 5) {
- //                                                       // And there has been text entered in the text field.
- //                                                       if (W.getElementById('textForOther').value !== "") {
- //                                                           node.game.questionnaire.currentAnswer =
- //                                                               W.getElementById('textForOther').value;
- //                                                           node.game.questionnaire.currentAnswerMade = true;
- //                                                       }
- //                                                   }
- //                                               })
- //                                              );
- //
- //           linearPageExecutor.execute();
- //       };
- //
- //       // Execute the SVO, NEP and RISK block in random order, then execute
- //       // demographics.
- //       randomBlockExecutor.execute([socialValueOrientation, risk,
- //                                    newEcologicalParadigm], function() {
- //                                        demographics();
- //                                    }
- //                                  );
- //
- //       return;
-
-        // TODO: REMOVE ABOVE
 
 	W.loadFrame('/burdenRAHR/html/instructions.html', function() {
 	    node.game.timeInstruction = Date.now();
@@ -1458,229 +1285,404 @@ module.exports = function(gameRoom, treatmentName, settings) {
 	    });
         }
         return true;
-    };
+    }
 
 
     ////////////////////////////QUESTIONAIRE ////////////////////////////
 
     function questionnaire() {
 
-	function round(value, exp) {
-	    if (typeof exp === 'undefined' || +exp === 0)
-	        return Math.round(value);
+        function randomOrderQuestionnaire() {
+            var randomBlockExecutor;
+            var socialValueOrientation, newEcologicalParadigm, risk;
 
-	    value = +value;
-	    exp  = +exp;
+            // Initializing storage.
+            node.game.questionnaire = {};
 
-	    if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0))
-	        return NaN;
 
-	    // Shift
-	    value = value.toString().split('e');
-	    value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp)));
+            // Makes a callback which loads a single questionnaire page and
+            // listens to onclick of the element with id 'done', to write
+            // currentAnswer to database and advance the executor.
+            function makePageLoad(block, page, extensionCallback) {
+                return function(executor) {
+                    W.loadFrame('/burdenRAHR/html/questionnaire/'+ block + '/' +
+                        page + '.html', function() {
+                            node.timer.setTimestamp(block + '/' + page);
+                            W.getElementById('done').onclick =
+                                function() {
+                                    var questionnaire =
+                                        node.game.questionnaire;
+                                    if (extensionCallback) {
+                                        extensionCallback();
+                                }
+                                if (questionnaire.currentAnswerMade) {
+                    				node.set('bsc_data',{
+                    				    player: node.game.ownID,
+                                        question: block + '/' + page,
+                                        answer: questionnaire.currentAnswer,
+                                        timeElapsed:
+                                            node.timer.getTimeSince(block +
+                                                '/' + page),
+                                        clicks: questionnaire.numberOfClicks
+                                    });
+                                    executor.next();
+                                }
+                                else {
+                                    alert('Please select an option.');
+                                }
+                            };
+                        }
+                    );
+                };
+            }
 
-	    // Shift back
-	    value = value.toString().split('e');
-	    return +(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp));
-	}
+            // Makes an array of page load callbacks
+            function makeBlockArray(block, pages) {
+                var i, result = [];
+                for (i = 0; i < pages.length; ++i) {
+                    result.push(makePageLoad(block,pages[i]));
+                }
+                return result;
+            }
 
-	// shows last page if dk.checkout has been called
+
+            randomBlockExecutor = new RandomOrderExecutor();
+
+            // Callback for the Social Value Orientation block.
+            // Loads all of the SVO questions in an random order.
+            socialValueOrientation = function(randomBlockExecutor) {
+                var randomPageExecutor = new RandomOrderExecutor();
+                randomPageExecutor.setCallbacks(
+                    makeBlockArray('socialValueOrientation',
+                                   ['1', '2', '3', '4', '5', '6'])
+                );
+                randomPageExecutor.setOnDone(function() {
+                    randomBlockExecutor.next();
+                });
+
+                // At the beginning of the block is an instructions page.
+                W.loadFrame('/burdenRAHR/html/questionnaire/' +
+                    'socialValueOrientation/instructions.html', function() {
+                        W.getElementById('done').onclick = function() {
+                            randomPageExecutor.execute();
+                        }
+                    }
+               );
+            };
+
+            // Callback for the New Ecological Paradigm block.
+            // Loads all of the NEP questions in an random order.
+            newEcologicalParadigm = function(randomBlockExecutor) {
+                var randomPageExecutor = new RandomOrderExecutor();
+                randomPageExecutor.setCallbacks(
+                    makeBlockArray('newEcologicalParadigm', [
+                        'limit','modify',
+                        'interfere', 'ingenuity', 'abusing', 'plenty', 'plants',
+                        'balance', 'crisis', 'spaceship', 'rule', 'control',
+                        'catastrophe', 'laws', 'upset'
+                    ])
+                );
+                randomPageExecutor.setOnDone(function() {
+                    randomBlockExecutor.next();
+                });
+
+                // At the beginning of the block is an instructions page.
+                W.loadFrame('/burdenRAHR/html/questionnaire/' +
+                    'newEcologicalParadigm/instructions.html', function() {
+                        W.getElementById('done').onclick = function() {
+                            randomPageExecutor.execute();
+                        }
+                    }
+               );
+            };
+
+            // Callback for the Risk block.
+            risk = function(randomBlockExecutor) {
+                var randomPageExecutor = new RandomOrderExecutor();
+
+                randomPageExecutor.setCallbacks(
+                    makeBlockArray('risk', [
+                        'doubleOrNothing','gambles', 'patience', 'riskTaking',
+                        'trusting','charity'
+                    ])
+                );
+
+                randomPageExecutor.setOnDone(function () {
+                    randomBlockExecutor.next();
+                });
+                randomPageExecutor.execute();
+            };
+
+            // Callback for the demographics block. This block is NOT randomized!
+            demographics = function() {
+                var linearPageExecutor = {
+                    // Begin execution of the callbacks.
+                    execute: function() {
+                        this.index = 1;
+                        this.callbacks[0](this);
+                    },
+                    // Advance to net callback or call done.
+                    next: function() {
+                        if (this.index < this.callbacks.length) {
+                            this.callbacks[this.index++](this);
+                        }
+                        else {
+                            this.done();
+                        }
+                    },
+                    // Final operation
+                    done: function() {
+                        // store stuff
+                        node.emit('DONE');
+                    }
+                };
+
+                linearPageExecutor.callbacks = makeBlockArray('demographics', [
+                    'gender', 'education', 'dateOfBirth', 'income',
+                    'occupation', 'participation']);
+
+                // Add politics page. (Because of the textfield it requires
+                // special treatement)
+                linearPageExecutor.callbacks.splice(3,0,
+                    makePageLoad('demographics','politics', function() {
+                        // If option 'other' is selected
+                        if (node.game.questionnaire.currentAnswer == 5) {
+                            if (W.getElementById('textForOther').value !== "") {
+                                node.game.questionnaire.currentAnswer =
+                                    W.getElementById('textForOther').value;
+                                node.game.questionnaire.currentAnswerMade =
+                                    true;
+                            }
+                        }
+                    })
+                );
+                linearPageExecutor.execute();
+            };
+
+            // Execute the SVO, NEP and RISK block in random order, then execute
+            // demographics.
+            randomBlockExecutor.execute([socialValueOrientation, risk,
+                newEcologicalParadigm], function() {
+                    demographics();
+                }
+            );
+
+        }
+
+	    function round(value, exp) {
+	        if (typeof exp === 'undefined' || +exp === 0)
+	            return Math.round(value);
+
+	        value = +value;
+	        exp  = +exp;
+
+	        if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0))
+	            return NaN;
+
+	        // Shift
+	        value = value.toString().split('e');
+	        value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp)));
+
+	        // Shift back
+	        value = value.toString().split('e');
+	        return +(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp));
+	    }
+
+	    // shows last page if dk.checkout has been called
 
         document.getElementById('state').innerHTML = "End of Game - Questionnaire";
 
         node.set('get_Profit',node.game.ownID);
 
         node.on.data("win", function(msg) {
-	    // W.clearFrame();
-	    function showWin() {
-		W.loadFrame('/burdenRAHR/html/ended.html', function() {
-		    W.writeln("Exit code: " + msg.data);
-		    node.game.timer.stop();
-		    node.game.timer.setToZero();
-		});
-	    }
-	    setTimeout(function() {showWin();}, 500);
-	});
+	        // W.clearFrame();
+	        function showWin() {
+		        W.loadFrame('/burdenRAHR/html/ended.html', function() {
+		            W.writeln("Exit code: " + msg.data);
+		            node.game.timer.stop();
+		            node.game.timer.setToZero();
+		        });
+
+	        }
+	        setTimeout(function() {showWin();}, 500);
+	    });
 
         node.on("in.say.DATA", function(msg) {
+            var bonus;
     	    // if (msg.text == "win") {}
     	    console.log(msg.text);
-	    if (msg.text == "PROFIT") {
-		console.log("Payout round: " + msg.data.Payout_Round);
-		console.log("Profit: " + msg.data.Profit);
-		var bonus;
+	        if (msg.text == "PROFIT") {
+		        console.log("Payout round: " + msg.data.Payout_Round);
+		        console.log("Profit: " + msg.data.Profit);
 
 
-		if (msg.data.Payout_Round != "none") {
-		    node.game.bonus = round((msg.data.Profit/50),2);
-		    console.log("Bonus: " + node.game.bonus);
-		    W.loadFrame('/burdenRAHR/html/questionnaire1.html', function() {
-			var payoutText = W.getElementById("payout")
-			W.write("You will be paid out the amount you earned in round " + msg.data.Payout_Round, payoutText);
-			var round = W.getElementById("payoutRound");
-			W.write(msg.data.Payout_Round , round);
-			var amountUCE = W.getElementById("amountECU");
-			W.write(msg.data.Profit + " ECU" , amountUCE);
-			var amountUSD = W.getElementById("amountUSD");
-			var profitUSD = node.game.bonus+1.0;
-			console.log("Profit" + profitUSD);
-			W.write(profitUSD + " $" , amountUSD);
 
-			node.game.timeResult = Date.now();
-			var options = {
-			    milliseconds: 60000, // 30000 ms is equivalent to 30 seconds
-			    timeup: function() {
-				node.game.timeResult = Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
-				var timeResultProp = {
-				    Player_ID : node.game.ownID,
-				    timeResult: node.game.timeResult
-				};
-				// node.set('bsc_questionnaireTime',timeResultProp);
-				questionnaire(1);
-			    }
-			};
-			node.game.timer.init(options);
-			node.game.timer.updateDisplay();
-			node.game.timer.start(options);
+		        if (msg.data.Payout_Round != "none") {
+		            node.game.bonus = round((msg.data.Profit/50),2);
+		            console.log("Bonus: " + node.game.bonus);
+		            W.loadFrame('/burdenRAHR/html/questionnaire1.html', function() {
+			            var payoutText = W.getElementById("payout")
+			            W.write("Payout so far: " + msg.data.Payout_Round, payoutText);
+			            var round = W.getElementById("payoutRound");
+			            W.write(msg.data.Payout_Round , round);
+			            var amountUCE = W.getElementById("amountECU");
+			            W.write(msg.data.Profit + " ECU" , amountUCE);
+			            var amountUSD = W.getElementById("amountUSD");
+			            var profitUSD = node.game.bonus + 1.0;
+			            console.log("Profit" + profitUSD);
+			            W.write(profitUSD + " $" , amountUSD);
 
-			var quest2 = W.getElementById('continue');
-			quest2.onclick = function () {
-			    node.game.timeResult = Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
-			    var timeResultProp = {
-				Player_ID : node.game.ownID,
-				timeResult: node.game.timeResult
-			    };
-			    // node.set('bsc_questionnaireTime',timeResultProp);
-			    node.game.timer.stop();
-			    questionnaire(0);
-			};
-		    });
-   		}
+			            node.game.timeResult = Date.now();
+			            var options = {
+			                milliseconds: 60000, // 30000 ms is equivalent to 30 seconds
+			                timeup: function() {
+				                node.game.timeResult = Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
+				                var timeResultProp = {
+				                    Player_ID : node.game.ownID,
+				                    timeResult: node.game.timeResult
+				                };
+				                // node.set('bsc_questionnaireTime',timeResultProp);
+				                questionnaire(1);
+			                }
+			            };
 
-		else {
-		    node.game.bonus = 0.0;
-		    W.loadFrame('/burdenRAHR/html/questionnaire12.html', function() {
-			var payoutText = W.getElementById("payout")
-			W.write("Unfortunately you did not complete any of the 3 rounds (excluding the test round) to be played. For your participation in the experiment you will be paid out a fixed amount of 1.00 $.", payoutText);
+		                node.game.timer.init(options);
+			            node.game.timer.updateDisplay();
+			            node.game.timer.start(options);
 
-			node.game.timeResult = Date.now();
-			var options = {
-			    milliseconds: 60000, // 30000 ms is equivalent to 30 seconds
-			    timeup: function() {
-				node.game.timeResult = Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
-				var timeResultProp = {
-				    Player_ID : node.game.ownID,
-				    timeResult: node.game.timeResult
-				};
-				// node.set('bsc_questionnaireTime',timeResultProp);
-				questionnaire(1);
-			    }
-			};
-			node.game.timer.init(options);
-			node.game.timer.updateDisplay();
-			node.game.timer.start(options);
+			            var quest2 = W.getElementById('continue');
+			            quest2.onclick = function () {
+			                node.game.timeResult = Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
+			                var timeResultProp = {
+				                Player_ID : node.game.ownID,
+				                timeResult: node.game.timeResult
+			                };
+			                // node.set('bsc_questionnaireTime',timeResultProp);
+			                node.game.timer.stop();
+			                questionnaire(0);
+			            };
+		            });
+           		}
 
-			var quest2 = W.getElementById('continue');
-			quest2.onclick = function () {
-			    node.game.timeResult = Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
-			    var timeResultProp = {
-				Player_ID : node.game.ownID,
-				timeResult: node.game.timeResult
-			    };
-			    // node.set('bsc_questionnaireTime',timeResultProp);
-			    node.game.timer.stop();
-			    questionnaire(0);
-			};
-		    });
-		}
+		        else {
+		            node.game.bonus = 0.0;
+		            W.loadFrame('/burdenRAHR/html/questionnaire12.html', function() {
+			            var payoutText = W.getElementById("payout")
+			            W.write("Unfortunately you did not complete any of the 3 rounds (excluding the test round) to be played. For your participation in the experiment you will be paid out a fixed amount of 1.00 $.", payoutText);
 
-		console.log('Postgame including Questionaire');
+			            node.game.timeResult = Date.now();
+			            var options = {
+			                milliseconds: 60000, // 30000 ms is equivalent to 30 seconds
+			                timeup: function() {
+				                node.game.timeResult = Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
+				                var timeResultProp = {
+				                    Player_ID : node.game.ownID,
+				                    timeResult: node.game.timeResult
+				                };
+				                // node.set('bsc_questionnaireTime',timeResultProp);
+				                questionnaire(1);
+			                }
+			            };
+			            node.game.timer.init(options);
+			            node.game.timer.updateDisplay();
+			            node.game.timer.start(options);
 
-		function checkID(msg) {
-		    bootbox.dialog({
-			message: msg,
-			buttons: {
-			    danger: {
-				label: "Return to Question",
-				className: "btn-danger",
-				callback: function() {
-				}
-			    },
-		            //			    success: {
-		            //			      label: "ID is correct",
-		            //			      className: "btn-success",
-		            //			      callback: function() {
-		            //				  		var saveId = {
-		            //								Player_ID: 666
-		            //						};
-		            //				  		node.emit('player_id',saveId);
-		            //						<!-- node.set('player_id',saveId); -->
-		            //
-		            //			    	  location.href="http://localhost:8080/pairs/";
-		            //			      }
-		            //			    },
-			}
-		    });
-		};
+			            var quest2 = W.getElementById('continue');
+			            quest2.onclick = function () {
+			                node.game.timeResult = Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
+			                var timeResultProp = {
+				                Player_ID : node.game.ownID,
+				                timeResult: node.game.timeResult
+			                };
+			                // node.set('bsc_questionnaireTime',timeResultProp);
+			                node.game.timer.stop();
+			                questionnaire(0);
+			            };
+		            });
+		        }
 
-		// Qualtrix Questionaire iframe
-		function questionnaire(timeout) {
-		    var url = '/burdenRAHR/html/questionnaire.html';
-		    console.log("Bonus: " + node.game.bonus);
-		    W.loadFrame(url, function() {
-			node.game.timeQuest1 = Date.now();
-			var options = {
-			    milliseconds: 1800000, // 1200000 ms is equivalent to 20 minutes
-			    timeup: function() {
-				node.game.timeQuest1 = Math.round(Math.abs(node.game.timeQuest1 - Date.now())/1000);
-				// node.game.comment6 = W.getElementById('comment7').value;
-				var timeResultProp = {
-				    playerID : {Player_ID: node.game.ownID},
-				    add: {timeQuest1: node.game.timeQuest1}//, Question6: node.game.comment6}
-				};
-				// node.set('bsc_questTime',timeResultProp);
-				node.say("QUEST_DONE", "SERVER", node.game.bonus);
-				// node.emit('DONE');
-			    },
-			};
-			node.game.timer.init(options);
-			node.game.timer.updateDisplay();
-			node.game.timer.start(options);
+		        console.log('Postgame including Questionaire');
 
-			var quest = W.getElementById('continue');
-			quest.onclick = function() {
-			    var qualtrixID = W.getElementById("qualtrix").value;
-			    if (qualtrixID.substring(0, 1) == "R" && qualtrixID.substring(1, 2) == "_") {
-				var surveyID = {
-				    playerID : {Player_ID: node.game.ownID},
-				    add: {Survey_ID: qualtrixID}
-				};
-				node.set('bsc_surveyID', surveyID);
+		        function checkID(msg) {
+		            bootbox.dialog({
+			            message: msg,
+			            buttons: {
+			                danger: {
+				                label: "Return to Question",
+				                className: "btn-danger",
+				                callback: function() {
+				                }
+			                },
+		                        //			    success: {
+		                        //			      label: "ID is correct",
+		                        //			      className: "btn-success",
+		                        //			      callback: function() {
+		                        //				  		var saveId = {
+		                        //								Player_ID: 666
+		                        //						};
+		                        //				  		node.emit('player_id',saveId);
+		                        //						<!-- node.set('player_id',saveId); -->
+		                        //
+		                        //			    	  location.href="http://localhost:8080/pairs/";
+		                        //			      }
+		                        //			    },
+			            }
+		            });
+		        };
 
-				node.game.timeQuest1 = Math.round(Math.abs(node.game.timeQuest1 - Date.now())/1000);
-				node.game.timer.stop();
-				var timeResultProp = {
-				    playerID : {Player_ID: node.game.ownID},
-				    add: {timeQuest1: node.game.timeQuest1} //, Question6: node.game.comment6}
-				};
-				// node.set('bsc_questTime',timeResultProp);
-				node.say("QUEST_DONE", "SERVER", node.game.bonus);
-				//node.say("questionnaire_done", "SERVER");
-				// node.emit('DONE');
-			    }
-			    else {
-				var msg = 'Wrong ID! Please copy the character string starting with "R_" from the questionnaire box and enter it in the free textbox below.';
-				checkID(msg);
-			    }
-			};
-		    });
-		    return;
-		};
+		        // Qualtrix Questionaire iframe
+		        function questionnaire(timeout) {
+	                console.log("Bonus: " + node.game.bonus);
 
-    	    }
+	                var options = {
+	                    milliseconds: 1800000, // 1200000 ms is equivalent to 20 minutes
+	                    timeup: function() {
+		                    node.game.timeQuest1 = Math.round(Math.abs(node.game.timeQuest1 - Date.now())/1000);
+		                    // node.game.comment6 = W.getElementById('comment7').value;
+		                    var timeResultProp = {
+		                        playerID : {Player_ID: node.game.ownID},
+		                        add: {timeQuest1: node.game.timeQuest1}//, Question6: node.game.comment6}
+		                    };
+		                    // node.set('bsc_questTime',timeResultProp);
+		                    node.say("QUEST_DONE", "SERVER", node.game.bonus);
+		                    // node.emit('DONE');
+	                    }
+	                };
+	                node.game.timer.init(options);
+	                node.game.timer.updateDisplay();
+	                node.game.timer.start(options);
+
+    //			            var quest = W.getElementById('continue');
+    //			            quest.onclick = function() {
+    //			                var qualtrixID = W.getElementById("qualtrix").value;
+    //			                if (qualtrixID.substring(0, 1) == "R" && qualtrixID.substring(1, 2) == "_") {
+    //				                var surveyID = {
+    //				                    playerID : {Player_ID: node.game.ownID},
+    //				                    add: {Survey_ID: qualtrixID}
+    //				                };
+    //				                node.set('bsc_surveyID', surveyID);
+
+    //				                node.game.timeQuest1 = Math.round(Math.abs(node.game.timeQuest1 - Date.now())/1000);
+    //				                node.game.timer.stop();
+    //				                var timeResultProp = {
+    //				                    playerID : {Player_ID: node.game.ownID},
+    //				                    add: {timeQuest1: node.game.timeQuest1} //, Question6: node.game.comment6}
+    //				                };
+    //				                // node.set('bsc_questTime',timeResultProp);
+    //				                node.say("QUEST_DONE", "SERVER", node.game.bonus);
+    //				                //node.say("questionnaire_done", "SERVER");
+    //				                // node.emit('DONE');
+    //			                }
+    //			                else {
+    //				                var msg = 'Wrong ID! Please copy the character string starting with "R_" from the questionnaire box and enter it in the free textbox below.';
+    //				                checkID(msg);
+    //			                }
+    //			            };
+                    randomOrderQuestionnaire();
+                }
+            }
         });
-        return;
-    };
+    }
 
 
     function clearFrame() {
@@ -1781,6 +1783,10 @@ module.exports = function(gameRoom, treatmentName, settings) {
     //auto: true = automatic run, auto: false = user input
     game.env = {
         auto: false
+    };
+
+    game.window = {
+        promptOnleave: true
     };
 
     return game;

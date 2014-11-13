@@ -8,24 +8,29 @@ module.exports = function(node, channel, gameRoom) {
 
     var basedir = channel.resolveGameDir('burdenRAHR');
     var confPath = basedir + '/auth/descil.conf.js';
+    var settings = require(basedir + '/server/game.settings.js');
 
     // Load the code database.
-    var dk = require('descil-mturk')(confPath);
+    var dk = require('descil-mturk')();
 
-    //   dk.getCodes(function() {
-    //       if (!dk.codes.size()) {
-    //           throw new Error('game.room: no codes found.');
-    //       }
-    //   });
-
-    dk.readCodes(function() {
-        if (!dk.codes.size()) {
-            throw new Error('game.room: no codes found.');
+    // Load code database
+    if (settings.AUTH !== 'none') {
+        dk.readConfiguration(confPath);
+        if (settings.AUTH === 'remote') {
+            dk.getCodes(function() {
+                if (!dk.codes.size()) {
+                    throw new Error('game.room: no codes found.');
+                }
+            });
         }
-    });
-
-    // Load settings.
-    var settings = require(__dirname + '/game.settings.js');
+        else {
+            dk.readCodes(function() {
+                if (!dk.codes.size()) {
+                    throw new Error('game.room: no codes found.');
+                }
+            });
+        }
+    }
 
     // If NO authorization is found, local codes will be used,
     // and assigned automatically.

@@ -11,7 +11,8 @@ Session.vim
 
 server/csv
 server/data
-server/descil.conf.js
+auth/descil.conf.js
+
 
 *.DS_Store
 .DS_Store

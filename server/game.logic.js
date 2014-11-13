@@ -30,6 +30,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
     var REPEAT, MIN_PLAYERS;
 
+    // Requiring additiinal functions.
     var cbs = require(__dirname + '/includes/logic.callbacks.js')
 
     // Client game to send to reconnecting players.
@@ -41,19 +42,28 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     // Reads in descil-mturk configuration.
     var basedir = channel.resolveGameDir('burdenRAHR');
     var confPath = basedir + '/auth/descil.conf.js';
-    var dk = require('descil-mturk')(confPath);
+    var dk = require('descil-mturk')();
+    var settings = require(basedir + '/server/game.settings.js');
 
-//    dk.getCodes(function() {
-//	if (!dk.codes.size()) {
-//    	    throw new Error('game.logic: no codes found.');
-//    	}
-//    });
 
-    dk.readCodes(function() {
-	if (!dk.codes.size()) {
-	    throw new Error('requirements.room: no codes found.');
-	}
-    });
+    // Load code database
+    if (settings.AUTH !== 'none') {
+        dk.readConfiguration(confPath);
+        if (settings.AUTH === 'remote') {
+            dk.getCodes(function() {
+                if (!dk.codes.size()) {
+                    throw new Error('game.logic: no codes found.');
+                }
+            });
+        }
+        else {
+            dk.readCodes(function() {
+                if (!dk.codes.size()) {
+                    throw new Error('game.logic: no codes found.');
+                }
+            });
+        }
+    }
 
     // Import the stager.
     var gameSequence = require(__dirname + '/game.stages.js')(settings);
@@ -93,6 +103,43 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         node.on.pconnect(function(p) {
             node.say("CLEAR_COUNTDOWN", p.id, 'clearCountDown');
         });
+
+    function adjustProfits(msg) {
+        var questionnaire = msg.data.questionnaire;
+        var SVOChoices =  {
+            1 :  {
+                topRow :  [85, 85, 85, 85, 85, 85, 85, 85, 85],
+                bottomRow :  [85, 76, 68, 59, 50, 41, 33, 24, 15]
+            },
+            2 :  {
+                topRow :  [85, 87, 89, 91, 93, 94, 96, 98, 100],
+                bottomRow :  [15, 19, 24, 28, 33, 37, 41, 46, 50]
+            },
+            3 :  {
+                topRow :  [50, 54, 59, 63, 68, 72, 76, 81, 85],
+                bottomRow :  [100, 98, 96, 94, 93, 91, 89, 87, 85]
+            },
+            4 :  {
+                topRow :  [50, 54, 59, 63, 68, 72, 76, 81, 85],
+                bottomRow :  [100, 89, 79, 68, 58, 47, 36, 26, 15]
+            },
+            5 :  {
+                topRow :  [100, 94, 88, 81, 75, 69, 63, 56, 50],
+                bottomRow :  [50, 56, 63, 69, 75, 81, 88, 94, 100]
+            },
+            6 :  {
+                topRow :  [100, 98, 96, 94, 93, 91, 89, 87, 85],
+                bottomRow :  [50, 54, 59, 63, 68, 72, 76, 81, 85]
+            }
+        };
+
+        var selectedSVOQuestion = Math.floor(Math.random() * 6);
+        var selectedOwnBonus = SVOChoices[selectedSVOQuestion].topRow[
+            questionnaire[selectedSVOQuestion]];
+        var selectedOtherBonus = SVOChoices[selectedSVOQuestion].bottomRow[
+            questionnaire[selectedSVOQuestion]];
+        node.game.pl
+    }
 
 	// Player reconnecting.
 	// Reconnections must be handled by the game developer.
@@ -336,7 +383,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 	}
 
 	// mdbInstrTime.connect(function() {});
-	node.on.data('bsc_instrTime',function(msg) {
+	node.on.data('bsc_instrTime', function(msg) {
 	    //checking if game time has been saved already
 	    bsc_check_instrData = mdbInstrTime.checkData(msg.data, function(rows, items) {
                 var currentRound = items;
@@ -348,16 +395,16 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 		}
 	    });
 	});
-	node.on.data('bsc_instrTimeUpdate',function(msg) {
+	node.on.data('bsc_instrTimeUpdate', function(msg) {
 	    mdbInstrTime.update(msg.data);
 	});
 
-	node.on.data('Write_Profit',function(msg) {
+	node.on.data('Write_Profit', function(msg) {
 	    console.log('Writing Profit Data!!!');
 	    mdbWriteProfit.store(msg.data);
 	});
 
-	node.on.data('bsc_data',function(msg) {
+	node.on.data('bsc_data', function(msg) {
 	    console.log('Writing Result Data!!!');
 	    mdbWrite.store(msg.data);
 	});
@@ -386,7 +433,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 	    writePlayerData();
 	}
 
-	node.on.data('check_Data',function(msg) {
+	node.on.data('check_Data', function(msg) {
 	    bsc_check_data = mdbCheckData.checkData(msg.data, function(rows, items) {
                 var currentRound = items;
 		node.socket.send(node.msg.create({
@@ -398,97 +445,107 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 	});
 
 	// Delet data from the database
-	node.on.data('delete_data',function(msg) {
+	node.on.data('delete_data', function(msg) {
 	    mdbDelet.deleting(msg.data.Player_ID, msg.data.Current_Round);
 	});
 
-	// Check whether profit data has been saved already. 
-        // If not than save it, otherwise ignore it
-	node.on.data('get_Profit',function(msg) {
+	// Check whether profit data has been saved already.
+        // If not, save it, otherwise ignore it
+	node.on.data('get_Profit', function(msg) {
 
-	    bsc_check_profit = mdbCheckProfit.checkProfit(msg.data, function(rows, items) {
-                var prof = items;
+            if (msg.data.questionnaire) {
+                adjustProfits(msg);
+                msg.data = msg.data.id;
+            }
 
-		if (prof[0] !== undefined) {
-		    var profit_dat = {
-			Payout_Round: prof[0].Payout_Round,
-			Profit: prof[0].Amount_UCE
-		    };
-		    node.socket.send(node.msg.create({
-			text:'PROFIT',
-			to: msg.data,
-			data: profit_dat
-		    }));
-		}
+	    bsc_check_profit = mdbCheckProfit.checkProfit(msg.data,
+	        function(rows, items) {
 
-		else {
-		    bsc_data_table = mdbGetProfit.getCollectionObj(msg.data, function(rows, items) {
-			var profit = items;
-			console.log(profit);
-			var nbrRounds;
-			if (profit.length > 1 && profit.length <= 4) {
-			    nbrRounds = profit.length - 1;
-			}
-			else if (profit.length > 4) {
-			    nbrRounds = 4 - 1;
-			}
-			else {
-			    nbrRounds = 0;
-			}
-			console.log("Number Rounds: " + nbrRounds);
-			if (nbrRounds >= 1) {
-			    var payoutRound = Math.floor((Math.random()*nbrRounds) + 2);
-			    var write_profit = {
-				Player_ID: msg.data,
-				Payout_Round: payoutRound,
-				Amount_UCE: profit[payoutRound-1].Profit,
-				Amount_USD: cbs.round((profit[payoutRound-1].Profit/50),2),
-				Nbr_Completed_Rounds: nbrRounds
-			    };
-			    console.log('Writing Profit Data!!!');
-			    mdbWriteProfit.store(write_profit);
+                    var prof = items;
 
-			    var profit_data = {
-				Payout_Round: payoutRound,
-				Profit: profit[payoutRound-1].Profit
-			    };
+		    if (prof[0] !== undefined) {
+		        var profit_dat = {
+			    Payout_Round: prof[0].Payout_Round,
+			    Profit: prof[0].Amount_UCE
+		        };
+		        node.socket.send(node.msg.create({
+			    text:'PROFIT',
+			    to: msg.data,
+			    data: profit_dat
+		        }));
+		    }
+		    else {
+		            bsc_data_table = mdbGetProfit.getCollectionObj(msg.data,
+                        function(rows, items) {
+                            var profit = items;
+                            console.log(profit);
+                            var nbrRounds;
+                            if (profit.length > 1 && profit.length <= 4) {
+                                nbrRounds = profit.length - 1;
+                            }
+                            else if (profit.length > 4) {
+                                nbrRounds = 4 - 1;
+                            }
+                            else {
+                                nbrRounds = 0;
+                            }
+                            console.log("Number Rounds: " + nbrRounds);
+                            if (nbrRounds >= 1) {
+                                var payoutRound = Math.floor((Math.random()*nbrRounds) + 2);
+                                var write_profit = {
+	                            Player_ID: msg.data,
+	                            Payout_Round: payoutRound,
+	                            Amount_UCE: profit[payoutRound-1].Profit,
+	                            Amount_USD: cbs.round((profit[payoutRound-1].Profit/50),2),
+	                            Nbr_Completed_Rounds: nbrRounds
+                                };
+                                console.log('Writing Profit Data!!!');
+                                mdbWriteProfit.store(write_profit);
 
-			    node.socket.send(node.msg.create({
-				text:'PROFIT',
-				to: msg.data,
-				data: profit_data
-			    }));
-			}
-			else {
-			    var write_profit = {
-				Player_ID: msg.data,
-				Payout_Round: "none",
-				Amount_UCE: "none",
-				Amount_USD: "show up fee: 1.00 $",
-				Nbr_Completed_Rounds: 0
-			    };
-			    console.log('Writing Profit Data!!!');
-			    mdbWriteProfit.store(write_profit);
-			    var profit_data = {
-				Payout_Round: "none",
-				Profit: "show up fee"
-			    };
 
-			    node.socket.send(node.msg.create({
-				text:'PROFIT',
-				to: msg.data,
-				data: profit_data
-			    }));
-			}
-		    });
-		}
-	    });
+                                var profit_data = {
+	                                Payout_Round: payoutRound,
+	                                Profit: profit[payoutRound-1].Profit
+                                };
+
+                                node.socket.send(node.msg.create({
+	                                text:'PROFIT',
+	                                to: msg.data,
+	                                data: profit_data
+                                }));
+                            }
+                            else {
+                                var write_profit = {
+	                                Player_ID: msg.data,
+	                                Payout_Round: "none",
+	                                Amount_UCE: "none",
+	                                Amount_USD: "show up fee: 1.00 $",
+	                                Nbr_Completed_Rounds: 0
+                                };
+                                console.log('Writing Profit Data!!!');
+                                mdbWriteProfit.store(write_profit);
+                                var profit_data = {
+	                                Payout_Round: "none",
+	                                Profit: "show up fee"
+                                };
+
+                                node.socket.send(node.msg.create({
+	                                text:'PROFIT',
+	                                to: msg.data,
+	                                data: profit_data
+                                }));
+                            }
+                        }
+                    );
+		        }
+	        }
+        );
 	});
 
 	// Opening the database for writing the game time.
 	// mdbWrite_gameTime.connect(function() {});
 
-	node.on.data('bsc_gameTime',function(msg) {
+	node.on.data('bsc_gameTime', function(msg) {
 	    //checking if game time has been saved already
 	    bsc_check_data = mdbCheckData.checkData(msg.data, function(rows, items) {
                 var currentRound = items;
@@ -506,12 +563,12 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 	// Opening the database for writing the time.
 	// mdbWrite_questTime.connect(function() {});
 
-	node.on.data('bsc_questionnaireTime',function(msg) {
+	node.on.data('bsc_questionnaireTime', function(msg) {
 	    console.log('Writing Time Questionaire!!!');
 	    mdbWrite_questTime.store(msg.data);
 	});
 
-	node.on.data('bsc_questTime',function(msg) {
+	node.on.data('bsc_questTime', function(msg) {
 	    mdbWrite_questTime.update(msg.data);
 	});
 
@@ -523,7 +580,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 	    mdbWrite_idData.updateEndow(msg.data)
 	});
 
-	node.on.data('get_InitEndow',function(msg) {
+	node.on.data('get_InitEndow', function(msg) {
 	    bsc_get_initEndow = mdbgetInitEndow.getInitEndow(msg.data.otherPlayerId, function(rows, items) {
                 var endow = items;
 		if (endow[0] !== undefined) {
@@ -566,12 +623,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 	});
 
     });
-
-//    stager.init()
-//	.next('instructions')
-//	.repeat('burdenSharingControl', REPEAT)
-//	.next('questionnaire');
-
 
     function notEnoughPlayers() {
 	console.log('Warning: not enough players!!');
@@ -625,8 +676,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 		if (msg.text === 'Round_Over') {
 		    console.log("Round: " + msg.data);
 
-		    // Round 1 is a testround for the player 
-                    // (The same matching of players and groups in 
+		    // Round 1 is a testround for the player
+                    // (The same matching of players and groups in
                     // round 1 will be repeated in round 4)
 		    // Round 1 will be evaluated
 
@@ -802,7 +853,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                         gameRoom.name);
 	}
     });
-    
+
     return {
 	nodename: 'lgc' + counter,
 	game_metadata: {

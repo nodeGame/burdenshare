@@ -17,6 +17,10 @@ module.exports = {
 
     REPEAT: 4,
 
-    N_PLAYERS: 4
+    N_PLAYERS: 4,
+
+//    AUTH: 'local'
+    // AUTH: 'remote'
+     AUTH: 'none'
 
 };

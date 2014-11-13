@@ -9,14 +9,16 @@
  */
 module.exports = function(node, channel, room) {
 
-    // Reads in descil-mturk configuration.    
+    // Reads in descil-mturk configuration.
     var basedir = channel.resolveGameDir('burdenRAHR');
     var confPath = basedir + '/auth/descil.conf.js';
 
-    var dk = require('descil-mturk')(confPath);
+    var settings = require(basedir + '/server/game.settings.js');
+    var dk = require('descil-mturk')();
 
     // Creates a stager object to define the game stages.
     var stager = new node.Stager();
+
 
     // Functions
 
@@ -24,18 +26,26 @@ module.exports = function(node, channel, room) {
         var that = this;
 
         console.log('********Requirements Room Created*****************');
-        
+
         // Load code database
-//        dk.getCodes(function() {
-//            if (!dk.codes.size()) {
-//                throw new Errors('requirements.room: no codes found.');
-//            }
-//        });
-        dk.readCodes(function() {
-            if (!dk.codes.size()) {
-                throw new Errors('requirements.room: no codes found.');
+        if (settings.AUTH !== 'none') {
+            dk.readConfiguration(confPath);
+            if (settings.AUTH === 'remote') {
+                dk.getCodes(function() {
+                    if (!dk.codes.size()) {
+                        throw new Error('requirements.room: no codes found.');
+                    }
+                });
             }
-        });
+            else {
+                dk.readCodes(function() {
+                    if (!dk.codes.size()) {
+                        throw new Error('requirements.room: no codes found.');
+                    }
+                });
+            }
+        }
+
 
 	node.on.preconnect(function(player) {
             console.log('Player connected to Requirements room.');
@@ -48,11 +58,11 @@ module.exports = function(node, channel, room) {
             node.remoteCommand('start', player.id);
 	});
 
-        node.on('MTID', function(msg) {
+        node.on('get.MTID', function(msg) {
             var mtid, errUri, code;
-            
+
             console.log('MTID');
-            
+
             // M-Turk id
             mtid = msg.data;
 
@@ -62,11 +72,11 @@ module.exports = function(node, channel, room) {
                     msg: 'Malformed or empty code received.'
                 };
             }
-            
+
             code = dk.codeExists(mtid);
-            
+
 	    if (!code) {
-		// errUri = '/ultimatum/unauth.html?id=' + mtid + '&err0=1';	
+		// errUri = '/ultimatum/unauth.html?id=' + mtid + '&err0=1';
 		// node.redirect(errUri, msg.data.id);
 		return {
                     success: false,
@@ -95,7 +105,7 @@ module.exports = function(node, channel, room) {
 
 
         node.on.pdisconnect(function(player) {
-            
+
 	});
 
         // Results of the requirements check.
@@ -115,7 +125,7 @@ module.exports = function(node, channel, room) {
 
     stager.setOnInit(init);
 
-    // A unique game stage that will handle all incoming connections. 
+    // A unique game stage that will handle all incoming connections.
     stager.addStage({
         id: 'requirements',
         cb: function() {
@@ -127,16 +137,16 @@ module.exports = function(node, channel, room) {
     stager
         .init()
         .loop('requirements');
-       
+
     // Return the game.
     game = {};
-    
+
     game.metadata = {
         name: 'Requirements check room for Burde-Sharing-Control-AMT',
         description: 'Validates players entry codes with an internal database.',
         version: '0.1'
     };
-    
+
     // Throws errors if true.
     game.debug = true;
 

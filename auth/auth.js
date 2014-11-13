@@ -5,17 +5,34 @@ module.exports = function(auth) {
 
     // Reads in descil-mturk configuration.
     var confPath = path.resolve(__dirname, 'descil.conf.js');
+    var dk = require('descil-mturk')();
+    var settings = require(path.resolve(__dirname, '../server/game.settings.js'));
 
-    // Load the code database.
-    var dk = require('descil-mturk')(confPath);
-
+    // Load code database
+    if (settings.AUTH !== 'none') {
+        dk.readConfiguration(confPath);
+        if (settings.AUTH === 'remote') {
+            dk.getCodes(function() {
+                if (!dk.codes.size()) {
+                    throw new Error('requirements.room: no codes found.');
+                }
+            });
+        }
+        else {
+            dk.readCodes(function() {
+                if (!dk.codes.size()) {
+                    throw new Error('requirements.room: no codes found.');
+                }
+            });
+        }
+    }
 
     /////////////////////////////// MTurk Version ///////////////////////////
     // Creating an authorization function for the players.
     // This is executed before the client the PCONNECT listener.
     // Here direct messages to the client can be sent only using
     // his socketId property, since no clientId has been created yet.
-    
+
     function authPlayers(channel, info) {
         var code, player, token;
         playerId = info.cookies.player;
@@ -23,8 +40,9 @@ module.exports = function(auth) {
 
         console.log('game.room: checking auth.');
 
-        return true;
-
+        if (settings.AUTH === 'none') {
+            return true;
+        }
 
         // Weird thing.
         if ('string' !== typeof playerId) {
@@ -41,13 +59,13 @@ module.exports = function(auth) {
         code = dk.codeExists(token);
 
         // Code not existing.
-	if (!code) {
+	    if (!code) {
             console.log('not existing token: ', token);
             return false;
         }
 
         // Code in use.
-	if (code.usage) {
+	    if (code.usage) {
             if (code.disconnected) {
                 return true;
             }
@@ -55,8 +73,8 @@ module.exports = function(auth) {
                 console.log('token already in use: ', token);
                 return false;
             }
-	}
-	// Mark the code as in use.
+	    }
+	    // Mark the code as in use.
         dk.incrementUsage(token);
 
         // Client Authorized
@@ -66,9 +84,9 @@ module.exports = function(auth) {
     // Assigns Player Ids based on cookie token.
     function idGen(channel, info) {
         var cid, cookies, validCookie;
-        
+
         cid = channel.registry.generateClientId();
-            
+
         // If no auth, add the new code to the db.
         dk.codes.insert({
             AccessCode: cid,
