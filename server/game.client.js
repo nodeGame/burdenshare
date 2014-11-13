@@ -622,7 +622,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
          * @return {boolean} true or false
          *
          */
-        this.isValidBid = function (n) {
+        this.isValidBid = function(n) {
 	    n = parseInt(n);
 	    return !isNaN(n) && isFinite(n) && n >= 0 && n <= node.game.costGE;
         };
