@@ -152,7 +152,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                 ];
 
                 var newAmountUCE = profit.Amount_UCE + bonusFromSelf;
-                var newAmountUSD = round((newAmountUCE/50),2);
+                var newAmountUSD = cbs.round((newAmountUCE/50),2);
 
                 mdbWriteProfit.update({
                     playerID: {
@@ -527,7 +527,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                                         Player_ID: msg.data,
                                         Payout_Round: payoutRound,
                                         Amount_UCE: profit[payoutRound-1].Profit,
-                                        Amount_USD: round((profit[payoutRound-1].Profit/50),2),
+                                        Amount_USD: cbs.round((profit[payoutRound-1].Profit/50),2),
                                         Nbr_Completed_Rounds: nbrRounds
                                     };
 
@@ -666,34 +666,59 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         }, 60000);
     }
 
+    function adjustPayoffAndCheckout() {
+        var i, checkoutFlag = true;
+        var currentCode, profit;
+        for (i = 0; i < node.game.pl.size(); ++i) {
+            try {
+                currentCode =
+                    dk.codes.id.get(node.game.pl.db[i].id);
+            }
+            catch(e) {
+                console.log("Questionnaire: QUEST_DONE: \n" +
+                    "Player: " + node.game.pl.db[i].id + "\n" +
+                    "dk.code does not exist!");
+            }
+            checkoutFlag = checkoutFlag && !!currentCode.checkout;
+
+        }
+        if (checkoutFlag) {
+            debugger;
+            for (i = 0; i < node.game.pl.size(); ++i) {
+            // get profit, in callback checkout dk...
+            dk.checkOut(currentCode.AccessCode, currentCode.ExitCode, prof);
+            }
+        }
+    }
+
     // Set default step rule.
     stager.setDefaultStepRule(stepRules.OTHERS_SYNC_STEP);
 
     stager.extendStep('instructions', {
-	cb: function() {
-	    console.log('********************** Instructions - SessionID: ' +
-                        gameRoom.name);
+        cb: function() {
+            console.log('********************** Instructions - SessionID: ' +
+                            gameRoom.name);
 
-	    var players, groups, proposer, respondent;
-	    //            players = node.game.pl.fetch();
-	    // node.game.groups = node.game.pl.getNGroups(2);
-	    node.game.groups = [[],[]];
-	    var playerIDs = node.game.pl.id.getAllKeys();
-	    node.game.playerID = J.shuffle(playerIDs);
+            var players, groups, proposer, respondent;
+            //            players = node.game.pl.fetch();
+            // node.game.groups = node.game.pl.getNGroups(2);
+            node.game.groups = [[],[]];
+            var playerIDs = node.game.pl.id.getAllKeys();
+            node.game.playerID = J.shuffle(playerIDs);
 
-	    node.game.groups[0][0] = node.game.playerID[0];
-	    node.game.groups[0][1] = node.game.playerID[1];
-	    node.game.groups[1][0] = node.game.playerID[2];
-	    node.game.groups[1][1] = node.game.playerID[3];
+            node.game.groups[0][0] = node.game.playerID[0];
+            node.game.groups[0][1] = node.game.playerID[1];
+            node.game.groups[1][0] = node.game.playerID[2];
+            node.game.groups[1][1] = node.game.playerID[3];
 
-	    console.log("Show Groups 1: ");
-	    console.log(node.game.groups[0][0]);
-	    console.log(node.game.groups[0][1]);
-	    console.log("Show Groups 2: ");
-	    console.log(node.game.groups[1][0]);
-	    console.log(node.game.groups[1][1]);
-	},
-	minPlayers: [ MIN_PLAYERS, notEnoughPlayers ]
+            console.log("Show Groups 1: ");
+            console.log(node.game.groups[0][0]);
+            console.log(node.game.groups[0][1]);
+            console.log("Show Groups 2: ");
+            console.log(node.game.groups[1][0]);
+            console.log(node.game.groups[1][1]);
+        },
+        minPlayers: [ MIN_PLAYERS, notEnoughPlayers ]
     });
 
     stager.addStep({
@@ -865,25 +890,38 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     });
 
     stager.extendStage('burdenSharingControl', {
-	steps: ["syncGroups", "initialSituation", "decision"],
-	minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
-	stepRule: node.stepRules.SYNC_STAGE
+        steps: ["syncGroups", "initialSituation", "decision"],
+        minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
+        stepRule: node.stepRules.SYNC_STAGE
     });
 
     stager.extendStep('questionnaire', {
-	cb: function() {
-	    node.on("in.say.DATA", function(msg) {
-		if (msg.text === "QUEST_DONE") {
-		    console.log("Bonus: " + msg.data);
-		    var code = dk.codes.id.get(msg.from);
-		    code.checkout = true;
-		    dk.checkOut(code.AccessCode, code.ExitCode, msg.data);
-		    node.say("win", msg.from, code.ExitCode);
-		}
-	    });
-	    console.log('********************** Questionaire - SessionID: ' +
-                        gameRoom.name);
-	}
+        cb: function() {
+            node.on("in.say.DATA", function(msg) {
+                if (msg.text === "QUEST_DONE") {
+                    // this call is not needed like that
+                    mdbCheckProfit.checkProfit(msg.from, function(rows, items) {
+                            var prof = items[0].Amount_USD;
+                            var code = dk.codes.id.get(msg.from);
+
+                            console.log("Bonus: " + prof);
+                            code.checkout = true;
+
+                            // If a player has disconnected, delay payoff and
+                            // checkout by 10s to give time for reconnect.
+                            if (node.game.pl.size() < MIN_PLAYERS) {
+                                setTimeout(adjustPayoffAndCheckout, 10000);
+                            }
+                            else {
+                                adjustPayoffAndCheckout();
+                            }
+                            node.say("win", msg.from, code.ExitCode);
+                    });
+                }
+            });
+            console.log('********************** Questionaire - SessionID: ' +
+                            gameRoom.name);
+        }
     });
 
     return {

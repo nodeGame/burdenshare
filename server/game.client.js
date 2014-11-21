@@ -19,6 +19,8 @@ module.exports = function(gameRoom, treatmentName, settings) {
     stager = ngc.getStager(gameSequence);
 
     var game = {};
+    var cbs = require(__dirname + '/includes/logic.callbacks.js');
+
 
     //INIT and GAMEOVER
     stager.setOnInit(function() {
@@ -1500,25 +1502,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
         }
 
-        function round(value, exp) {
-            if (typeof exp === 'undefined' || +exp === 0)
-                return Math.round(value);
-
-            value = +value;
-            exp  = +exp;
-
-            if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0))
-                return NaN;
-
-            // Shift
-            value = value.toString().split('e');
-            value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp)));
-
-            // Shift back
-            value = value.toString().split('e');
-            return +(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp));
-        }
-
         // shows last page if dk.checkout has been called
 
         document.getElementById('state').innerHTML = "End of Game - Questionnaire";
@@ -1540,6 +1523,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
         node.on("in.say.DATA", function(msg) {
             var bonus;
+
             // if (msg.text == "win") {}
             console.log(msg.text);
             if (msg.text == "PROFIT") {
@@ -1549,7 +1533,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
 
                 if (msg.data.Payout_Round != "none") {
-                    node.game.bonus = round((msg.data.Profit/50),2);
+                    node.game.bonus = node.game.globals.round((msg.data.Profit/50),2);
                     console.log("Bonus: " + node.game.bonus);
                     W.loadFrame('/burdenRAHR/html/questionnaire1.html', function() {
                         var payoutText = W.getElementById("payout");
@@ -1727,7 +1711,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
     }
 
     function notEnoughPlayers() {
-        //	alert('Not Enought Players');
+        //  alert('Not Enought Players');
         node.game.pause();
         W.lockScreen('One player disconnected. We are now waiting to see if ' +
                      ' he or she reconnects. If there is no reconnection within 60 seconds the game will be terminated and you will be forwarded to the questionnaire.');
@@ -1798,6 +1782,10 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     stager.extendStep('questionnaire', {
         cb: questionnaire
+    });
+
+    stager.setDefaultGlobals({
+        round: cbs.round
     });
 
     //We serialize the game sequence before sending it
