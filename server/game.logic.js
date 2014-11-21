@@ -1,13 +1,9 @@
 var path = require('path');
 var channel = module.parent.exports.channel;
 var ngc = require('nodegame-client');
-var Stager = ngc.Stager;
 var stepRules = ngc.stepRules;
 var GameStage = ngc.GameStage;
 var J = ngc.JSUS;
-
-
-var stager = new Stager();
 
 var counter = 0;
 var PLAYING_STAGE = 1;
@@ -34,12 +30,16 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
     var REPEAT, MIN_PLAYERS;
 
+    // Requiring additiinal functions.
     var cbs = require(__dirname + '/includes/logic.callbacks.js');
 
-    // game room ID = gameRoom.name
+
 
     // Client game to send to reconnecting players.
-    var client = channel.require(__dirname + '/game.client', { ngc: ngc });
+    var client = require(gameRoom.gamePaths.player)(gameRoom,
+                                                    treatmentName,
+                                                    settings);
+
 
     // Reads in descil-mturk configuration.
     var basedir = channel.resolveGameDir('burdenRAHR');
@@ -54,18 +54,22 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         if (settings.AUTH === 'remote') {
             dk.getCodes(function() {
                 if (!dk.codes.size()) {
-                    throw new Error('requirements.room: no codes found.');
+                    throw new Error('game.logic: no codes found.');
                 }
             });
         }
         else {
             dk.readCodes(function() {
                 if (!dk.codes.size()) {
-                    throw new Error('requirements.room: no codes found.');
+                    throw new Error('game.logic: no codes found.');
                 }
             });
         }
     }
+
+    // Import the stager.
+    var gameSequence = require(__dirname + '/game.stages.js')(settings);
+    var stager = ngc.getStager(gameSequence);
 
     // Settings variables.
 
@@ -650,41 +654,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
     });
 
-    /**
-     * ## round
-     *
-     * rounds a given number to a specified number of decimal places
-     *
-     * @param {number} value the floating point number to be rounded
-     * @param {number} exp the number of decimal places
-     *
-     */
-    function round(value, exp) {
-        if (typeof exp === 'undefined' || +exp === 0)
-            return Math.round(value);
-
-        value = +value;
-        exp  = +exp;
-
-        if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0))
-            return NaN;
-
-        // Shift
-        value = value.toString().split('e');
-        value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp)));
-
-        // Shift back
-        value = value.toString().split('e');
-        return +(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp));
-    }
-
-
-    function precache() {
-        console.log('********************** Pre-Cache - SessionID: ' +
-                    gameRoom.name);
-    }
-
-
     function notEnoughPlayers() {
         console.log('Warning: not enough players!!');
         node.timer.setTimestamp('burden_paused');
@@ -700,40 +669,31 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     // Set default step rule.
     stager.setDefaultStepRule(stepRules.OTHERS_SYNC_STEP);
 
-    // Adding the stages. We can later on define the rules and order that
-    // will determine their execution.
-    stager.addStage({
-        id: 'precache',
-        cb: precache,
-        minPlayers: [ 4, notEnoughPlayers ]
-    });
+    stager.extendStep('instructions', {
+	cb: function() {
+	    console.log('********************** Instructions - SessionID: ' +
+                        gameRoom.name);
 
-    stager.addStage({
-        id: 'instructions',
-        cb: function() {
-            console.log('********************** Instructions - SessionID: ' +
-                gameRoom.name);
+	    var players, groups, proposer, respondent;
+	    //            players = node.game.pl.fetch();
+	    // node.game.groups = node.game.pl.getNGroups(2);
+	    node.game.groups = [[],[]];
+	    var playerIDs = node.game.pl.id.getAllKeys();
+	    node.game.playerID = J.shuffle(playerIDs);
 
-            var players, groups, proposer, respondent;
-            //            players = node.game.pl.fetch();
-            // node.game.groups = node.game.pl.getNGroups(2);
-            node.game.groups = [[],[]];
-            var playerIDs = node.game.pl.id.getAllKeys();
-            node.game.playerID = J.shuffle(playerIDs);
+	    node.game.groups[0][0] = node.game.playerID[0];
+	    node.game.groups[0][1] = node.game.playerID[1];
+	    node.game.groups[1][0] = node.game.playerID[2];
+	    node.game.groups[1][1] = node.game.playerID[3];
 
-            node.game.groups[0][0] = node.game.playerID[0];
-            node.game.groups[0][1] = node.game.playerID[1];
-            node.game.groups[1][0] = node.game.playerID[2];
-            node.game.groups[1][1] = node.game.playerID[3];
-
-            console.log("Show Groups 1: ");
-            console.log(node.game.groups[0][0]);
-            console.log(node.game.groups[0][1]);
-            console.log("Show Groups 2: ");
-            console.log(node.game.groups[1][0]);
-            console.log(node.game.groups[1][1]);
-        },
-        minPlayers: [ 4, notEnoughPlayers ]
+	    console.log("Show Groups 1: ");
+	    console.log(node.game.groups[0][0]);
+	    console.log(node.game.groups[0][1]);
+	    console.log("Show Groups 2: ");
+	    console.log(node.game.groups[1][0]);
+	    console.log(node.game.groups[1][1]);
+	},
+	minPlayers: [ MIN_PLAYERS, notEnoughPlayers ]
     });
 
     stager.addStep({
@@ -904,39 +864,27 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         }
     });
 
-    stager.addStage({
-        id: 'burdenSharingControl',
-        steps: ["syncGroups", "initialSituation", "decision"],
-        minPlayers: [ 4, notEnoughPlayers ],
-        stepRule: node.stepRules.SYNC_STAGE
+    stager.extendStage('burdenSharingControl', {
+	steps: ["syncGroups", "initialSituation", "decision"],
+	minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
+	stepRule: node.stepRules.SYNC_STAGE
     });
 
-    stager.addStage({
-        id: 'questionnaire',
-        cb: function() {
-            node.on("in.say.DATA", function(msg) {
-                if (msg.text === "QUEST_DONE") {
-                    mdbCheckProfit.checkProfit(msg.from, function(rows, items) {
-                        var prof = items[0].Amount_USD;
-                        var code = dk.codes.id.get(msg.from);
-
-                        console.log("Bonus: " + prof);
-                        code.checkout = true;
-                        dk.checkOut(code.AccessCode, code.ExitCode, prof);
-                        node.say("win", msg.from, code.ExitCode);
-                    });
-                }
-            });
-            console.log('********************** Questionaire - SessionID: ' +
-                gameRoom.name
-            );
-        }
+    stager.extendStep('questionnaire', {
+	cb: function() {
+	    node.on("in.say.DATA", function(msg) {
+		if (msg.text === "QUEST_DONE") {
+		    console.log("Bonus: " + msg.data);
+		    var code = dk.codes.id.get(msg.from);
+		    code.checkout = true;
+		    dk.checkOut(code.AccessCode, code.ExitCode, msg.data);
+		    node.say("win", msg.from, code.ExitCode);
+		}
+	    });
+	    console.log('********************** Questionaire - SessionID: ' +
+                        gameRoom.name);
+	}
     });
-
-    stager.init()
-    .next('instructions')
-    .repeat('burdenSharingControl', REPEAT)
-    .next('questionnaire');
 
     return {
         nodename: 'lgc' + counter,

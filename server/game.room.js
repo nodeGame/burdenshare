@@ -11,22 +11,25 @@ module.exports = function(node, channel, gameRoom) {
     var settings = require(basedir + '/server/game.settings.js');
 
     // Load the code database.
-    var dk = require('descil-mturk')(confPath);
+    var dk = require('descil-mturk')();
 
     // Load code database
-    if (settings.AUTH === 'remote') {
-        dk.getCodes(function() {
-            if (!dk.codes.size()) {
-                throw new Error('requirements.room: no codes found.');
-            }
-        });
-    }
-    else {
-        dk.readCodes(function() {
-            if (!dk.codes.size()) {
-                throw new Error('requirements.room: no codes found.');
-            }
-        });
+    if (settings.AUTH !== 'none') {
+        dk.readConfiguration(confPath);
+        if (settings.AUTH === 'remote') {
+            dk.getCodes(function() {
+                if (!dk.codes.size()) {
+                    throw new Error('game.room: no codes found.');
+                }
+            });
+        }
+        else {
+            dk.readCodes(function() {
+                if (!dk.codes.size()) {
+                    throw new Error('game.room: no codes found.');
+                }
+            });
+        }
     }
 
     // If NO authorization is found, local codes will be used,

@@ -132,8 +132,17 @@
                     type : 'SocketIo',
                     reconnect : false
                 }
-            });
-            
+            });            
+
+            // Connecting to waiting room.
+            if (location.search) {
+                // Pass query arguments on.
+                node.connect("/burdenRAHR", { query: location.search.substr(1) });
+            }
+            else {
+                node.connect("/burdenRAHR");
+            }
+
             // connecting
             node.connect("/burdenRAHR");
             

@@ -5,9 +5,27 @@ module.exports = function(auth) {
 
     // Reads in descil-mturk configuration.
     var confPath = path.resolve(__dirname, 'descil.conf.js');
-    var dk = require('descil-mturk')(confPath);
+    var dk = require('descil-mturk')();
     var settings = require(path.resolve(__dirname, '../server/game.settings.js'));
 
+    // Load code database
+    if (settings.AUTH !== 'none') {
+        dk.readConfiguration(confPath);
+        if (settings.AUTH === 'remote') {
+            dk.getCodes(function() {
+                if (!dk.codes.size()) {
+                    throw new Error('requirements.room: no codes found.');
+                }
+            });
+        }
+        else {
+            dk.readCodes(function() {
+                if (!dk.codes.size()) {
+                    throw new Error('requirements.room: no codes found.');
+                }
+            });
+        }
+    }
 
     /////////////////////////////// MTurk Version ///////////////////////////
     // Creating an authorization function for the players.

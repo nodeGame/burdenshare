@@ -14,7 +14,7 @@ module.exports = function(node, channel, room) {
     var confPath = basedir + '/auth/descil.conf.js';
 
     var settings = require(basedir + '/server/game.settings.js');
-    var dk = require('descil-mturk')(confPath);
+    var dk = require('descil-mturk')();
 
     // Creates a stager object to define the game stages.
     var stager = new node.Stager();
@@ -28,20 +28,24 @@ module.exports = function(node, channel, room) {
         console.log('********Requirements Room Created*****************');
 
         // Load code database
-        if (settings.AUTH === 'remote') {
-            dk.getCodes(function() {
-                if (!dk.codes.size()) {
-                    throw new Error('requirements.room: no codes found.');
-                }
-            });
+        if (settings.AUTH !== 'none') {
+            dk.readConfiguration(confPath);
+            if (settings.AUTH === 'remote') {
+                dk.getCodes(function() {
+                    if (!dk.codes.size()) {
+                        throw new Error('requirements.room: no codes found.');
+                    }
+                });
+            }
+            else {
+                dk.readCodes(function() {
+                    if (!dk.codes.size()) {
+                        throw new Error('requirements.room: no codes found.');
+                    }
+                });
+            }
         }
-        else {
-            dk.readCodes(function() {
-                if (!dk.codes.size()) {
-                    throw new Error('requirements.room: no codes found.');
-                }
-            });
-        }
+
 
 	node.on.preconnect(function(player) {
             console.log('Player connected to Requirements room.');

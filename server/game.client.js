@@ -1727,7 +1727,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
     }
 
     function notEnoughPlayers() {
-        //    alert('Not Enought Players');
+        //	alert('Not Enought Players');
         node.game.pause();
         W.lockScreen('One player disconnected. We are now waiting to see if ' +
                      ' he or she reconnects. If there is no reconnection within 60 seconds the game will be terminated and you will be forwarded to the questionnaire.');

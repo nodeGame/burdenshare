@@ -1,6 +1,7 @@
 module.exports = {
 
-    decorateMongoObj: decorateMongoObj
+    decorateMongoObj: decorateMongoObj,
+    round: round
 
 };
 
@@ -52,7 +53,7 @@ function decorateMongoObj(mongo) {
             var data = callback(msg);
 
             if ('object' !== typeof data) {
-                that.node.err("MongoLayer.on callback didn't rgturn data object");
+                that.node.err("MongoLayer.on callback didn't return data object");
                 return;
             }
 
@@ -129,5 +130,35 @@ function decorateMongoObj(mongo) {
             this.node.err('MongoLayer: no active connection!');
         }
     };
+    
+}
 
+
+
+/**
+ * ## round
+ *
+ * rounds a given number to a specified number of decimal places
+ *
+ * @param {number} value the floating point number to be rounded
+ * @param {number} exp the number of decimal places
+ *
+ */
+function round(value, exp) {
+    if (typeof exp === 'undefined' || +exp === 0)
+	return Math.round(value);
+
+    value = +value;
+    exp  = +exp;
+
+    if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0))
+	return NaN;
+
+    // Shift
+    value = value.toString().split('e');
+    value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp)));
+
+    // Shift back
+    value = value.toString().split('e');
+    return +(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp));
 }
