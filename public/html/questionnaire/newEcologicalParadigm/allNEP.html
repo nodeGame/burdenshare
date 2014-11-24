@@ -1,0 +1,49 @@
+<!DOCTYPE html><title></title><head><script>var numberOfQuestions = 15</script><script>var currentAnswersMade = [];
+var questionnaire = parent.node.game.questionnaire;
+questionnaire.currentAnswerMade = false;
+questionnaire.currentAnswer = [];
+questionnaire.numberOfClicks = [];
+function makeChoice(i,j) {
+    if (numberOfQuestions <= 1) {
+        questionnaire.numberOfClicks =
+            questionnaire.numberOfClicks + 1 || 1;
+        questionnaire.currentAnswerMade = true;
+        questionnaire.currentAnswer = i;
+        return;
+    }
+    questionnaire.numberOfClicks[j] =
+        questionnaire.numberOfClicks[j] + 1 || 1;
+    questionnaire.currentAnswer[j] = i;
+    currentAnswersMade[j] = true;
+    questionnaire.currentAnswerMade = allAnswered()
+}
+
+function allAnswered() {
+    for (j = 0; j < numberOfQuestions; ++j) {
+        if (!currentAnswersMade[j]) {
+            return false;
+        }
+    }
+    return true;
+}
+</script><style>th.centeredHead, td {
+    border: solid 1px;
+    text-align: center;
+}
+table td {
+    word-wrap: break-word;
+}
+table {
+    width: 1000px;
+}
+div.questionDiv {
+    width: 1000px;
+    font-size: 18px;
+}
+h1.questionExplanation {
+    word-wrap: break-word;
+    font-size: 25px;
+}</style><style>th.centeredHead { width: 16.666666666666668%;}</style><link rel="stylesheet" href="/burdenRAHR/css/bootstrap.min.css">
+<link rel="stylesheet" href="/stylesheets/fullheight.css">
+<link rel="stylesheet" href="/stylesheets/noscript.css">
+<link rel="stylesheet" href="/stylesheets/player.css"></head><body><div class="questionDiv"><h1 class="questionExplanation">Please indicate whether you: <i>strongly agree, mildly agree, unsure, mildly disagree,</i> or <i>strongly disagree</i>.</h1><p><table><thead><tr><td></td><th class="centeredHead">Strongly Disagree</th><th class="centeredHead">Mildly Disagree</th><th class="centeredHead">Unsure</th><th class="centeredHead">Mildly Agree</th><th class="centeredHead">Strongly Agree</th></tr></thead><tbody><tr id="Question0"><th class="centeredHead">We are approaching the limit of the number of people the earth can support.</th><td><input type="radio" name="QButton0" onclick="makeChoice(0,0)"></td><td><input type="radio" name="QButton0" onclick="makeChoice(1,0)"></td><td><input type="radio" name="QButton0" onclick="makeChoice(2,0)"></td><td><input type="radio" name="QButton0" onclick="makeChoice(3,0)"></td><td><input type="radio" name="QButton0" onclick="makeChoice(4,0)"></td></tr><tr id="Question1"><th class="centeredHead">Humans have the right to modify the natural environment to suit their needs.</th><td><input type="radio" name="QButton1" onclick="makeChoice(0,1)"></td><td><input type="radio" name="QButton1" onclick="makeChoice(1,1)"></td><td><input type="radio" name="QButton1" onclick="makeChoice(2,1)"></td><td><input type="radio" name="QButton1" onclick="makeChoice(3,1)"></td><td><input type="radio" name="QButton1" onclick="makeChoice(4,1)"></td></tr><tr id="Question2"><th class="centeredHead">When humans interfere with nature it often produces disastrous consequences.</th><td><input type="radio" name="QButton2" onclick="makeChoice(0,2)"></td><td><input type="radio" name="QButton2" onclick="makeChoice(1,2)"></td><td><input type="radio" name="QButton2" onclick="makeChoice(2,2)"></td><td><input type="radio" name="QButton2" onclick="makeChoice(3,2)"></td><td><input type="radio" name="QButton2" onclick="makeChoice(4,2)"></td></tr><tr id="Question3"><th class="centeredHead">Human ingenuity will insure that we do NOT make the earth unlivable.</th><td><input type="radio" name="QButton3" onclick="makeChoice(0,3)"></td><td><input type="radio" name="QButton3" onclick="makeChoice(1,3)"></td><td><input type="radio" name="QButton3" onclick="makeChoice(2,3)"></td><td><input type="radio" name="QButton3" onclick="makeChoice(3,3)"></td><td><input type="radio" name="QButton3" onclick="makeChoice(4,3)"></td></tr><tr id="Question4"><th class="centeredHead">Humans are severely abusing the environment.</th><td><input type="radio" name="QButton4" onclick="makeChoice(0,4)"></td><td><input type="radio" name="QButton4" onclick="makeChoice(1,4)"></td><td><input type="radio" name="QButton4" onclick="makeChoice(2,4)"></td><td><input type="radio" name="QButton4" onclick="makeChoice(3,4)"></td><td><input type="radio" name="QButton4" onclick="makeChoice(4,4)"></td></tr><tr id="Question5"><th class="centeredHead">The earth has plenty of natural resources if we just learn how to develop them.</th><td><input type="radio" name="QButton5" onclick="makeChoice(0,5)"></td><td><input type="radio" name="QButton5" onclick="makeChoice(1,5)"></td><td><input type="radio" name="QButton5" onclick="makeChoice(2,5)"></td><td><input type="radio" name="QButton5" onclick="makeChoice(3,5)"></td><td><input type="radio" name="QButton5" onclick="makeChoice(4,5)"></td></tr><tr id="Question6"><th class="centeredHead">Plants and animals have as much right as humans to exist.</th><td><input type="radio" name="QButton6" onclick="makeChoice(0,6)"></td><td><input type="radio" name="QButton6" onclick="makeChoice(1,6)"></td><td><input type="radio" name="QButton6" onclick="makeChoice(2,6)"></td><td><input type="radio" name="QButton6" onclick="makeChoice(3,6)"></td><td><input type="radio" name="QButton6" onclick="makeChoice(4,6)"></td></tr><tr id="Question7"><th class="centeredHead">The balance of nature is strong enough to cope with the impacts of modern industrial nations.</th><td><input type="radio" name="QButton7" onclick="makeChoice(0,7)"></td><td><input type="radio" name="QButton7" onclick="makeChoice(1,7)"></td><td><input type="radio" name="QButton7" onclick="makeChoice(2,7)"></td><td><input type="radio" name="QButton7" onclick="makeChoice(3,7)"></td><td><input type="radio" name="QButton7" onclick="makeChoice(4,7)"></td></tr><tr id="Question8"><th class="centeredHead">The so-called "ecological crisis" facing humankind has been greatly exaggerated.</th><td><input type="radio" name="QButton8" onclick="makeChoice(0,8)"></td><td><input type="radio" name="QButton8" onclick="makeChoice(1,8)"></td><td><input type="radio" name="QButton8" onclick="makeChoice(2,8)"></td><td><input type="radio" name="QButton8" onclick="makeChoice(3,8)"></td><td><input type="radio" name="QButton8" onclick="makeChoice(4,8)"></td></tr><tr id="Question9"><th class="centeredHead">The earth is like a spaceship with very limited and resources.</th><td><input type="radio" name="QButton9" onclick="makeChoice(0,9)"></td><td><input type="radio" name="QButton9" onclick="makeChoice(1,9)"></td><td><input type="radio" name="QButton9" onclick="makeChoice(2,9)"></td><td><input type="radio" name="QButton9" onclick="makeChoice(3,9)"></td><td><input type="radio" name="QButton9" onclick="makeChoice(4,9)"></td></tr><tr id="Question10"><th class="centeredHead">Humans were meant to rule over the rest of nature.</th><td><input type="radio" name="QButton10" onclick="makeChoice(0,10)"></td><td><input type="radio" name="QButton10" onclick="makeChoice(1,10)"></td><td><input type="radio" name="QButton10" onclick="makeChoice(2,10)"></td><td><input type="radio" name="QButton10" onclick="makeChoice(3,10)"></td><td><input type="radio" name="QButton10" onclick="makeChoice(4,10)"></td></tr><tr id="Question11"><th class="centeredHead">Humans will eventually learn enough about how nature works to be able to control it.</th><td><input type="radio" name="QButton11" onclick="makeChoice(0,11)"></td><td><input type="radio" name="QButton11" onclick="makeChoice(1,11)"></td><td><input type="radio" name="QButton11" onclick="makeChoice(2,11)"></td><td><input type="radio" name="QButton11" onclick="makeChoice(3,11)"></td><td><input type="radio" name="QButton11" onclick="makeChoice(4,11)"></td></tr><tr id="Question12"><th class="centeredHead">If things continue on their present course, we will soon experience a major ecological catastrophe.</th><td><input type="radio" name="QButton12" onclick="makeChoice(0,12)"></td><td><input type="radio" name="QButton12" onclick="makeChoice(1,12)"></td><td><input type="radio" name="QButton12" onclick="makeChoice(2,12)"></td><td><input type="radio" name="QButton12" onclick="makeChoice(3,12)"></td><td><input type="radio" name="QButton12" onclick="makeChoice(4,12)"></td></tr><tr id="Question13"><th class="centeredHead">Despite our special abilities humans are still subject to the laws of nature.</th><td><input type="radio" name="QButton13" onclick="makeChoice(0,13)"></td><td><input type="radio" name="QButton13" onclick="makeChoice(1,13)"></td><td><input type="radio" name="QButton13" onclick="makeChoice(2,13)"></td><td><input type="radio" name="QButton13" onclick="makeChoice(3,13)"></td><td><input type="radio" name="QButton13" onclick="makeChoice(4,13)"></td></tr><tr id="Question14"><th class="centeredHead">The balance of nature is very delicate and easily upset.</th><td><input type="radio" name="QButton14" onclick="makeChoice(0,14)"></td><td><input type="radio" name="QButton14" onclick="makeChoice(1,14)"></td><td><input type="radio" name="QButton14" onclick="makeChoice(2,14)"></td><td><input type="radio" name="QButton14" onclick="makeChoice(3,14)"></td><td><input type="radio" name="QButton14" onclick="makeChoice(4,14)"></td></tr></tbody></table></p><p><input type="button" id="done" value="Submit Answer" class="btn btn-lg btn-primary"></p></div></body>
