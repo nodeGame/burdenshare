@@ -106,7 +106,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             node.say("CLEAR_COUNTDOWN", p.id, 'clearCountDown');
         });
 
-        function adjustProfit(msg) {
+        function addQuestionnaireBonus(msg) {
             mdbCheckProfit.checkProfit(msg.data.player, function(rows, items) {
                 // Adds to the profit a bonus depending on the
                 // choice made in the SVO questionnaire block.
@@ -150,6 +150,19 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                 var bonusFromSelf = SVOChoices[selectedRound].topRow[
                     choicesMade[selectedRound]
                 ];
+
+                var bonusToOther = SVOChoices[selectedRound].bottomRow[
+                    choicesMade[selectedRound]
+                ];
+
+                if('undefined' === typeof node.game.pl.otherBonus) {
+                    node.game.pl.otherBonus = [];
+                }
+
+                node.game.pl.otherBonus[
+                    node.game.pl.id.resolve[msg.data.player]
+                ] = bonusToOther;
+
 
                 var newAmountUCE = profit.Amount_UCE + bonusFromSelf;
                 var newAmountUSD = cbs.round((newAmountUCE/50),2);
@@ -438,7 +451,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
         node.on.data('Adjust_Profit', function(msg) {
             console.log('Adjusting profit');
-            adjustProfit(msg);
+            addQuestionnaireBonus(msg);
         });
         node.on.data('bsc_data',function(msg) {
             console.log('Writing Result Data!!!');
@@ -666,27 +679,49 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         }, 60000);
     }
 
+    // Adds an 'other'-bonus to all players and calls dk.checkOut iff all
+    // players have had their codes checked-out.
     function adjustPayoffAndCheckout() {
         var i, checkoutFlag = true;
         var currentCode, profit;
+        var idList = [];
+        // Check whether all players codes have been checked-out.
         for (i = 0; i < node.game.pl.size(); ++i) {
+            idList[i] = node.game.pl.db[i].id;
             try {
                 currentCode =
-                    dk.codes.id.get(node.game.pl.db[i].id);
+                    dk.codes.id.get(idList[i]);
             }
             catch(e) {
                 console.log("Questionnaire: QUEST_DONE: \n" +
-                    "Player: " + node.game.pl.db[i].id + "\n" +
+                    "Player: " + idList[i] + "\n" +
                     "dk.code does not exist!");
             }
             checkoutFlag = checkoutFlag && !!currentCode.checkout;
-
         }
         if (checkoutFlag) {
-            debugger;
-            for (i = 0; i < node.game.pl.size(); ++i) {
-            // get profit, in callback checkout dk...
-            dk.checkOut(currentCode.AccessCode, currentCode.ExitCode, prof);
+            if (!node.game.pl.checkout) {
+                node.game.pl.checkout = true;
+                // Gets profit for all players
+                mdbCheckProfit.checkProfit({ $in : idList}, function(rows, items) {
+                    var profit;
+                    var bonus;
+                    var code;
+
+                    for (i = 0; i < idList.length; ++i) {
+                        code = dk.codes.id.get(idList[i]);
+                        bonus = items[i].Amount_UCE;
+
+                        // Adding the bonusToOther from the next player in the
+                        // list.
+                        bonus += node.game.pl.otherBonus[
+                            node.game.pl.id.resolve[idList[(i+1)%idList.length]]
+                        ];
+                        profit = cbs.round((bonus/50),2);
+                        dk.checkOut(code.AccessCode, code.ExitCode, profit);
+                    }
+                });
+
             }
         }
     }
@@ -899,24 +934,21 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         cb: function() {
             node.on("in.say.DATA", function(msg) {
                 if (msg.text === "QUEST_DONE") {
-                    // this call is not needed like that
-                    mdbCheckProfit.checkProfit(msg.from, function(rows, items) {
-                            var prof = items[0].Amount_USD;
-                            var code = dk.codes.id.get(msg.from);
+                    // Checkout the player code.
+                    var code = dk.codes.id.get(msg.from);
+                    console.log("Checkout code of splayer" + msg.from);
+                    code.checkout = true;
 
-                            console.log("Bonus: " + prof);
-                            code.checkout = true;
+                    // If a player has disconnected, delay payoff and
+                    // checkout by 10s to give time for reconnect.
+                    if (node.game.pl.size() < MIN_PLAYERS) {
+                        setTimeout(adjustPayoffAndCheckout, 10000);
+                    }
+                    else {
+                        adjustPayoffAndCheckout();
+                    }
+                    node.say("win", msg.from, code.ExitCode);
 
-                            // If a player has disconnected, delay payoff and
-                            // checkout by 10s to give time for reconnect.
-                            if (node.game.pl.size() < MIN_PLAYERS) {
-                                setTimeout(adjustPayoffAndCheckout, 10000);
-                            }
-                            else {
-                                adjustPayoffAndCheckout();
-                            }
-                            node.say("win", msg.from, code.ExitCode);
-                    });
                 }
             });
             console.log('********************** Questionaire - SessionID: ' +

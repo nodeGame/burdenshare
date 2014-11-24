@@ -128,7 +128,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 node.game.timequestionsRounds = Date.now();
                 var options = {
                     // count down time
-                    milliseconds: 1000, //240000, // 240000 ms is equivalent to 6 minutes (reading time approximately 3 minutes times 2)
+                    milliseconds: 2000, //240000, // 240000 ms is equivalent to 6 minutes (reading time approximately 3 minutes times 2)
                     // if count down elapsed and no action has been taken by participant function is called
                     timeup: function() {
                         node.game.timequestionsRounds = Math.round(Math.abs(node.game.timequestionsRounds - Date.now())/1000);
@@ -260,7 +260,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
             W.loadFrame('/burdenRAHR/html/questionRounds_resp.html', function() {
                 node.game.timequestionsRounds = Date.now();
                 var options = {
-                    milliseconds: 1000, //240000, // 240000 ms is equivalent to 4 minutes (reading time approximately 2 minutes times 2)
+                    milliseconds: 2000, //240000, // 240000 ms is equivalent to 4 minutes (reading time approximately 2 minutes times 2)
                     timeup: function() {
                         node.game.timequestionsRounds = Math.round(Math.abs(node.game.timequestionsRounds - Date.now())/1000);
                         var timeInstr = {
@@ -419,7 +419,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
                 // Start the timer.
                 var options = {
-                    milliseconds: 1000, //120000, // 120000 ms is equivalent to 2 minutes
+                    milliseconds: 2000, //120000, // 120000 ms is equivalent to 2 minutes
                     timeup: function() {
                         node.game.timer.stop();
                         this.disabled = "disabled";
@@ -643,7 +643,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         W.loadFrame('/burdenRAHR/html/instructions.html', function() {
             node.game.timeInstruction = Date.now();
             var options = {
-                milliseconds: 1000, //480000, // 240000 ms is equivalent to 6 minutes (reading time approximately 2 minutes times 2)
+                milliseconds: 2000, //480000, // 240000 ms is equivalent to 6 minutes (reading time approximately 2 minutes times 2)
                 timeup: function() {
                     node.game.timeInstruction = Math.round(Math.abs(node.game.timeInstruction - Date.now())/1000);
                     var timeInstr = {
@@ -683,7 +683,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
             W.loadFrame('/burdenRAHR/html/instructions2.html', function() {
                 node.game.timeInstruction2 = Date.now();
                 var options = {
-                    milliseconds: 1000, //480000, // 480000 ms is equivalent to 8 minutes (reading time approximately 4 minutes times 2)
+                    milliseconds: 2000, //480000, // 480000 ms is equivalent to 8 minutes (reading time approximately 4 minutes times 2)
                     timeup: function() {
                         node.game.timeInstruction2 = Math.round(Math.abs(node.game.timeInstruction2 - Date.now())/1000);
                         var timeInstr = {
@@ -723,7 +723,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
             W.loadFrame('/burdenRAHR/html/instructions3.html', function() {
                 node.game.timeInstruction3 = Date.now();
                 var options = {
-                    milliseconds: 1000, //480000, // 480000 ms is equivalent to 8 minutes (reading time approximately 4 minutes times 2)
+                    milliseconds: 2000, //480000, // 480000 ms is equivalent to 8 minutes (reading time approximately 4 minutes times 2)
                     timeup: function() {
                         node.game.timeInstruction3 = Math.round(Math.abs(node.game.timeInstruction3 - Date.now())/1000);
                         var timeInstr = {
@@ -989,7 +989,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 W.getElementById("offer").selectedIndex = -1;
                 node.game.timeMakingOffer = Date.now();
                 var options = {
-                    milliseconds: 1000, //90000, // 120000 ms is equivalent to 2 minutes
+                    milliseconds: 2000, //90000, // 120000 ms is equivalent to 2 minutes
                     timeup: function() {
                         W.getElementById("fieldset").disabled = true;
                         node.game.timer.stop();
@@ -1043,7 +1043,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                             node.game.timeResultProp = Date.now();
                             // Start the timer.
                             var options = {
-                                milliseconds: 1000, //120000, // 120000 ms is equivalent to 2 minutes
+                                milliseconds: 2000, //120000, // 120000 ms is equivalent to 2 minutes
                                 timeup: function() {
                                     node.game.timer.stop();
                                     this.disabled = "disabled";
@@ -1120,7 +1120,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                             node.game.timeResultProp = Date.now();
                             // Start the timer.
                             var options = {
-                                milliseconds: 1000, //120000, // 120000 ms is equivalent to 2 minutes
+                                milliseconds: 2000, //120000, // 120000 ms is equivalent to 2 minutes
                                 timeup: function() {
                                     node.game.timer.stop();
                                     this.disabled = "disabled";
@@ -1241,7 +1241,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                     node.game.timeResponse = Date.now();
                     if (msg.text == "OFFER") {
                         var options = {
-                            milliseconds: 1000, //60000, // 120000 ms is equivalent to 2 minutes
+                            milliseconds: 2000, //60000, // 120000 ms is equivalent to 2 minutes
                             timeup: function() {
                                 node.game.timer.stop();
                                 that.randomAccept(msg.data, node.game.otherID);
@@ -1302,16 +1302,19 @@ module.exports = function(gameRoom, treatmentName, settings) {
             // Makes a callback which loads a single questionnaire page and
             // listens to onclick of the element with id 'done', to write
             // currentAnswer to database and advance the executor.
-            function makePageLoad(block, page, extensionCallback) {
+            function makePageLoad(block, page, onDoneCallback, onLoadCallback) {
                 return function(executor) {
                     W.loadFrame('/burdenRAHR/html/questionnaire/'+ block + '/' +
                         page + '.html', function() {
+                            if (onLoadCallback) {
+                                onLoadCallback(block, page);
+                            }
                             node.timer.setTimestamp(block + '/' + page);
                             W.getElementById('done').onclick =function() {
                                 var questionnaire =
                                     node.game.questionnaire;
-                                if (extensionCallback) {
-                                        extensionCallback(block,page);
+                                if (onDoneCallback) {
+                                        onDoneCallback(block,page);
                                 }
                                 if (questionnaire.currentAnswerMade) {
                                     node.set('bsc_data',{
@@ -1335,10 +1338,16 @@ module.exports = function(gameRoom, treatmentName, settings) {
             }
 
             // Makes an array of page load callbacks
-            function makeBlockArray(block, pages, extensionCallback) {
+            function makeBlockArray(block, pages, onDoneCallback, onLoadCallback) {
                 var i, result = [];
                 for (i = 0; i < pages.length; ++i) {
-                    result.push(makePageLoad(block,pages[i],extensionCallback));
+                    result.push(
+                        makePageLoad(
+                            block,
+                            pages[i],
+                            onDoneCallback,
+                            onLoadCallback
+                    ));
                 }
                 return result;
             }
@@ -1354,7 +1363,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 randomPageExecutor.setCallbacks(
                     makeBlockArray(
                         'socialValueOrientation',
-                        ['1', '2', '3', '4', '5', '6'],
+                        ['1', '2','3','4','5','6'],
                         function(block,page) {
                             node.game.questionnaire.SVOChoices[page] =
                                 node.game.questionnaire.currentAnswer;
@@ -1384,13 +1393,61 @@ module.exports = function(gameRoom, treatmentName, settings) {
             // Loads all of the NEP questions in an random order.
             newEcologicalParadigm = function(randomBlockExecutor) {
                 var randomPageExecutor = new RandomOrderExecutor();
+                var numberOfQuestions = 15;
+                var questionsPerPage = 5;
+                var i;
+                var pageName = 'allNEP';
+                var pageNameArray = [];
+
+                for (i = 0; i < numberOfQuestions; i += questionsPerPage) {
+                    pageNameArray = pageNameArray.concat([pageName]);
+                }
+                node.game.questionnaire.NEPQuestions = [];
+                for (i = 0; i < numberOfQuestions; ++i) {
+                    node.game.questionnaire.NEPQuestions[i] =
+                    {
+                        position: i,
+                        questionId: 'Question' + i,
+                        rank: Math.random()
+                    }
+                }
+
+
                 randomPageExecutor.setCallbacks(
-                    makeBlockArray('newEcologicalParadigm', [
-                        'limit','modify',
-                        'interfere', 'ingenuity', 'abusing', 'plenty', 'plants',
-                        'balance', 'crisis', 'spaceship', 'rule', 'control',
-                        'catastrophe', 'laws', 'upset'
-                    ])
+                    makeBlockArray(
+                        'newEcologicalParadigm',
+                         pageNameArray,
+                         false,
+                         function() {
+                            // Unhides `numberOfQuestions` questions on the
+                            // page.
+                            var NEPQuestions =
+                                node.game.questionnaire.NEPQuestions;
+                            var question, i;
+                            var currentAnswersMade =
+                                W.getFrame().contentWindow.currentAnswersMade;
+
+                            NEPQuestions.sort(function(left,right) {
+                               return left.rank < right.rank ? -1 : 1;
+                            });
+                            // Unhides the 5 questions with lowest rank.
+                            for (i = 0; i < numberOfQuestions; ++i){
+                                if (i < questionsPerPage) {
+                                    NEPQuestions[i].rank = 2; // Push to back.
+                                }
+                                // Hide the question.
+                                else {
+                                    currentAnswersMade[
+                                        NEPQuestions[i].position
+                                    ] = true;
+                                    question = W.getElementById(
+                                        NEPQuestions[i].questionId
+                                    );
+                                    question.style.display = "none";
+                                }
+                            }
+                         }
+                     )
                 );
                 randomPageExecutor.setOnDone(function() {
                     randomBlockExecutor.next();
@@ -1475,8 +1532,8 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 };
 
                 linearPageExecutor.callbacks = makeBlockArray('demographics', [
-                    'gender', 'education', 'dateOfBirth', 'income',
-                    'occupation', 'participation']);
+                    'gender','politics', 'participation', 'occupation',
+                    'income','dateOfBirth','education']);
 
                 // Add politics page. (Because of the textfield it requires
                 // special treatement)
@@ -1498,7 +1555,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
             // Execute the SVO, NEP and RISK block in random order, then execute
             // demographics.
-            randomBlockExecutor.execute([socialValueOrientation], demographics);
+            randomBlockExecutor.execute([newEcologicalParadigm], demographics);
 
         }
 
@@ -1549,7 +1606,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
                         node.game.timeResult = Date.now();
                         var options = {
-                            milliseconds: 1000, //60000, // 30000 ms is equivalent to 30 seconds
+                            milliseconds: 2000, //60000, // 30000 ms is equivalent to 30 seconds
                             timeup: function() {
                                 node.game.timeResult = Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
                                 var timeResultProp = {
@@ -1587,7 +1644,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
                         node.game.timeResult = Date.now();
                         var options = {
-                            milliseconds: 1000, //60000, // 30000 ms is equivalent to 30 seconds
+                            milliseconds: 2000, //60000, // 30000 ms is equivalent to 30 seconds
                             timeup: function() {
                                 node.game.timeResult = Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
                                 var timeResultProp = {
@@ -1739,7 +1796,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         cb: initialSituation,
         stepRule: syncGroup,
         timer: {
-            milliseconds: 1000, //180000, // 120000 ms is equivalent to 2 minutes
+            milliseconds: 2000, //180000, // 120000 ms is equivalent to 2 minutes
             update: 1000,
             timeup: function() {
                 node.game.timer.stop();

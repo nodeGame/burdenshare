@@ -119,7 +119,7 @@ function decorateMongoObj(mongo) {
 
     mongo.checkProfit = function(playerID, callback) {
     if(this.activeCollection){
-        this.activeCollection.find({"Player_ID": playerID}, {"Payout_Round": 1,"Amount_UCE": 1,  "_id": 0}).toArray(function(err, items){
+        this.activeCollection.find({"Player_ID": playerID}, {"_id": 0}).toArray(function(err, items){
         if(err) callback(err);
         else {
             callback(null, items);
@@ -130,7 +130,6 @@ function decorateMongoObj(mongo) {
             this.node.err('MongoLayer: no active connection!');
         }
     };
-    
 }
 
 
@@ -146,13 +145,13 @@ function decorateMongoObj(mongo) {
  */
 function round(value, exp) {
     if (typeof exp === 'undefined' || +exp === 0)
-	return Math.round(value);
+    return Math.round(value);
 
     value = +value;
     exp  = +exp;
 
     if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0))
-	return NaN;
+    return NaN;
 
     // Shift
     value = value.toString().split('e');
