@@ -718,7 +718,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                             node.game.pl.id.resolve[idList[(i+1)%idList.length]]
                         ];
                         profit = cbs.round((bonus/50),2);
-                        dk.checkOut(code.AccessCode, code.ExitCode, profit);
+                        //dk.checkOut(code.AccessCode, code.ExitCode, profit);
                     }
                 });
 

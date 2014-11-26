@@ -11,7 +11,6 @@ var constants = ngc.constants;
 // Export the game-creating function. It needs the name of the treatment and
 // its options.
 module.exports = function(gameRoom, treatmentName, settings) {
-
     var gameSequence, stager;
 
     // Import the stager.
@@ -21,16 +20,18 @@ module.exports = function(gameRoom, treatmentName, settings) {
     var game = {};
     var cbs = require(__dirname + '/includes/logic.callbacks.js');
 
-
     //INIT and GAMEOVER
     stager.setOnInit(function() {
+
+        var gameName = node.game.globals.gameName;
+        var chosenTreatment = node.game.globals.chosenTreatment;
 
         // basic amount of own endowment (here 25)
         node.game.endowment_own = 25;
         node.game.endowment_responder = 0;
         node.game.endowment_proposer = 0;
         // cost green house gas emmisions, two Versions: 30 or 80 ECU
-        node.game.costGE = 30;
+        node.game.costGE = node.game.globals.costGE;
         // number of rounds including the test round
         node.game.nbrRounds = 4;
         // initialization first round
@@ -43,6 +44,20 @@ module.exports = function(gameRoom, treatmentName, settings) {
         node.game.decisionOffer = 0;
         // response made by person = 1, response made by computer due to time out = 0
         node.game.decisionResponse = 0;
+
+        if (chosenTreatment === 'sa') {
+            // counter: number of rounds during the self selection of risk and economic growth in the first part
+            node.game.pgCounter = 0;
+            node.game.EGRnd = [];
+            // 3 levels (first index of array) of economic growth
+            // for each chosen level a a number is selected randomly (second index of array)
+            node.game.growth = [
+                [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+                [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+            ];
+        }
+
         // ground level of climate risk
         node.game.risk = 7.5;
         node.game.ClimateRisk = 0;
@@ -53,16 +68,19 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
         // condition for one of the two game versions
         if (node.game.costGE == 30) {
-            node.game.url_bidder = '/burdenRAHR/html/bidder_30.html';
-            node.game.url_resp = '/burdenRAHR/html/resp_30.html';
-            node.game.url_initprop = '/burdenRAHR/html/initialSituationProp_30.htm';
-            node.game.url_initresp = '/burdenRAHR/html/initialSituationResp_30.htm';
+            node.game.url_bidder = gameName + '/html/bidder_30.html';
+            node.game.url_resp = gameName + '/html/resp_30.html';
+            node.game.url_initprop = gameName + '/html/initialSituationProp_30.htm';
+            node.game.url_initresp = gameName + '/html/initialSituationResp_30.htm';
+            node.game.url_preGame = gameName + '/html/preGame_30.html';
         }
         else if (node.game.costGE == 80) {
-            node.game.url_bidder = '/burdenRAHR/html/bidder_80.html';
-            node.game.url_resp = '/burdenRAHR/html/resp_80.html';
-            node.game.url_initprop = '/burdenRAHR/html/initialSituationProp_80.htm';
-            node.game.url_initresp = '/burdenRAHR/html/initialSituationResp_80.htm';
+            node.game.url_bidder = gameName + '/html/bidder_80.html';
+            node.game.url_resp = gameName + '/html/resp_80.html';
+            node.game.url_initprop = gameName + '/html/initialSituationProp_80.htm';
+            node.game.url_initresp = gameName + '/html/initialSituationResp_80.htm';
+            node.game.url_preGame = gameName + '/html/preGame_80.html';
+
         }
 
         console.log('INIT PLAYER!');
@@ -124,7 +142,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
             // node.set('bsc_gameTime',gameTimeResp);
 
             // short question at the end of each round
-            W.loadFrame('/burdenRAHR/html/questionRounds_prop.html', function() {
+            W.loadFrame(gameName + '/html/questionRounds_prop.html', function() {
                 node.game.timequestionsRounds = Date.now();
                 var options = {
                     // count down time
@@ -257,7 +275,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
             // node.set('bsc_gameTime',gameTimeResp);
 
             //Check if data for playerID and current round already exists
-            W.loadFrame('/burdenRAHR/html/questionRounds_resp.html', function() {
+            W.loadFrame(gameName + '/html/questionRounds_resp.html', function() {
                 node.game.timequestionsRounds = Date.now();
                 var options = {
                     milliseconds: 2000, //240000, // 240000 ms is equivalent to 4 minutes (reading time approximately 2 minutes times 2)
@@ -409,7 +427,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
             // var timeResponse = {timeResponse: node.game.timeResponse};
             // node.set('bsc_time',timeResponse);
 
-            W.loadFrame('/burdenRAHR/html/resultResponder.html', function() {
+            W.loadFrame(gameName + '/html/resultResponder.html', function() {
                 if (node.player.stage.round == 1) {
                     // Test Round
                     var practice3 = W.getElementById('practice3');
@@ -633,6 +651,48 @@ module.exports = function(gameRoom, treatmentName, settings) {
     ///// STAGES and STEPS
 
     function instructions() {
+        debugger
+        var gameName = node.game.globals.gameName;
+        var chosenTreatment = node.game.globals.chosenTreatment;
+
+
+        /**
+        * ## checkEntry
+        *
+        * checks whether the question has been answered or not
+        *
+        * if not a warning message is shown
+        *
+        * @param {string} msg The text to be shown in the warning message window
+        *
+        */
+        function checkEntry(msg){
+            bootbox.dialog({
+                  message: msg,
+                  buttons: {
+                    danger: {
+                      label: "Return to Question",
+                      className: "btn-danger",
+                      callback: function() {
+                      }
+                    },
+        //              success: {
+        //                label: "ID is correct",
+        //                className: "btn-success",
+        //                callback: function() {
+        //                      var saveId = {
+        //                              Player_ID: 666
+        //                      };
+        //                      node.emit('player_id',saveId);
+        //                      <!-- node.set('player_id',saveId); -->
+        //
+        //                    location.href="http://localhost:8080/pairs/";
+        //                }
+        //              },
+                  }
+            });
+        }
+
 
         var waitingForPlayers =  W.getElementById('waitingForPlayers');
         waitingForPlayers.style.display = 'none';
@@ -640,7 +700,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         document.getElementById('state').innerHTML = "Instruction";
         console.log('instructions');
 
-        W.loadFrame('/burdenRAHR/html/instructions.html', function() {
+        W.loadFrame(gameName + '/html/instructions.html', function() {
             node.game.timeInstruction = Date.now();
             var options = {
                 milliseconds: 2000, //480000, // 240000 ms is equivalent to 6 minutes (reading time approximately 2 minutes times 2)
@@ -680,7 +740,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         });
 
         function instructions2() {
-            W.loadFrame('/burdenRAHR/html/instructions2.html', function() {
+            W.loadFrame(gameName + '/html/instructions2.html', function() {
                 node.game.timeInstruction2 = Date.now();
                 var options = {
                     milliseconds: 2000, //480000, // 480000 ms is equivalent to 8 minutes (reading time approximately 4 minutes times 2)
@@ -701,7 +761,9 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 node.game.timer.start(options);
 
                 console.log('Instructions Page 2');
-                W.getElementById("cost").innerHTML = node.game.costGE;
+                if (chosenTreatment === 'ra') {
+                    W.getElementById("cost").innerHTML = node.game.costGE;
+                }
 
                 var next;
                 next = W.getElementById("continue");
@@ -720,7 +782,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         }
 
         function instructions3() {
-            W.loadFrame('/burdenRAHR/html/instructions3.html', function() {
+            W.loadFrame(gameName + '/html/instructions3.html', function() {
                 node.game.timeInstruction3 = Date.now();
                 var options = {
                     milliseconds: 2000, //480000, // 480000 ms is equivalent to 8 minutes (reading time approximately 4 minutes times 2)
@@ -741,6 +803,9 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 node.game.timer.updateDisplay();
                 node.game.timer.start(options);
                 console.log('Instructions Page 2');
+                if (chosenTreatment === 'sa') {
+                    W.getElementById("cost").innerHTML = node.game.costGE;
+                }
 
                 var next;
                 next = W.getElementById("continue");
@@ -753,8 +818,250 @@ module.exports = function(gameRoom, treatmentName, settings) {
                     // node.set('bsc_instrTimeUpdate',timeInstr);
                     node.game.timer.stop();
                     this.disabled = "disabled";
-                    EconGrowthAndRisk();
+                    if (chosenTreatment === 'ra') {
+                        EconGrowthAndRisk();
+                    }
+                    else if (chosenTreatment === 'sa') {
+                        instructions4();
+                    }
                 };
+            });
+        }
+
+        function instructions4(){
+            W.loadFrame(gameName + '/html/instructions4.html', function() {
+                node.game.timeInstruction4 = Date.now();
+                var initEndow = {
+                    playerID: {Player_ID: node.game.ownID},
+                    addEndow: {Initial_Endowment: node.game.endowment_own, Climate_Risk: node.game.risk}
+                };
+                var options = {
+                    milliseconds: 480000, // 240000 ms is equivalent to 8 minutes (reading time approximately 4 minutes times 2)
+                    timeup: function() {
+                        node.game.timeInstruction4 = Math.round(Math.abs(node.game.timeInstruction4 - Date.now())/1000);
+                        var timeInstr = {
+                            playerID: {Player_ID: node.game.ownID},
+                            add: {TimeInstruction_4: node.game.timeInstruction4}
+                        };
+                        // node.set('bsc_instrTimeUpdate',timeInstr);
+                        node.game.timer.stop();
+                        this.disabled = "disabled";
+                        // node.emit('DONE');
+                        node.game.pgCounter = 0;
+                        node.game.endowment_own = 25;
+                        node.game.risk = 7.5;
+                        initEndow.addEndow.Initial_Endowment = 0;
+                        initEndow.addEndow.Climate_Risk = 0;
+                        node.set('initEndow',initEndow);
+                        for(var j = 1; j <= 5; j++){
+                            node.game.EGRnd[j] = 0;
+                            switch(j){
+                                    case 1: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd1: node.game.EGRnd[j]}}; break;
+                                    case 2: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd2: node.game.EGRnd[j]}}; break;
+                                    case 3: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd3: node.game.EGRnd[j]}}; break;
+                                    case 4: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd4: node.game.EGRnd[j]}}; break;
+                                    case 5: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd5: node.game.EGRnd[j]}}; break;
+                            }
+                            node.set("econGrowth",setDBEconGrowth);
+                        }
+                        chooseEconGrowth();
+                    }
+                };
+                node.game.timer.init(options);
+                node.game.timer.updateDisplay();
+                node.game.timer.start(options);
+                console.log('Instructions Page 4');
+
+                var next;
+                next = W.getElementById("continue");
+                next.onclick = function() {
+                    node.game.timeInstruction4 = Math.round(Math.abs(node.game.timeInstruction4 - Date.now())/1000);
+                    var timeInstr = {
+                        playerID: {Player_ID: node.game.ownID},
+                        add: {TimeInstruction_4: node.game.timeInstruction4}
+                    };
+                    // node.set('bsc_instrTimeUpdate',timeInstr);
+                    node.game.timer.stop();
+                    this.disabled = "disabled";
+                    // set back values in database in case of a disconnection - reconnection
+                    node.game.pgCounter = 0;
+                    node.game.endowment_own = 25;
+                    node.game.risk = 7.5;
+                    initEndow.addEndow.Initial_Endowment = 0;
+                    initEndow.addEndow.Climate_Risk = 0;
+                    node.set('initEndow',initEndow);
+                    for(var j = 1; j <= 5; j++){
+                        node.game.EGRnd[j] = 0;
+                        switch(j){
+                                case 1: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd1: node.game.EGRnd[j]}}; break;
+                                case 2: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd2: node.game.EGRnd[j]}}; break;
+                                case 3: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd3: node.game.EGRnd[j]}}; break;
+                                case 4: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd4: node.game.EGRnd[j]}}; break;
+                                case 5: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd5: node.game.EGRnd[j]}}; break;
+                        }
+                        node.set("econGrowth",setDBEconGrowth);
+                   }
+                    chooseEconGrowth();
+                };
+            });
+        }
+
+        /**
+        * ## chooseEconGrowth
+        *
+        * participant has to choose the economic growth during 5 rounds
+        *
+        */
+        function chooseEconGrowth(){
+            W.loadFrame(node.game.url_preGame, function() {
+                if(node.game.pgCounter === 0){
+                    // Test Round
+                    var practice0 = W.getElementById('practice0');
+                    practice0.style.display = '';
+                }
+                // node.game.timeInstruction3 = Date.now();
+                var cumEndow = W.getElementById("propEndow");
+                var cumRisk =  W.getElementById("clRiskOwn");
+                W.write(node.game.endowment_own,cumEndow);
+                if(node.game.risk - 7.5 <= 0){
+                    W.write("0",cumRisk);
+                }
+                else{
+                    W.write(node.game.risk - 7.5,cumRisk);
+                }
+                node.game.pgCounter++;
+                var options = {
+                    milliseconds: 40000, // 40000 ms is equal to 40 seconds
+                    timeup: function() {
+                        // node.game.timeInstruction3 = Math.round(Math.abs(node.game.timeInstruction3 - Date.now())/1000);
+                        // var timeInstr = {
+                            // playerID: {Player_ID: node.game.ownID},
+                            // add: {TimeInstruction_3: node.game.timeInstruction3}
+                        // };
+                        // node.set('bsc_instrTimeUpdate',timeInstr);
+                        var initEndow = {
+                            playerID: {Player_ID: node.game.ownID},
+                            addEndow: {Initial_Endowment: node.game.endowment_own, Climate_Risk: node.game.risk}
+                        };
+                        if(W.getElementById("pg1").checked){
+                            node.game.EGRnd[node.game.pgCounter] = 1;
+                            node.game.risk = node.game.risk + 0;
+                        }
+                        else if(W.getElementById("pg2").checked){
+                            node.game.EGRnd[node.game.pgCounter] = 2;
+                            node.game.risk = node.game.risk + 2.5;
+                        }
+                        else if(W.getElementById("pg3").checked){
+                            node.game.EGRnd[node.game.pgCounter] = 3;
+                            node.game.risk = node.game.risk + 5;
+                        }
+                        else{
+                            // if count down elapsed the computer will randomly choose one of 3 options
+                            var randnum = Math.floor(1+(Math.random()*3));
+                            node.game.EGRnd[node.game.pgCounter] = randnum;
+                            switch(randnum){
+                                case 1: node.game.risk = node.game.risk + 0; break;
+                                case 2: node.game.risk = node.game.risk + 2.5; break;
+                                case 3: node.game.risk = node.game.risk + 5; break;
+                            }
+                        }
+
+                        // Randomly chooses on of the values within the chosen economy growth level
+                        var ind = node.game.EGRnd[node.game.pgCounter] - 1;
+                        var rnd = Math.floor(1+(Math.random()*node.game.growth[ind].length)) - 1;
+                        node.game.endowment_own = node.game.endowment_own + node.game.growth[ind][rnd];
+
+                        switch(node.game.pgCounter){
+                            case 1: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd1: node.game.EGRnd[node.game.pgCounter]}}; break;
+                            case 2: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd2: node.game.EGRnd[node.game.pgCounter]}}; break;
+                            case 3: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd3: node.game.EGRnd[node.game.pgCounter]}}; break;
+                            case 4: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd4: node.game.EGRnd[node.game.pgCounter]}}; break;
+                            case 5: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd5: node.game.EGRnd[node.game.pgCounter]}}; break;
+                        }
+                        node.set("econGrowth",setDBEconGrowth);
+                        node.game.timer.stop();
+                        this.disabled = "disabled";
+                        if(node.game.pgCounter < 5){
+                            chooseEconGrowth();
+                        }
+                        else{
+                            initEndow.addEndow.Initial_Endowment = node.game.endowment_own;
+                            initEndow.addEndow.Climate_Risk = node.game.risk;
+                            node.set('initEndow',initEndow);
+                            node.game.pgCounter = 0;
+                            node.emit('DONE');
+                        }
+                    }
+                };
+                node.game.timer.init(options);
+                node.game.timer.updateDisplay();
+                node.game.timer.start(options);
+                console.log('Choose Economy Growth');
+
+                var next;
+                next = W.getElementById("submitGrowth");
+                next.onclick = function() {
+                    console.log("Page Counter: ---------- "+ node.game.pgCounter);
+                    var initEndow = {
+                        playerID: {Player_ID: node.game.ownID},
+                        addEndow: {Initial_Endowment: node.game.endowment_own, Climate_Risk: node.game.risk}
+                    };
+
+                    if(W.getElementById("pg1").checked){
+                        node.game.EGRnd[node.game.pgCounter] = 1;
+                        node.game.risk = node.game.risk + 0;
+                    }
+                    else if(W.getElementById("pg2").checked){
+                        node.game.EGRnd[node.game.pgCounter] = 2;
+                        node.game.risk = node.game.risk + 2.5;
+                    }
+                    else if(W.getElementById("pg3").checked){
+                        node.game.EGRnd[node.game.pgCounter] = 3;
+                        node.game.risk = node.game.risk + 5;
+                    }
+
+                    if(W.getElementById("pg1").checked || W.getElementById("pg2").checked || W.getElementById("pg3").checked){
+                        // Randomly chooses on of the values within the chosen economy growth level
+                        var ind = node.game.EGRnd[node.game.pgCounter] - 1;
+                        var rnd = Math.floor((Math.random()*node.game.growth[ind].length)+1) - 1;
+                        node.game.endowment_own = node.game.endowment_own + node.game.growth[ind][rnd];
+                        console.log("Growth Endowment = " + node.game.growth[ind][rnd]);
+                        switch(node.game.pgCounter){
+                            case 1: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd1: node.game.EGRnd[node.game.pgCounter]}}; break;
+                            case 2: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd2: node.game.EGRnd[node.game.pgCounter]}}; break;
+                            case 3: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd3: node.game.EGRnd[node.game.pgCounter]}}; break;
+                            case 4: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd4: node.game.EGRnd[node.game.pgCounter]}}; break;
+                            case 5: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd5: node.game.EGRnd[node.game.pgCounter]}}; break;
+                        }
+                        node.set("econGrowth",setDBEconGrowth);
+                        node.game.timer.stop();
+                        this.disabled = "disabled";
+                        if(node.game.pgCounter < 5){
+                            chooseEconGrowth();
+                        }
+                        else{
+                            W.getElementById("propEndow").innerHTML = node.game.endowment_own;
+                            W.getElementById("clRiskOwn").innerHTML = node.game.risk - 7.5;
+
+                            initEndow.addEndow.Initial_Endowment = node.game.endowment_own;
+                            initEndow.addEndow.Climate_Risk = node.game.risk;
+                            node.set('initEndow',initEndow);
+                            node.game.pgCounter = 0;
+                            node.emit('DONE');
+                        }
+                    }
+                    else{
+                        checkEntry("Please choose one of the three options of economic growth and then continue.");
+                    }
+
+                };
+
+                // node.game.timeInstruction3 = Math.round(Math.abs(node.game.timeInstruction3 - Date.now())/1000);
+                // var timeInstr = {
+                    // playerID: {Player_ID: node.game.ownID},
+                    // add: {TimeInstruction_3: node.game.timeInstruction3}
+                // };
+                // node.set('bsc_instrTimeUpdate',timeInstr);
             });
         }
 
@@ -796,6 +1103,9 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
 
     function initialSituation() {
+
+        var gameName = node.game.globals.gameName;
+        var chosenTreatment = node.game.globals.chosenTreatment;
 
         // Set state in Header
         document.getElementById('state').innerHTML = 'Game Period: ' +  node.player.stage.round + " - of - " + node.game.nbrRounds ;
@@ -939,6 +1249,9 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     function decision() {
 
+        var gameName = node.game.globals.gameName;
+        var chosenTreatment = node.game.globals.chosenTreatment;
+
         /**
              * ## checkID
              *
@@ -983,8 +1296,11 @@ module.exports = function(gameRoom, treatmentName, settings) {
             W.loadFrame(node.game.url_bidder, function() {
                 if (node.player.stage.round == 1) {
                     // Test Round
-                    var practice1 = W.getElementById('practice1');
-                    practice1.style.display = '';
+
+                    W.getElementById(
+                        chosenTreatment === 'ra' ?
+                            'practice1' : 'practice2'
+                    ).style.display = '';
                 }
                 W.getElementById("offer").selectedIndex = -1;
                 node.game.timeMakingOffer = Date.now();
@@ -1034,7 +1350,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
                 node.on("in.say.DATA", function(msg) {
                     if (msg.text == "ACCEPT") {
-                        W.loadFrame('/burdenRAHR/html/resultProposer.html', function() {
+                        W.loadFrame(gameName + '/html/resultProposer.html', function() {
                             if (node.player.stage.round == 1) {
                                 // Test Round
                                 var practice3 = W.getElementById('practice3');
@@ -1117,6 +1433,13 @@ module.exports = function(gameRoom, treatmentName, settings) {
                     }
                     else if (msg.text == "REJECT") {
                         W.loadFrame('html/resultProposer.html', function () {
+                            if(chosenTreatment === 'sa') {
+                                if(node.player.stage.round === 1){
+                                    // Test Round
+                                    var practice3 = W.getElementById('practice3');
+                                    practice3.style.display = '';
+                                }
+                            }
                             node.game.timeResultProp = Date.now();
                             // Start the timer.
                             var options = {
@@ -1210,8 +1533,10 @@ module.exports = function(gameRoom, treatmentName, settings) {
             W.loadFrame(node.game.url_resp, function() {
                 if (node.player.stage.round == 1) {
                     // Test Round
-                    var practice2 = W.getElementById('practice2');
-                    practice2.style.display = '';
+                    W.getElementById(
+                        chosenTreatment === 'ra' ?
+                            'practice2' : 'practice3'
+                    ).practice2.style.display = '';
                 }
                 var span_dot = W.getElementById('span_dot');
                 // Refreshing the dots...
@@ -1291,6 +1616,9 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     function questionnaire() {
 
+        var gameName = node.game.globals.gameName;
+        var chosenTreatment = node.game.globals.chosenTreatment;
+
         function randomOrderQuestionnaire() {
             var randomBlockExecutor;
             var socialValueOrientation, newEcologicalParadigm, risk;
@@ -1304,7 +1632,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
             // currentAnswer to database and advance the executor.
             function makePageLoad(block, page, onDoneCallback, onLoadCallback) {
                 return function(executor) {
-                    W.loadFrame('/burdenRAHR/html/questionnaire/'+ block + '/' +
+                    W.loadFrame(gameName + '/html/questionnaire/'+ block + '/' +
                         page + '.html', function() {
                             if (onLoadCallback) {
                                 onLoadCallback(block, page);
@@ -1380,7 +1708,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 });
 
                 // At the beginning of the block is an instructions page.
-                W.loadFrame('/burdenRAHR/html/questionnaire/' +
+                W.loadFrame(gameName + '/html/questionnaire/' +
                     'socialValueOrientation/instructions.html', function() {
                         W.getElementById('done').onclick = function() {
                             randomPageExecutor.execute();
@@ -1404,12 +1732,11 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 }
                 node.game.questionnaire.NEPQuestions = [];
                 for (i = 0; i < numberOfQuestions; ++i) {
-                    node.game.questionnaire.NEPQuestions[i] =
-                    {
+                    node.game.questionnaire.NEPQuestions[i] = {
                         position: i,
                         questionId: 'Question' + i,
                         rank: Math.random()
-                    }
+                    };
                 }
 
 
@@ -1454,7 +1781,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 });
 
                 // At the beginning of the block is an instructions page.
-                W.loadFrame('/burdenRAHR/html/questionnaire/' +
+                W.loadFrame(gameName + '/html/questionnaire/' +
                     'newEcologicalParadigm/instructions.html', function() {
                         W.getElementById('done').onclick = function() {
                             randomPageExecutor.execute();
@@ -1500,7 +1827,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                     },
                     // Final operation
                     done: function() {
-                        W.loadFrame('/burdenRAHR/html/profit_adjustment.html',
+                        W.loadFrame(gameName + '/html/profit_adjustment.html',
                             function() {
                                 W.getElementById('continue').onclick =
                                     function() {
@@ -1568,7 +1895,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         node.on.data("win", function(msg) {
             // W.clearFrame();
             function showWin() {
-                W.loadFrame('/burdenRAHR/html/ended.html', function() {
+                W.loadFrame(gameName + '/html/ended.html', function() {
                     W.writeln("Exit code: " + msg.data);
                     node.game.timer.stop();
                     node.game.timer.setToZero();
@@ -1592,7 +1919,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 if (msg.data.Payout_Round != "none") {
                     node.game.bonus = node.game.globals.round((msg.data.Profit/50),2);
                     console.log("Bonus: " + node.game.bonus);
-                    W.loadFrame('/burdenRAHR/html/questionnaire1.html', function() {
+                    W.loadFrame(gameName + '/html/questionnaire1.html', function() {
                         var payoutText = W.getElementById("payout");
                         W.write("Payout so far: " + msg.data.Payout_Round, payoutText);
                         var round = W.getElementById("payoutRound");
@@ -1638,7 +1965,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
                 else {
                     node.game.bonus = 0.0;
-                    W.loadFrame('/burdenRAHR/html/questionnaire12.html', function() {
+                    W.loadFrame(gameName + '/html/questionnaire12.html', function() {
                         var payoutText = W.getElementById("payout");
                         W.write("Unfortunately you did not complete any of the 3 rounds (excluding the test round) to be played. For your participation in the experiment you will be paid out a fixed amount of 1.00 $.", payoutText);
 
@@ -1796,7 +2123,8 @@ module.exports = function(gameRoom, treatmentName, settings) {
         cb: initialSituation,
         stepRule: syncGroup,
         timer: {
-            milliseconds: 2000, //180000, // 120000 ms is equivalent to 2 minutes
+            milliseconds: settings.CHOSEN_TREATMENT === 'sa' ? 36000 : 18000,
+            //milliseconds: 2000,
             update: 1000,
             timeup: function() {
                 node.game.timer.stop();
@@ -1842,7 +2170,10 @@ module.exports = function(gameRoom, treatmentName, settings) {
     });
 
     stager.setDefaultGlobals({
-        round: cbs.round
+        round: cbs.round,
+        gameName: settings.GAME_NAME,
+        chosenTreatment: settings.CHOSEN_TREATMENT,
+        costGE: settings.COSTGE
     });
 
     //We serialize the game sequence before sending it

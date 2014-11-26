@@ -5,7 +5,7 @@
  *
  * File must export an array of objects containing at the very least two
  * properties: _AccesCode_, and _ExitCode_. The values of such properties
- * must be unique. 
+ * must be unique.
  *
  * For real authorization codes use at least 32 random characters and digits.
  * ---
@@ -22,5 +22,5 @@ for (i = 0 ; i < nCodes; i ++) {
         ExitCode: i + '_exit'
     });
 }
-        
-module.exports = codes;    
+
+module.exports = codes;
