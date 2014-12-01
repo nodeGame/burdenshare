@@ -1,0 +1,97 @@
+<!doctype html>
+<title>GAME 2</title>
+<link rel="stylesheet" type="text/css" href="../css/style.css">
+<link href="../css/bootstrap.min.css" rel="stylesheet">
+
+<body>
+	<script src="../js/jquery.min.js"></script>
+	<script src="../js/bootstrap.js"></script>
+	<script> 
+		$(document).ready(function(){
+		  $("#instruct").click(function(){
+		    $("#frame").slideToggle("slow");
+		  });
+		});
+	</script>
+
+	<center>
+		<div id="practice0", style="display: none;">This is the first round of the first part.
+			You now have to decide if you want low, medium, or high growth in your economy in 
+			this round. This decision will affect your wealth in the next round and climate risk in 
+			the second part. The tables below show how your decision affects your wealth and climate 
+			risk (show tables somewhere below). Please make your decision now using the menu below.
+		</div>
+		<br>
+		<div id="instructions">		
+			<table class="table" style="max-width:600px;">
+			  <tr class="active">
+			    <td align="left">Your endowment (ECU):</td>
+			    <td align="center" id="propEndow"></td>
+			  </tr>
+			  <tr>
+			    <td align="left">Your contribution to increase the climate risk (%):</td>
+			    <td align="center" id="clRiskOwn"></td>
+			  </tr>
+			</table>
+			<br> <br>
+			<h4>Please decide whether you want to have high growth, medium growth or low growth in your economy.</h4>
+		</div>
+		</br>
+		<!-- <fieldset id="fieldset">
+			<select class="form-control" name="growth" id="growth"
+				style="max-width: 70px;">
+				<option>Low Growth</option>
+				<option>Medium Growth</option>
+				<option>High Growth</option>
+			</select> <br /> -->
+			<!-- <input type="number" min="0" max="10" name="offer" id="offer" /> -->
+			<!-- <a class="btn btn-primary" id="submitGrowth" style="width: 70px;">Submit</a>
+		</fieldset> -->
+	</center>
+	
+	<table align="center">
+		<tr>
+		<td>
+			<div class="radio">
+			  <label>
+			    <input type="radio" name="pg" id="pg1" value="1">
+			    Low Growth - (wealth increase between 1 and 10, risk increase 0 %)
+			  </label>
+			</div>
+		</td>
+		</tr>
+		<tr>
+		<td>
+			<div class="radio">
+			  <label>
+			    <input type="radio" name="pg" id="pg2" value="2">
+			    Medium Growth - (wealth increase between 5 and 15, risk increase 2.5 %)
+			  </label>
+			</div>
+		</td>
+		</tr>
+		<tr>
+		<td>
+			<div class="radio">
+			  <label>
+			    <input type="radio" name="pg" id="pg3" value="3">
+			    High Growth - (wealth increase between 10 and 20, risk increase 5 %)
+			  </label>
+			</div>
+		</td>
+		</tr>
+	</table>   </br></br>
+	
+	<center>
+		<a class="btn btn-primary" id="submitGrowth" style="width: 70px;">Submit</a>
+		<br><br><br><br>
+		<div>For showing the instructions again click the button below.</div><br>
+		<a class="btn btn-custom" id="instruct">Click here to show or hide the instructions</a>
+		<br> <br>
+		<div id="frame"  style="display: none;">
+			<iframe src="instructions_full_30.html" width = "85%" height = "600px">						
+				<p>Your browser does not support iframes.</p>
+			</iframe>
+		</div>	
+	</center>	
+</body>
