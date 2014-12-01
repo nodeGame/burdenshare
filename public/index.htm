@@ -31,11 +31,11 @@
     <div class="jumbotron" id = "startPage">
       <h1 align="center">Welcome to the experiment!</h1>
       <h3 align="center">
-	<div id="join"></div> <br><br>
-	<div id="nbrPlayers"></div> <br><br>Time Remaining:
+    <div id="join"></div> <br><br>
+    <div id="nbrPlayers"></div> <br><br>Time Remaining:
       </h3>
       <center>
-	<div id="Uhr" class="Uhr" style="font-size:250%;">&nbsp;</div>
+    <div id="Uhr" class="Uhr" style="font-size:250%;">&nbsp;</div>
       </center>
     </div>
   </div>
@@ -49,11 +49,11 @@
         // var Now = new Date();
         // HoursWaitRoom = Now.getUTCHours();
         // MinutesWaitRoom = Now.getUTCMinutes();
-        
+
         if (DHTML) {
             if (NS4) {
                 setContent("id", "Uhr", null, '<span class="Uhr">' + TimeNow + "<\/span>");
-            } 
+            }
             else {
                 setContent("id", "Uhr", null, TimeNow);
             }
@@ -90,19 +90,19 @@
         timeout = msg.data.over;
         exitCode = msg.data.exit;
     });
-    
+
     node.on.data('PLAYERSCONNECTED', function(msg) {
         console.log(msg.data);
         nbrPlayerConnected = msg.data;
     });
-    
+
     // TODO: NOT WORKING.
     node.on.data('CLEAR_COUNTDOW', function(msg) {
         console.log("Clear CountDown");
         clearInterval(timeCheck);
         clearTimeout(count);
     });
-    
+
     window.onload = function () {
         // HourLimitWaitRoom = 25;
         // MinutesLimitWaitRoom = 61;
@@ -132,7 +132,7 @@
                     type : 'SocketIo',
                     reconnect : false
                 }
-            });            
+            });
 
             // Connecting to waiting room.
             if (location.search) {
@@ -143,15 +143,12 @@
                 node.connect("/burdenRAHR");
             }
 
-            // connecting
-            node.connect("/burdenRAHR");
-            
             timeCheck = setInterval(function() {
                 var timeOut;
-                
+
                 // TODO INTERVAL MUST BE STOPPED!
                 // console.log(timeout);
-                
+
                 // if (HoursWaitRoom <= HourLimitWaitRoom && MinutesWaitRoom < MinutesLimitWaitRoom) {
                 if (timeout == "NotEnoughPlayers") {
                     document.getElementById("nbrPlayers").innerHTML = "Number of participants already in the group:  " + nbrPlayerConnected + " of 4";
