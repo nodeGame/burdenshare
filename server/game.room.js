@@ -13,8 +13,8 @@ module.exports = function(node, channel, gameRoom) {
     var dk = require('descil-mturk')();
 
     // Load code database
+    dk.readConfiguration(confPath);
     if (settings.AUTH !== 'none') {
-        dk.readConfiguration(confPath);
         if (settings.AUTH === 'remote') {
             dk.getCodes(function() {
                 if (!dk.codes.size()) {
@@ -242,7 +242,6 @@ module.exports = function(node, channel, gameRoom) {
                 treatmentName: settings.CHOSEN_TREATMENT
 
             });
-            debugger;
 
             room.setupGame();
             room.startGame(true, tmpPlayerList.id.getAllKeys());

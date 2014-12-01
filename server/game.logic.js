@@ -49,8 +49,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
 
     // Load code database
+    dk.readConfiguration(confPath);
     if (settings.AUTH !== 'none') {
-        dk.readConfiguration(confPath);
         if (settings.AUTH === 'remote') {
             dk.getCodes(function() {
                 if (!dk.codes.size()) {
@@ -178,7 +178,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                 });
 
                 node.socket.send(node.msg.create({
-                    text: 'PROFIT_ADJUSTMENT',
+                    text: 'ADDED_QUESTIONNAIRE_BONUS',
                     to: msg.data.player,
                     data: {
                         oldAmountUCE: profit.Amount_UCE,
@@ -247,8 +247,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             node.remoteSetup('env', p.id, client.env);
 
             var RECON_STAGE = node.player.stage;
-            // console.log(RECON_STAGE);
-            // console.log(GameStage.compare(node.player.stage, '2.2.1'));
 
             if (!GameStage.compare(node.player.stage, '2.2.1') ||
             !GameStage.compare(node.player.stage, '2.2.2') ||
@@ -293,7 +291,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                 node.remoteCommand('goto_step', p.id, RECON_STAGE);
 
                 // IF ALREADY CHECKOUT
-                // console.log("Has checked out: " + code.checkout);
                 if (code.checkout) {
                     node.say("win", p.id, code.ExitCode);
                 }
@@ -449,8 +446,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             mdbWriteProfit.store(msg.data);
         });
 
-        node.on.data('Adjust_Profit', function(msg) {
-            console.log('Adjusting profit');
+        node.on.data('add_questionnaire_bonus', function(msg) {
+            console.log('adding questionnaire bonus');
             addQuestionnaireBonus(msg);
         });
         node.on.data('bsc_data',function(msg) {
@@ -735,8 +732,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                             gameRoom.name);
 
             var players, groups, proposer, respondent;
-            //            players = node.game.pl.fetch();
-            // node.game.groups = node.game.pl.getNGroups(2);
             node.game.groups = [[],[]];
             var playerIDs = node.game.pl.id.getAllKeys();
             node.game.playerID = J.shuffle(playerIDs);
@@ -883,9 +878,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                                 respondent: node.game.groups[i][1]
                             };
                             proposer = node.game.groups[i][0];
-                            //            console.log(proposer);
                             respondent = node.game.groups[i][1];
-                            //            console.log(proposer);
 
                             node.socket.send(node.msg.create({
                                 text:'RESPONDENT',
