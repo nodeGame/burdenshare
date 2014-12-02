@@ -1,5 +1,5 @@
 /**
- * # Requierements Room for Meritocracy Game
+ * # Requierements Room for Burden-share Game
  * Copyright(c) 2014 Stefano Balietti
  * MIT Licensed
  *
@@ -84,16 +84,13 @@ module.exports = function(node, channel, room) {
 	        };
             }
 
-	    if (code.usage) {
-		//console.log('Code ' +  mtid + ' already in use ' + code.usage + ' times.');
-		// errUri = '/ultiturk/unauthr.html?id=' + mtid + '&codeInUse=1';
-		// node.redirect(errUri, msg.data.id);
-		// dk.decrementUsage(mtid);
+            // usage is for LOCAL check, IsUsed for MTURK
+            if ((code.usage || code.IsUsed) && !code.disconnected) {
                 return {
                     success: false,
                     msg: 'Code already in use: ' + mtid
-	        };
-	    }
+                };
+            }
 
             return {
                 success: true,

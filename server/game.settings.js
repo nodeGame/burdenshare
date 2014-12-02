@@ -12,7 +12,8 @@ module.exports = {
     // Files
     gamePaths: {
         logic:  "game.logic.js",
-        player: "game.client.js"
+        player: "game.client.js",
+        autoplay: "game.autoplay"
     },
 
     REPEAT: 4,

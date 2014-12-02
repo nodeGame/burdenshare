@@ -1,6 +1,10 @@
 /**
- * This is a game that spawns sub-games
+ * # Waiting Room for Burden-share Game
+ * Copyright(c) 2014 Stefano Balietti
+ * MIT Licensed
  *
+ * Handles incoming connections, matches them, sets the Burden-share game
+ * in each client, move them in a separate gaming room, and start the game.
  */
 module.exports = function(node, channel, gameRoom) {
 
@@ -58,8 +62,6 @@ module.exports = function(node, channel, gameRoom) {
             return true;
         }
     });
-
-    //  stager.addStage(waitingStage);
 
     stager.setOnInit(function() {
 
@@ -193,6 +195,9 @@ module.exports = function(node, channel, gameRoom) {
             dk.checkIn(code.AccessCode);
 
             console.log('-----------Player connected ' + p.id);
+
+            dk.markInvalid(p.id);      
+
             wRoom = channel.waitingRoom.clients.player;
 
             for (i = 0; i < wRoom.size(); i++) {
@@ -203,7 +208,10 @@ module.exports = function(node, channel, gameRoom) {
             TimeOut(p.id, wRoom.size());
 
             // Wait for all players to connect.
-            if (wRoom.size() < NPLAYERS) return;
+            if (wRoom.size() < NPLAYERS) {
+                // channel.connectPhantom();
+                return;
+            }
 
             for (i = 0; i < wRoom.size(); i++) {
                 timeOutData = {
@@ -316,7 +324,7 @@ module.exports = function(node, channel, gameRoom) {
             // Client really disconnected (not moved into another game room).
             if (channel.registry.clients.disconnected.get(p.id)) {
                 // Free up the code.
-                dk.decrementUsage(p.id);
+                dk.markValid(p.id);
             }
 
         });

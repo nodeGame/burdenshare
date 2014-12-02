@@ -86,17 +86,17 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
         var disconnectedState;
 
-            // Register player disconnection, and wait for him...
-            node.on.pdisconnect(function(p) {
-                dk.updateCode(p.id, {
-                    disconnected: true,
-                    // stage: p.stage
-                    stage: node.player.stage
+        // Register player disconnection, and wait for him...
+        node.on.pdisconnect(function(p) {
+            dk.updateCode(p.id, {
+                disconnected: true,
+                // stage: p.stage
+                stage: node.player.stage
 
-                });
-                console.log('Disconnection in Stage: ' + node.player.stage);
-                dk.decrementUsage(p.id);
             });
+
+            console.log('Disconnection in Stage: ' + node.player.stage);            
+        });
 
         var disconnected;
         disconnected = {};
@@ -761,6 +761,11 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         cb: function() {
         console.log('********************** Syncing all Players - SessionID: ' +
             gameRoom.name);
+
+            // See if it works.
+//             node.game.groups = [[],[]];
+//             var playerIDs = node.game.pl.id.getAllKeys();
+//             node.game.playerID = J.shuffle(playerIDs);
 
             node.on('in.say.DATA', function(msg) {
                 if (msg.text === 'Round_Over') {

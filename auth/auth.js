@@ -1,4 +1,11 @@
-
+/**
+ * # Authorization functions for Burden-share Game
+ * Copyright(c) 2014 Stefano Balietti
+ * MIT Licensed
+ *
+ * Sets authorizations for accessing the Burden-share channels.
+ * ---
+ */
 module.exports = function(auth) {
 
     var path = require('path');
@@ -59,13 +66,13 @@ module.exports = function(auth) {
         code = dk.codeExists(token);
 
         // Code not existing.
-	    if (!code) {
+	if (!code) {
             console.log('not existing token: ', token);
             return false;
         }
 
         // Code in use.
-	    if (code.usage) {
+	if (code.usage) {
             if (code.disconnected) {
                 return true;
             }
@@ -73,9 +80,7 @@ module.exports = function(auth) {
                 console.log('token already in use: ', token);
                 return false;
             }
-	    }
-	    // Mark the code as in use.
-        dk.incrementUsage(token);
+	}
 
         // Client Authorized
         return true;
@@ -87,16 +92,15 @@ module.exports = function(auth) {
 
         cid = channel.registry.generateClientId();
 
-        // If no auth, add the new code to the db.
-        dk.codes.insert({
-            AccessCode: cid,
-            ExitCode: cid + '_exit'
-        });
-        return cid;
+        if (settings.AUTH === 'none' || settings.AUTH === 'NO') {
+            // If no auth, add the new code to the db.
+            dk.codes.insert({
+                AccessCode: cid,
+                ExitCode: cid + '_exit'
+            });            
+            return cid;
+        }
 
-        // var code;
-        // code = dk.codes.db[++noAuthCounter].AccessCode;
-        // dk.incrementUsage(code);
         // // Return the id only if token was validated.
         // // More checks could be done here to ensure that token is unique in ids.
         if (cookies.token) {

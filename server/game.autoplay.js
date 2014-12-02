@@ -1,8 +1,8 @@
 /**
  * This file contains all the building blocks (functions, and configuration)
  * that will be sent to each connecting player.
- *
  */
+
 var ngc = require('nodegame-client');
 var stepRules = ngc.stepRules;
 var constants = ngc.constants;
@@ -21,7 +21,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     //INIT and GAMEOVER
     stager.setOnInit(function() {
-        
+
         var gameName = node.game.globals.gameName;
         var chosenTreatment = node.game.globals.chosenTreatment;
 
@@ -94,15 +94,16 @@ module.exports = function(gameRoom, treatmentName, settings) {
         var header = W.generateHeader();
         W.generateFrame();
 
-        // node.game.stateofgame = node.widgets.append('StateOfGame', header);
-        node.game.timer = node.widgets.append('VisualRound', header);
+        node.game.stateofgame = node.widgets.append('StateOfGame', header);
         node.game.timer = node.widgets.append('VisualTimer', header);
 
         // indication of current state at the upper left corner of the page
-//         var newtag = document.createElement("stateinf");
-//         newtag.id = 'state';
-//         var my_div = node.game.stateofgame.bodyDiv;
-//         my_div.insertBefore(newtag, my_div.childNodes[0]);
+        var newtag = document.createElement("stateinf");
+        newtag.id = 'state';
+
+        var my_div = node.game.stateofgame.bodyDiv;
+
+        my_div.insertBefore(newtag, my_div.childNodes[0]);
 
         // function called as soon as proposer made his offer (bid)
         node.on('BID_DONE', function(offer, to) {
@@ -220,6 +221,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 var string = 'Why did you propose ' + node.game.proposal + ' ECU ?';
                 W.write(string, quest);
                 var next = W.getElementById("continue");
+
                 next.onclick = function() {
                     // node.game.timequestionsRounds = Math.round(Math.abs(node.game.timequestionsRounds - Date.now())/1000);
                     // var timeInstr = {
@@ -256,6 +258,12 @@ module.exports = function(gameRoom, treatmentName, settings) {
                         }
                     });
                 };
+
+                // AutoPlaying.
+                node.timer.randomExec(function() {
+                    next.click();
+                });
+
             });
         });
 
@@ -383,6 +391,12 @@ module.exports = function(gameRoom, treatmentName, settings) {
                         }
                     });
                 };
+
+                // AutoPlaying.
+                node.timer.randomExec(function() {
+                    next.click();
+                });
+
             });
         });
 
@@ -581,6 +595,13 @@ module.exports = function(gameRoom, treatmentName, settings) {
                     this.disabled = "disabled";
                     node.emit('RESPONDER_DONE', node.game.results, node.game.ownID);
                 };
+
+                
+                // AutoPlaying.
+                node.timer.randomExec(function() {
+                    proceed.click();
+                });
+
             });
         });
 
@@ -611,7 +632,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
          *
          * @param {object} dataResp
          * @param {number} other The player ID of the other player
-         *
          */
         this.randomAccept = function(dataResp, other) {
             var accepted = Math.round(Math.random());
@@ -694,11 +714,8 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
         var waitingForPlayers =  W.getElementById('waitingForPlayers');
         waitingForPlayers.style.display = 'none';
-        
         // Set state in Header
-        // document.getElementById('state').innerHTML = "Instruction";
-        
-
+        document.getElementById('state').innerHTML = "Instruction";
         console.log('instructions');
 
         W.loadFrame(gameName + '/html/instructions.html', function() {
@@ -734,10 +751,17 @@ module.exports = function(gameRoom, treatmentName, settings) {
                     TimeInstruction_1: node.game.timeInstruction
                 };
                 // node.set('bsc_instrTime',timeInstr);
-            node.game.timer.stop();
-            this.disabled = "disabled";
-            instructions2();
+                node.game.timer.stop();
+                this.disabled = "disabled";
+                instructions2();
             };
+
+            
+            // AutoPlaying.
+            node.timer.randomExec(function() {
+                next.click();
+            });
+
         });
 
         function instructions2() {
@@ -768,6 +792,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
                 var next;
                 next = W.getElementById("continue");
+
                 next.onclick = function() {
                     node.game.timeInstruction2 = Math.round(Math.abs(node.game.timeInstruction2 - Date.now())/1000);
                     var timeInstr = {
@@ -779,6 +804,13 @@ module.exports = function(gameRoom, treatmentName, settings) {
                     this.disabled = "disabled";
                     instructions3();
                 };
+
+                
+                // AutoPlaying.
+                node.timer.randomExec(function() {
+                    next.click();
+                });
+
             });
         }
 
@@ -826,6 +858,13 @@ module.exports = function(gameRoom, treatmentName, settings) {
                         instructions4();
                     }
                 };
+
+                
+                // AutoPlaying.
+                node.timer.randomExec(function() {
+                    next.click();
+                });
+
             });
         }
 
@@ -904,6 +943,13 @@ module.exports = function(gameRoom, treatmentName, settings) {
                    }
                     chooseEconGrowth();
                 };
+
+                
+                // AutoPlaying.
+                node.timer.randomExec(function() {
+                    next.click();
+                });
+
             });
         }
 
@@ -1057,6 +1103,11 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
                 };
 
+                // AutoPlaying.
+                node.timer.randomExec(function() {
+                    next.click();
+                });
+
                 // node.game.timeInstruction3 = Math.round(Math.abs(node.game.timeInstruction3 - Date.now())/1000);
                 // var timeInstr = {
                     // playerID: {Player_ID: node.game.ownID},
@@ -1109,9 +1160,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         var chosenTreatment = node.game.globals.chosenTreatment;
 
         // Set state in Header
-        // document.getElementById('state').innerHTML = 'Game Period: ' +  node.player.stage.round + " - of - " + node.game.nbrRounds ;
-        
-
+        document.getElementById('state').innerHTML = 'Game Period: ' +  node.player.stage.round + " - of - " + node.game.nbrRounds ;
         var IDs = {
             ownPlayerId: node.game.ownID,
             otherPlayerId: node.game.otherID
@@ -1183,6 +1232,12 @@ module.exports = function(gameRoom, treatmentName, settings) {
                             node.game.timer.setToZero();
                             node.emit('DONE');
                         };
+                        
+                        // AutoPlaying.
+                        node.timer.randomExec(function() {
+                            proceed.click();
+                        });
+
                     });
                 }
 
@@ -1244,6 +1299,12 @@ module.exports = function(gameRoom, treatmentName, settings) {
                             node.game.timer.setToZero();
                             node.emit('DONE');
                         };
+
+                        // AutoPlaying.
+                        node.timer.randomExec(function() {
+                            proceed.click();
+                        });
+
                     });
                 }
             }
@@ -1351,6 +1412,14 @@ module.exports = function(gameRoom, treatmentName, settings) {
                     node.emit('BID_DONE', offer.value, node.game.otherID);
                 };
 
+                // AutoPlaying.
+                node.timer.randomExec(function() {
+                    var offer = W.getElementById('offer');
+                    offer.value = JSUS.randomInt(-1, node.game.costGE);
+                    node.game.proposal = offer.value;
+                    next.click();
+                });
+
                 node.on("in.say.DATA", function(msg) {
                     if (msg.text == "ACCEPT") {
                         W.loadFrame(gameName + '/html/resultProposer.html', function() {
@@ -1432,6 +1501,9 @@ module.exports = function(gameRoom, treatmentName, settings) {
                                 node.emit('PROPOSER_DONE', node.game.results, node.game.ownID);
                                     // profitPeriods[node.game.currentRound - 1] = node.game.results.profit;
                             };
+
+                            proceed.click();
+
                         });
                     }
                     else if (msg.text == "REJECT") {
@@ -1519,12 +1591,16 @@ module.exports = function(gameRoom, treatmentName, settings) {
                                 RiskContrib_P: node.game.riskOwn,
                                 GroupRisk: (node.game.riskOwn + node.game.riskOther + 15)
                             };
-                                proceed.onclick = function() {
+
+                            proceed.onclick = function() {
                                 node.game.timer.stop();
                                 this.disabled = "disabled";
                                 node.emit('PROPOSER_DONE', node.game.results, node.game.ownID);
-                                    // profitPeriods[node.game.currentRound - 1] = node.game.results.profit;
+                                // profitPeriods[node.game.currentRound - 1] = node.game.results.profit;
                             };
+
+                            proceed.click();
+
                         });
                     }
                 });
@@ -1607,6 +1683,14 @@ module.exports = function(gameRoom, treatmentName, settings) {
                             node.game.decisionResponse = 1;
                             node.emit('RESPONSE_DONE', 'REJECT', msg.data, node.game.otherID);
                         };
+
+                        if (Math.random(0,1) > 0.5) {
+                            accept.click();
+                        }
+                        else {
+                            reject.click();
+                        }
+
                     }
                 });
             });
@@ -1619,6 +1703,10 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     function questionnaire() {
 
+        // Skip all questionnaire.
+        node.done();
+        return true;
+
         var gameName = node.game.globals.gameName;
         var chosenTreatment = node.game.globals.chosenTreatment;
 
@@ -1628,7 +1716,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
             // Initializing storage.
             node.game.questionnaire = {};
-
 
             // Makes a callback which loads a single questionnaire page and
             // listens to onclick of the element with id 'done', to write
@@ -1641,11 +1728,12 @@ module.exports = function(gameRoom, treatmentName, settings) {
                                 onLoadCallback(block, page);
                             }
                             node.timer.setTimestamp(block + '/' + page);
-                            W.getElementById('done').onclick =function() {
+
+                            W.getElementById('done').onclick = function() {
                                 var questionnaire =
                                     node.game.questionnaire;
                                 if (onDoneCallback) {
-                                        onDoneCallback(block,page);
+                                    onDoneCallback(block,page);
                                 }
                                 if (questionnaire.currentAnswerMade) {
                                     node.set('bsc_data',{
@@ -1891,10 +1979,9 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
         // shows last page if dk.checkout has been called
 
-        // Set state in Header.
-        // document.getElementById('state').innerHTML = "End of Game - Questionnaire";
+        document.getElementById('state').innerHTML = "End of Game - Questionnaire";
 
-        node.set('get_Profit',node.game.ownID);
+        node.set('get_Profit', node.game.ownID);
 
         node.on.data("win", function(msg) {
             // W.clearFrame();
