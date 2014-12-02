@@ -28,8 +28,8 @@ module.exports = function(node, channel, room) {
         console.log('********Requirements Room Created*****************');
 
         // Load code database
+        dk.readConfiguration(confPath);
         if (settings.AUTH !== 'none') {
-            dk.readConfiguration(confPath);
             if (settings.AUTH === 'remote') {
                 dk.getCodes(function() {
                     if (!dk.codes.size()) {
@@ -47,16 +47,16 @@ module.exports = function(node, channel, room) {
         }
 
 
-	node.on.preconnect(function(player) {
+        node.on.preconnect(function(player) {
             console.log('Player connected to Requirements room.');
             node.game.pl.add(player);
             node.remoteCommand('start', player.id);
-	});
+        });
 
-	node.on.pconnect(function(player) {
+        node.on.pconnect(function(player) {
             console.log('Player connected to Requirements room.');
             node.remoteCommand('start', player.id);
-	});
+        });
 
         node.on('get.MTID', function(msg) {
             var mtid, errUri, code;
@@ -75,13 +75,13 @@ module.exports = function(node, channel, room) {
 
             code = dk.codeExists(mtid);
 
-	    if (!code) {
-		// errUri = '/ultimatum/unauth.html?id=' + mtid + '&err0=1';
-		// node.redirect(errUri, msg.data.id);
-		return {
+            if (!code) {
+                // errUri = '/ultimatum/unauth.html?id=' + mtid + '&err0=1';
+                // node.redirect(errUri, msg.data.id);
+                return {
                     success: false,
                     msg: 'Code not found: ' + mtid
-	        };
+                };
             }
 
             // usage is for LOCAL check, IsUsed for MTURK
@@ -103,13 +103,13 @@ module.exports = function(node, channel, room) {
 
         node.on.pdisconnect(function(player) {
 
-	});
+        });
 
         // Results of the requirements check.
-	node.on.data('requirements', function(msg) {
+        node.on.data('requirements', function(msg) {
             console.log('requirements');
             console.log(msg.data);
-	});
+        });
 
         // In case a user is using the feedback form display the action.
         node.on.data('FEEDBACK', function(msg) {

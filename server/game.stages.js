@@ -10,9 +10,9 @@ module.exports = function(settings) {
     var stager = ngc.getStager();
 
     stager.init()
-	.next('instructions')
-	.repeat('burdenSharingControl', settings.REPEAT)
-	.next('questionnaire');
+    .next('instructions')
+    .repeat('burdenSharingControl', settings.REPEAT)
+    .next('questionnaire');
 
     debugger
     // Modifty the stager to skip one stage.

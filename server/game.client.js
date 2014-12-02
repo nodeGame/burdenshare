@@ -21,7 +21,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     //INIT and GAMEOVER
     stager.setOnInit(function() {
-        
+
         var gameName = node.game.globals.gameName;
         var chosenTreatment = node.game.globals.chosenTreatment;
 
@@ -66,19 +66,19 @@ module.exports = function(gameRoom, treatmentName, settings) {
         node.game.response = '';
 
         // condition for one of the two game versions
-        if (node.game.costGE == 30) {
-            node.game.url_bidder = gameName + '/html/bidder_30.html';
-            node.game.url_resp = gameName + '/html/resp_30.html';
-            node.game.url_initprop = gameName + '/html/initialSituationProp_30.htm';
-            node.game.url_initresp = gameName + '/html/initialSituationResp_30.htm';
-            node.game.url_preGame = gameName + '/html/preGame_30.html';
+        if (node.game.costGE === 30) {
+            node.game.url_bidder = gameName + '/html/' + gameName + '/bidder_30.html';
+            node.game.url_resp = gameName + '/html/' + gameName + '/resp_30.html';
+            node.game.url_initprop = gameName + '/html/' + gameName + '/initialSituationProp_30.htm';
+            node.game.url_initresp = gameName + '/html/' + gameName + '/initialSituationResp_30.htm';
+            node.game.url_preGame = gameName + '/html/' + gameName + '/preGame_30.html';
         }
-        else if (node.game.costGE == 80) {
-            node.game.url_bidder = gameName + '/html/bidder_80.html';
-            node.game.url_resp = gameName + '/html/resp_80.html';
-            node.game.url_initprop = gameName + '/html/initialSituationProp_80.htm';
-            node.game.url_initresp = gameName + '/html/initialSituationResp_80.htm';
-            node.game.url_preGame = gameName + '/html/preGame_80.html';
+        else if (node.game.costGE === 80) {
+            node.game.url_bidder = gameName + '/html/' + gameName + '/bidder_80.html';
+            node.game.url_resp = gameName + '/html/' + gameName + '/resp_80.html';
+            node.game.url_initprop = gameName + '/html/' + gameName + '/initialSituationProp_80.htm';
+            node.game.url_initresp = gameName + '/html/' + gameName + '/initialSituationResp_80.htm';
+            node.game.url_preGame = gameName + '/html/' + gameName + '/preGame_80.html';
 
         }
 
@@ -140,7 +140,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
             // node.set('bsc_gameTime',gameTimeResp);
 
             // short question at the end of each round
-            W.loadFrame(gameName + '/html/questionRounds_prop.html', function() {
+            W.loadFrame(gameName + '/html/' + gameName + '/questionRounds_prop.html', function() {
                 node.game.timequestionsRounds = Date.now();
                 var options = {
                     // count down time
@@ -167,7 +167,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                         node.on("in.say.DATA", function(msg) {
                             if (msg.text == "CheckData") {
                                 console.log('Current Round: ' + msg.data[0]);
-                                if (msg.data[0] === undefined) {
+                                if ('undefined' === typeof msg.data[0]) {
                                     node.set('bsc_data',node.game.results);
                                     node.emit('DONE');
                                 }
@@ -273,7 +273,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
             // node.set('bsc_gameTime',gameTimeResp);
 
             //Check if data for playerID and current round already exists
-            W.loadFrame(gameName + '/html/questionRounds_resp.html', function() {
+            W.loadFrame(gameName + '/html/' + gameName + '/questionRounds_resp.html', function() {
                 node.game.timequestionsRounds = Date.now();
                 var options = {
                     milliseconds: 2000, //240000, // 240000 ms is equivalent to 4 minutes (reading time approximately 2 minutes times 2)
@@ -386,23 +386,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
             });
         });
 
-        // node.on('RESPONDER_DONE', function(data) {
-        // node.game.timeResultResp = Math.round(Math.abs(node.game.timeResultResp - Date.now())/1000);
-        // var gameTimeResp = {
-        // Player_ID: data.Player_ID,
-        // Current_Round: data.Current_Round,
-        // timeInitSituaResp: data.timeInitSituaResp,
-        // timeRespondeResp: data.timeRespondeResp,
-        // timeResultResp: node.game.timeResultResp,
-        // };
-        // node.set('bsc_gameTime',gameTimeResp);
-        // //Check if data for playerID and current round already exists
-        // node.set('check_Data', node.game.ownID);
-        // node.set('bsc_data',data);
-        // node.emit('DONE');
-        // });
-
-
         // getting the player ID of the other player and the group number
         // depending on whether this player is the proposer or the responder in the current round
         node.on("in.say.DATA", function(msg) {
@@ -425,11 +408,10 @@ module.exports = function(gameRoom, treatmentName, settings) {
             // var timeResponse = {timeResponse: node.game.timeResponse};
             // node.set('bsc_time',timeResponse);
 
-            W.loadFrame(gameName + '/html/resultResponder.html', function() {
+            W.loadFrame(gameName + '/html/' + gameName + '/resultResponder.html', function() {
                 if (node.player.stage.round == 1) {
                     // Test Round
-                    var practice3 = W.getElementById('practice3');
-                    practice3.style.display = '';
+                    W.getElementById('practice3').style.display = '';
                 }
                 node.game.timeResultResp = Date.now();
 
@@ -643,7 +625,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
             n = parseInt(n);
             return !isNaN(n) && isFinite(n) && n >= 0 && n <= node.game.costGE;
         };
-
     });
 
     ///// STAGES and STEPS
@@ -652,7 +633,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
         var gameName = node.game.globals.gameName;
         var chosenTreatment = node.game.globals.chosenTreatment;
-
 
         /**
         * ## checkEntry
@@ -674,19 +654,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                       callback: function() {
                       }
                     },
-        //              success: {
-        //                label: "ID is correct",
-        //                className: "btn-success",
-        //                callback: function() {
-        //                      var saveId = {
-        //                              Player_ID: 666
-        //                      };
-        //                      node.emit('player_id',saveId);
-        //                      <!-- node.set('player_id',saveId); -->
-        //
-        //                    location.href="http://localhost:8080/pairs/";
-        //                }
-        //              },
                   }
             });
         }
@@ -701,7 +668,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
         console.log('instructions');
 
-        W.loadFrame(gameName + '/html/instructions.html', function() {
+        W.loadFrame(gameName + '/html/' + gameName + '/instructions.html', function() {
             node.game.timeInstruction = Date.now();
             var options = {
                 milliseconds: 2000, //480000, // 240000 ms is equivalent to 6 minutes (reading time approximately 2 minutes times 2)
@@ -712,7 +679,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                         Current_Round: "Instructions",
                         TimeInstruction_1: node.game.timeInstruction
                     };
-                    // node.set('bsc_instrTime',timeInstr);
                     this.disabled = "disabled";
                     instructions2();
                 }
@@ -733,7 +699,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                     Current_Round: "Instructions",
                     TimeInstruction_1: node.game.timeInstruction
                 };
-                // node.set('bsc_instrTime',timeInstr);
             node.game.timer.stop();
             this.disabled = "disabled";
             instructions2();
@@ -741,7 +706,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         });
 
         function instructions2() {
-            W.loadFrame(gameName + '/html/instructions2.html', function() {
+            W.loadFrame(gameName + '/html/' + gameName + '/instructions2.html', function() {
                 node.game.timeInstruction2 = Date.now();
                 var options = {
                     milliseconds: 2000, //480000, // 480000 ms is equivalent to 8 minutes (reading time approximately 4 minutes times 2)
@@ -751,7 +716,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                             playerID: {Player_ID: node.game.ownID},
                             add: {TimeInstruction_2: node.game.timeInstruction2}
                         };
-                        // node.set('bsc_instrTimeUpdate',timeInstr);
                         node.game.timer.stop();
                         this.disabled = "disabled";
                         instructions3();
@@ -774,7 +738,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                         playerID: {Player_ID: node.game.ownID},
                         add: {TimeInstruction_2: node.game.timeInstruction2}
                     };
-                    // node.set('bsc_instrTimeUpdate',timeInstr);
                     node.game.timer.stop();
                     this.disabled = "disabled";
                     instructions3();
@@ -783,7 +746,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         }
 
         function instructions3() {
-            W.loadFrame(gameName + '/html/instructions3.html', function() {
+            W.loadFrame(gameName + '/html/' + gameName + '/instructions3.html', function() {
                 node.game.timeInstruction3 = Date.now();
                 var options = {
                     milliseconds: 2000, //480000, // 480000 ms is equivalent to 8 minutes (reading time approximately 4 minutes times 2)
@@ -793,11 +756,14 @@ module.exports = function(gameRoom, treatmentName, settings) {
                             playerID: {Player_ID: node.game.ownID},
                             add: {TimeInstruction_3: node.game.timeInstruction3}
                         };
-                        // node.set('bsc_instrTimeUpdate',timeInstr);
                         node.game.timer.stop();
                         this.disabled = "disabled";
-                        EconGrowthAndRisk();
-                        // node.emit('DONE');
+                        if (node.game.globals.chosenTreatment === 'ra') {
+                            EconGrowthAndRisk();
+                        }
+                        else if (node.game.globals.chosenTreatment === 'sa') {
+                            instructions4();
+                        }
                     }
                 };
                 node.game.timer.init(options);
@@ -816,7 +782,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                         playerID: {Player_ID: node.game.ownID},
                         add: {TimeInstruction_3: node.game.timeInstruction3}
                     };
-                    // node.set('bsc_instrTimeUpdate',timeInstr);
                     node.game.timer.stop();
                     this.disabled = "disabled";
                     if (chosenTreatment === 'ra') {
@@ -829,8 +794,8 @@ module.exports = function(gameRoom, treatmentName, settings) {
             });
         }
 
-        function instructions4(){
-            W.loadFrame(gameName + '/html/instructions4.html', function() {
+        function instructions4() {
+            W.loadFrame(gameName + '/html/' + gameName + '/instructions4.html', function() {
                 node.game.timeInstruction4 = Date.now();
                 var initEndow = {
                     playerID: {Player_ID: node.game.ownID},
@@ -844,10 +809,8 @@ module.exports = function(gameRoom, treatmentName, settings) {
                             playerID: {Player_ID: node.game.ownID},
                             add: {TimeInstruction_4: node.game.timeInstruction4}
                         };
-                        // node.set('bsc_instrTimeUpdate',timeInstr);
                         node.game.timer.stop();
                         this.disabled = "disabled";
-                        // node.emit('DONE');
                         node.game.pgCounter = 0;
                         node.game.endowment_own = 25;
                         node.game.risk = 7.5;
@@ -881,9 +844,9 @@ module.exports = function(gameRoom, treatmentName, settings) {
                         playerID: {Player_ID: node.game.ownID},
                         add: {TimeInstruction_4: node.game.timeInstruction4}
                     };
-                    // node.set('bsc_instrTimeUpdate',timeInstr);
                     node.game.timer.stop();
                     this.disabled = "disabled";
+
                     // set back values in database in case of a disconnection - reconnection
                     node.game.pgCounter = 0;
                     node.game.endowment_own = 25;
@@ -920,7 +883,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                     var practice0 = W.getElementById('practice0');
                     practice0.style.display = '';
                 }
-                // node.game.timeInstruction3 = Date.now();
                 var cumEndow = W.getElementById("propEndow");
                 var cumRisk =  W.getElementById("clRiskOwn");
                 W.write(node.game.endowment_own,cumEndow);
@@ -934,12 +896,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 var options = {
                     milliseconds: 40000, // 40000 ms is equal to 40 seconds
                     timeup: function() {
-                        // node.game.timeInstruction3 = Math.round(Math.abs(node.game.timeInstruction3 - Date.now())/1000);
-                        // var timeInstr = {
-                            // playerID: {Player_ID: node.game.ownID},
-                            // add: {TimeInstruction_3: node.game.timeInstruction3}
-                        // };
-                        // node.set('bsc_instrTimeUpdate',timeInstr);
                         var initEndow = {
                             playerID: {Player_ID: node.game.ownID},
                             addEndow: {Initial_Endowment: node.game.endowment_own, Climate_Risk: node.game.risk}
@@ -1057,12 +1013,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
                 };
 
-                // node.game.timeInstruction3 = Math.round(Math.abs(node.game.timeInstruction3 - Date.now())/1000);
-                // var timeInstr = {
-                    // playerID: {Player_ID: node.game.ownID},
-                    // add: {TimeInstruction_3: node.game.timeInstruction3}
-                // };
-                // node.set('bsc_instrTimeUpdate',timeInstr);
             });
         }
 
@@ -1104,7 +1054,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
 
     function initialSituation() {
-
         var gameName = node.game.globals.gameName;
         var chosenTreatment = node.game.globals.chosenTreatment;
 
@@ -1126,7 +1075,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 if (node.game.role == 'PROPOSER') {
                     node.game.endowment_responder = initialEndow;
                     node.game.endowment_proposer = node.game.endowment_own;
-
                     W.loadFrame(node.game.url_initprop, function() {
                         var initText1 = "Due to economic growth, you have received " + (node.game.endowment_own-25) + " ECU which will be added ";
                         initText1 = initText1 + "to your initial endowment.";
@@ -1148,18 +1096,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                             W.write(initText2, text2);
                         }
                         node.game.timeInitialSituation = Date.now();
-//                        var options = {
-//                        milliseconds: 330000,
-//                        timeup: function() {
-//                        node.game.timer.stop();
-//                        node.game.timeInitialSituation = Math.round(Math.abs(node.game.timeInitialSituation - Date.now())/1000);
-//                        var timeInitialSituation = {timeInitialSituation: node.game.timeInitialSituation};
-//                        // node.set('bsc_time',timeInitialSituation);
-//                        node.emit('DONE');
-//                        },
-//                        };
-//                        node.game.timer.restart(options);
-
 
                         var propEndow = W.getElementById('propEndow');
                         var respEndow = W.getElementById('respEndow');
@@ -1178,8 +1114,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                         proceed.onclick = function() {
                             node.game.timer.stop();
                             node.game.timeInitialSituation = Math.round(Math.abs(node.game.timeInitialSituation - Date.now())/1000);
-                            // var timeInitialSituation = {timeInitialSituation: node.game.timeInitialSituation};
-                            // node.set('bsc_time',timeInitialSituation);
                             node.game.timer.setToZero();
                             node.emit('DONE');
                         };
@@ -1211,17 +1145,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                             W.write(initText2, text2);
                         }
                         node.game.timeInitialSituationResp = Date.now();
-//                        var options = {
-//                        milliseconds: 330000,
-//                        timeup: function() {
-//                        node.game.timer.stop();
-//                        node.game.timeInitialSituationResp = Math.round(Math.abs(node.game.timeInitialSituationResp - Date.now())/1000);
-//                        // var timeInitialSituationResp = {timeInitialSituationResp: node.game.timeInitialSituationResp};
-//                        // node.set('bsc_time',timeInitialSituationResp);
-//                        node.emit('DONE');
-//                        },
-//                        };
-//                        node.game.timer.restart(options);
+
 
                         var propEndow = W.getElementById('propEndow');
                         var respEndow = W.getElementById('respEndow');
@@ -1239,8 +1163,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                         proceed.onclick = function() {
                             node.game.timer.stop();
                             node.game.timeInitialSituationResp = Math.round(Math.abs(node.game.timeInitialSituationResp - Date.now())/1000);
-                            // var timeInitialSituationResp = {timeInitialSituationResp: node.game.timeInitialSituationResp};
-                            // node.set('bsc_time',timeInitialSituationResp);
                             node.game.timer.setToZero();
                             node.emit('DONE');
                         };
@@ -1275,19 +1197,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                         callback: function() {
                         }
                     },
-                            //                success: {
-                            //                  label: "ID is correct",
-                            //                  className: "btn-success",
-                            //                  callback: function() {
-                            //                          var saveId = {
-                            //                                Player_ID: 666
-                            //                        };
-                            //                          node.emit('player_id',saveId);
-                            //                        <!-- node.set('player_id',saveId); -->
-                            //
-                            //                      location.href="http://localhost:8080/pairs/";
-                            //                  }
-                            //                },
                 }
             });
         }
@@ -1353,11 +1262,12 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
                 node.on("in.say.DATA", function(msg) {
                     if (msg.text == "ACCEPT") {
-                        W.loadFrame(gameName + '/html/resultProposer.html', function() {
+                        W.loadFrame(gameName + '/html/' + gameName + '/resultProposer.html', function() {
                             if (node.player.stage.round == 1) {
                                 // Test Round
-                                var practice3 = W.getElementById('practice3');
-                                practice3.style.display = '';
+                                W.getElementById(
+                                    'practice3'
+                                ).style.display = '';
                             }
                             node.game.timeResultProp = Date.now();
                             // Start the timer.
@@ -1367,7 +1277,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                                     node.game.timer.stop();
                                     this.disabled = "disabled";
                                     node.emit('PROPOSER_DONE', node.game.results, node.game.ownID);
-                                        //                                    profitPeriods[node.game.currentRound - 1] = node.game.results.profit;
                                 }
                             };
                             node.game.timer.restart(options);
@@ -1430,12 +1339,11 @@ module.exports = function(gameRoom, treatmentName, settings) {
                                 node.game.timer.stop();
                                 this.disabled = "disabled";
                                 node.emit('PROPOSER_DONE', node.game.results, node.game.ownID);
-                                    // profitPeriods[node.game.currentRound - 1] = node.game.results.profit;
                             };
                         });
                     }
                     else if (msg.text == "REJECT") {
-                        W.loadFrame('html/resultProposer.html', function () {
+                        W.loadFrame('html/' + gameName + '/resultProposer.html', function () {
                             if(chosenTreatment === 'sa') {
                                 if(node.player.stage.round === 1){
                                     // Test Round
@@ -1451,7 +1359,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                                     node.game.timer.stop();
                                     this.disabled = "disabled";
                                     node.emit('PROPOSER_DONE', node.game.results, node.game.ownID);
-                                        // profitPeriods[node.game.currentRound - 1] = node.game.results.profit;
                                 }
                             };
                             node.game.timer.restart(options);
@@ -1523,7 +1430,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                                 node.game.timer.stop();
                                 this.disabled = "disabled";
                                 node.emit('PROPOSER_DONE', node.game.results, node.game.ownID);
-                                    // profitPeriods[node.game.currentRound - 1] = node.game.results.profit;
                             };
                         });
                     }
@@ -1539,7 +1445,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                     W.getElementById(
                         chosenTreatment === 'ra' ?
                             'practice2' : 'practice3'
-                    ).practice2.style.display = '';
+                    ).style.display = '';
                 }
                 var span_dot = W.getElementById('span_dot');
                 // Refreshing the dots...
@@ -1703,7 +1609,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                     )
                 );
                 randomPageExecutor.setOnDone(function() {
-                    node.set('Adjust_Profit',{
+                    node.set('add_questionnaire_bonus',{
                         choices: node.game.questionnaire.SVOChoices,
                         player: node.game.ownID
                     });
@@ -1830,19 +1736,20 @@ module.exports = function(gameRoom, treatmentName, settings) {
                     },
                     // Final operation
                     done: function() {
-                        W.loadFrame(gameName + '/html/profit_adjustment.html',
-                            function() {
-                                W.getElementById('continue').onclick =
-                                    function() {
-                                        node.game.timeQuest1 =
-                                            Math.round(Math.abs(
-                                                node.game.timeQuest1 -
-                                                    Date.now())/1000
-                                            );
-                                        node.game.timer.stop();
-                                        node.say("QUEST_DONE", "SERVER",
-                                            node.game.bonus.newAmountUSD);
-                                    };
+                        W.loadFrame(gameName + '/html/' + gameName +
+                            '/profit_adjustment.html', function() {
+                                W.getElementById(
+                                    'continue'
+                                ).onclick = function() {
+                                    node.game.timeQuest1 =
+                                        Math.round(Math.abs(
+                                            node.game.timeQuest1 -
+                                                Date.now())/1000
+                                        );
+                                    node.game.timer.stop();
+                                    node.say("QUEST_DONE", "SERVER",
+                                        node.game.bonus.newAmountUSD);
+                                };
                                 W.write(node.game.bonus.newAmountUCE,
                                     W.getElementById("amountECU")
                                 );
@@ -1862,13 +1769,15 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 };
 
                 linearPageExecutor.callbacks = makeBlockArray('demographics', [
-                    'gender','politics', 'participation', 'occupation',
-                    'income','dateOfBirth','education']);
+                    'gender', 'education', 'dateOfBirth', 'politics', 'income',
+                    'occupation', 'participation']);
 
                 // Add politics page. (Because of the textfield it requires
                 // special treatement)
-                linearPageExecutor.callbacks.splice(3,0,
-                    makePageLoad('demographics','politics', function() {
+                linearPageExecutor.callbacks[3] = makePageLoad(
+                    'demographics',
+                    'politics',
+                    function() {
                         // If option 'other' is selected
                         if (node.game.questionnaire.currentAnswer == 5) {
                             if (W.getElementById('textForOther').value !== "") {
@@ -1878,18 +1787,24 @@ module.exports = function(gameRoom, treatmentName, settings) {
                                     true;
                             }
                         }
-                    })
+                    }
                 );
                 linearPageExecutor.execute();
             };
 
             // Execute the SVO, NEP and RISK block in random order, then execute
             // demographics.
-            randomBlockExecutor.execute([newEcologicalParadigm], demographics);
-
+            randomBlockExecutor.execute(
+                [
+                    newEcologicalParadigm,
+                    socialValueOrientation,
+                    risk
+                ],
+                demographics
+            );
         }
 
-        // shows last page if dk.checkout has been called
+        // Shows last page.
 
         // Set state in Header.
         // document.getElementById('state').innerHTML = "End of Game - Questionnaire";
@@ -1897,22 +1812,19 @@ module.exports = function(gameRoom, treatmentName, settings) {
         node.set('get_Profit',node.game.ownID);
 
         node.on.data("win", function(msg) {
-            // W.clearFrame();
-            function showWin() {
-                W.loadFrame(gameName + '/html/ended.html', function() {
+            if (msg.text === "win") {
+                // W.clearFrame();
+                W.loadFrame(gameName + '/html/' + gameName + '/ended.html', function() {
                     W.writeln("Exit code: " + msg.data);
                     node.game.timer.stop();
                     node.game.timer.setToZero();
                 });
-
             }
-            setTimeout(function() {showWin();}, 500);
         });
 
         node.on("in.say.DATA", function(msg) {
             var bonus;
 
-            // if (msg.text == "win") {}
             console.log(msg.text);
             if (msg.text == "PROFIT") {
                 console.log("Payout round: " + msg.data.Payout_Round);
@@ -1923,7 +1835,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 if (msg.data.Payout_Round != "none") {
                     node.game.bonus = node.game.globals.round((msg.data.Profit/50),2);
                     console.log("Bonus: " + node.game.bonus);
-                    W.loadFrame(gameName + '/html/questionnaire1.html', function() {
+                    W.loadFrame(gameName + '/html/' + gameName + '/questionnaire1.html', function() {
                         var payoutText = W.getElementById("payout");
                         W.write("Payout so far: " + msg.data.Payout_Round, payoutText);
                         var round = W.getElementById("payoutRound");
@@ -1944,7 +1856,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                                     Player_ID : node.game.ownID,
                                     timeResult: node.game.timeResult
                                 };
-                                // node.set('bsc_questionnaireTime',timeResultProp);
                                 questionnaire(1);
                             }
                         };
@@ -1960,7 +1871,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                                 Player_ID : node.game.ownID,
                                 timeResult: node.game.timeResult
                             };
-                            // node.set('bsc_questionnaireTime',timeResultProp);
                             node.game.timer.stop();
                             questionnaire(0);
                         };
@@ -1969,7 +1879,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
                 else {
                     node.game.bonus = 0.0;
-                    W.loadFrame(gameName + '/html/questionnaire12.html', function() {
+                    W.loadFrame(gameName + '/html/' + gameName + '/questionnaire12.html', function() {
                         var payoutText = W.getElementById("payout");
                         W.write("Unfortunately you did not complete any of the 3 rounds (excluding the test round) to be played. For your participation in the experiment you will be paid out a fixed amount of 1.00 $.", payoutText);
 
@@ -1982,7 +1892,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                                     Player_ID : node.game.ownID,
                                     timeResult: node.game.timeResult
                                 };
-                                // node.set('bsc_questionnaireTime',timeResultProp);
                                 questionnaire(1);
                             }
                         };
@@ -1997,7 +1906,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                                 Player_ID : node.game.ownID,
                                 timeResult: node.game.timeResult
                             };
-                            // node.set('bsc_questionnaireTime',timeResultProp);
                             node.game.timer.stop();
                             questionnaire(0);
                         };
@@ -2016,24 +1924,11 @@ module.exports = function(gameRoom, treatmentName, settings) {
                                 callback: function() {
                                 }
                             },
-                                //                success: {
-                                //                  label: "ID is correct",
-                                //                  className: "btn-success",
-                                //                  callback: function() {
-                                //                          var saveId = {
-                                //                                Player_ID: 666
-                                //                        };
-                                //                          node.emit('player_id',saveId);
-                                //                        <!-- node.set('player_id',saveId); -->
-                                //
-                                //                      location.href="http://localhost:8080/pairs/";
-                                //                  }
-                                //                },
                         }
                     });
                 }
 
-                // Qualtrix Questionaire iframe
+                // Goto questionnaire.
                 function questionnaire(timeout) {
                     console.log("Bonus: " + node.game.bonus);
 
@@ -2041,50 +1936,21 @@ module.exports = function(gameRoom, treatmentName, settings) {
                         milliseconds: 1800000, // 1200000 ms is equivalent to 20 minutes
                         timeup: function() {
                             node.game.timeQuest1 = Math.round(Math.abs(node.game.timeQuest1 - Date.now())/1000);
-                            // node.game.comment6 = W.getElementById('comment7').value;
                             var timeResultProp = {
                                 playerID : {Player_ID: node.game.ownID},
-                                add: {timeQuest1: node.game.timeQuest1}//, Question6: node.game.comment6}
+                                add: {timeQuest1: node.game.timeQuest1}
                             };
-                            // node.set('bsc_questTime',timeResultProp);
                             node.say("QUEST_DONE", "SERVER", node.game.bonus);
-                            // node.emit('DONE');
                         }
                     };
                     node.game.timer.init(options);
                     node.game.timer.updateDisplay();
                     node.game.timer.start(options);
 
-                    //var quest = W.getElementById('continue');
-                    //quest.onclick = function() {
-                        //var qualtrixID = W.getElementById("qualtrix").value;
-                        //if (qualtrixID.substring(0, 1) == "R" && qualtrixID.substring(1, 2) == "_") {
-                            //var surveyID = {
-                                //playerID : {Player_ID: node.game.ownID},
-                                //add: {Survey_ID: qualtrixID}
-                            //};
-                            //node.set('bsc_surveyID', surveyID);
-
-                            //node.game.timeQuest1 = Math.round(Math.abs(node.game.timeQuest1 - Date.now())/1000);
-                            //node.game.timer.stop();
-                            //var timeResultProp = {
-                                //playerID : {Player_ID: node.game.ownID},
-                                //add: {timeQuest1: node.game.timeQuest1} //, Question6: node.game.comment6}
-                            //};
-                             ////node.set('bsc_questTime',timeResultProp);
-                            //node.say("QUEST_DONE", "SERVER", node.game.bonus);
-                            ////node.say("questionnaire_done", "SERVER");
-                             ////node.emit('DONE');
-                        //}
-                        //else {
-                            //var msg = 'Wrong ID! Please copy the character string starting with "R_" from the questionnaire box and enter it in the free textbox below.';
-                            //checkID(msg);
-                        //}
-                    //};
                     randomOrderQuestionnaire();
                 }
             }
-            if (msg.text == "PROFIT_ADJUSTMENT") {
+            if (msg.text == 'ADDED_QUESTIONNAIRE_BONUS') {
                     console.log("Profit Adjustment" + msg.data.oldAmountUCE +
                         "+" + msg.data.newAmountUCE);
                     node.game.bonus = msg.data;
@@ -2099,7 +1965,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
     }
 
     function notEnoughPlayers() {
-        //  alert('Not Enought Players');
         node.game.pause();
         W.lockScreen('One player disconnected. We are now waiting to see if ' +
                      ' he or she reconnects. If there is no reconnection within 60 seconds the game will be terminated and you will be forwarded to the questionnaire.');
@@ -2127,15 +1992,14 @@ module.exports = function(gameRoom, treatmentName, settings) {
         cb: initialSituation,
         stepRule: syncGroup,
         timer: {
-            milliseconds: settings.CHOSEN_TREATMENT === 'sa' ? 36000 : 18000,
-            //milliseconds: 2000,
+            //milliseconds: settings.CHOSEN_TREATMENT === 'sa' ? 36000 : 18000,
+            milliseconds: 2000,
             update: 1000,
             timeup: function() {
                 node.game.timer.stop();
                 node.game.timeInitialSituation = Math.round(Math.abs(node.game.timeInitialSituation - Date.now())/1000);
                 node.game.timeInitialSituationResp = Math.round(Math.abs(node.game.timeInitialSituationResp - Date.now())/1000);
                 var timeInitialSituation = {timeInitialSituation: node.game.timeInitialSituation};
-                        // node.set('bsc_time',timeInitialSituation);
                 node.emit('DONE');
             },
         }
