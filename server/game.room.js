@@ -16,6 +16,17 @@ module.exports = function(node, channel, gameRoom) {
     // Load the code database.
     var dk = require('descil-mturk')();
 
+    // Keep timeouts for all 4 players.
+    var timeOuts = [undefined, undefined, undefined, undefined];
+
+    var cbs = channel.require(__dirname + '/includes/room.callbacks.js', {
+        node: node,
+        gameRoom: gameRoom,
+        dk: dk,
+        settings: settings,
+        timeOuts: timeOuts
+    });
+
     // If NO authorization is found, local codes will be used,
     // and assigned automatically.
     var noAuthCounter = -1;
@@ -36,214 +47,10 @@ module.exports = function(node, channel, gameRoom) {
         ngc: ngc
     });
 
-    stager.addStage({
-        id: 'waiting',
-        cb: function() {
-            // Returning true in a stage callback means execution ok.
-            return true;
-        }
-    });
-
     stager.setOnInit(function() {
 
         this.channel = channel;
-        var counter = 1;
         console.log('********Waiting Room Created*****************');
-
-        function TimeOut(playerID, nbrPlayers) {
-
-            var code = dk.codes.id.get(playerID);
-
-            var timeOutData = {
-                over: "Time elapsed!!!",
-                exit: code.ExitCode
-            };
-
-            if (nbrPlayers == 1) {
-                countDown1 = setTimeout(function() {
-                    // console.log("Timeout has not been cleared!!!");
-                    dk.checkOut(code.AccessCode, code.ExitCode, 0.0, function(err, response, body) {
-                        if (err) {
-                            // Retry the Checkout
-                            setTimeout(function() {
-                                dk.checkOut(code.AccessCode, code.ExitCode, 0.0);
-                            }, 2000);
-                        }
-                    });
-                    node.say("TIME", playerID, timeOutData);
-
-                    for (i = 0; i < channel.waitingRoom.clients.player.size(); i++) {
-                        if (channel.waitingRoom.clients.player.db[i].id == playerID) {
-                            delete channel.waitingRoom.clients.player.db[i];
-                            channel.waitingRoom.clients.player.db =
-                                channel.waitingRoom.clients.player.db.filter(
-                                    function(a) {
-                                        return typeof a !== 'undefined';
-                                    }
-                                );
-                        }
-                    }
-
-                }, 600000); // 600000 == 10 min
-            }
-            else if (nbrPlayers == 2) {
-                countDown2 = setTimeout(function() {
-                    // console.log("Timeout has not been cleared!!!");
-                    dk.checkOut(code.AccessCode, code.ExitCode, 0.0, function(err, response, body) {
-                        if (err) {
-                            // Retry the Checkout
-                            setTimeout(function() {
-                                dk.checkOut(code.AccessCode, code.ExitCode, 0.0);
-                            }, 2000);
-                        }
-                    });
-                    node.say("TIME", playerID, timeOutData);
-                    for (i = 0; i < channel.waitingRoom.clients.player.size(); i++) {
-                        if (channel.waitingRoom.clients.player.db[i].id == playerID) {
-                            delete channel.waitingRoom.clients.player.db[i];
-                            channel.waitingRoom.clients.player.db =
-                                channel.waitingRoom.clients.player.db.filter(
-                                    function(a) {
-                                        return typeof a !== 'undefined';
-                                    });
-                        }
-                    }
-
-                }, 600000); // 600000 == 10 min
-            }
-            else if (nbrPlayers == 3) {
-                countDown3 = setTimeout(function() {
-                    // console.log("Timeout has not been cleared!!!");
-                    dk.checkOut(code.AccessCode, code.ExitCode, 0.0, function(err, response, body) {
-                        if (err) {
-                            // Retry the Checkout
-                            setTimeout(function() {
-                                dk.checkOut(code.AccessCode, code.ExitCode, 0.0);
-                            }, 2000);
-                        }
-                    });
-                    node.say("TIME", playerID, timeOutData);
-                    for (var i = 0; i < channel.waitingRoom.clients.player.size(); i++) {
-                        if (channel.waitingRoom.clients.player.db[i].id == playerID) {
-                            delete channel.waitingRoom.clients.player.db[i];
-                            channel.waitingRoom.clients.player.db =
-                                channel.waitingRoom.clients.player.db.filter(
-                                    function(a) {
-                                        return typeof a !== 'undefined';
-                                    });
-                        }
-                    }
-
-                }, 600000); // 600000 == 10 min
-            }
-            else if (nbrPlayers == 4) {
-                countDown4 = setTimeout(function() {
-                    // console.log("Timeout has not been cleared!!!");
-                    dk.checkOut(code.AccessCode, code.ExitCode, 0.0, function(err, response, body) {
-                        if (err) {
-                            // Retry the Checkout
-                            setTimeout(function() {
-                                dk.checkOut(code.AccessCode, code.ExitCode, 0.0);
-                            }, 2000);
-                        }
-                    });
-                    node.say("TIME", playerID, timeOutData);
-                    for (var i = 0; i < channel.waitingRoom.clients.player.size(); i++) {
-                        if (channel.waitingRoom.clients.player.db[i].id == playerID) {
-                            delete channel.waitingRoom.clients.player.db[i];
-                            channel.waitingRoom.clients.player.db =
-                                channel.waitingRoom.clients.player.db.filter(
-                                    function(a) {
-                                        return typeof a !== 'undefined';
-                                    });
-                        }
-                    }
-
-                }, 600000); // 600000 == 10 min
-            }
-        }
-
-        function connectingPlayer(p) {
-            var room, wRoom;
-            var NPLAYERS;
-            var code;
-            var i;
-            var timeOutData;
-
-            NPLAYERS = settings.N_PLAYERS;
-
-            code = dk.codes.id.get(p.id);
-            dk.checkIn(code.AccessCode);
-
-            console.log('-----------Player connected ' + p.id);
-
-            dk.markInvalid(p.id);
-
-            wRoom = channel.waitingRoom.clients.player;
-
-            for (i = 0; i < wRoom.size(); i++) {
-                // console.log(wRoom.db[i].id);
-                node.say("PLAYERSCONNECTED", wRoom.db[i].id, wRoom.size());
-            }
-
-            TimeOut(p.id, wRoom.size());
-
-            // Wait for all players to connect.
-            if (wRoom.size() < NPLAYERS) {
-                channel.connectPhantom();
-                return;
-            }
-
-            for (i = 0; i < wRoom.size(); i++) {
-                timeOutData = {
-                    over: "AllPlayersConnected",
-                    exit: 0
-                };
-                node.say("TIME", wRoom.db[i].id, timeOutData);
-                if (i === 0) {
-                    clearTimeout(countDown1);
-                }
-                else if (i === 1) {
-                    clearTimeout(countDown2);
-                }
-                else if (i === 2) {
-                    clearTimeout(countDown3);
-                }
-                else if (i === 3) {
-                    clearTimeout(countDown4);
-                }
-            }
-
-            console.log('-----------We have four players-----Game Room ID: ' + counter);
-
-            tmpPlayerList = wRoom.shuffle().limit(NPLAYERS);
-
-
-            room = channel.createGameRoom({
-                group: 'burdenshare',
-                clients: tmpPlayerList,
-                gameName: 'burdenshare',
-                treatmentName: settings.CHOSEN_TREATMENT
-
-            });
-
-            room.setupGame();
-            room.startGame(true, tmpPlayerList.id.getAllKeys());
-
-            //// Setting metadata, settings, and plot
-
-            // Send room number to admin
-            channel.admin.socket.send2roomAdmins(node.msg.create({
-                target: node.constants.target.TXT,
-                text: 'ROOMNO',
-                data: {
-                    roomNo: counter,
-                    pids: room.clients.player.id.getAllKeys(),
-                    aids: room.clients.admin.id.getAllKeys()
-                }
-            }), room);
-            counter ++;
-        }
 
         // This callback is executed whenever a previously disconnected
         // players reconnects.
@@ -262,7 +69,7 @@ module.exports = function(node, channel, gameRoom) {
                 }));
             });
             node.game.pl.add(p);
-            connectingPlayer(p);
+            cbs.connectingPlayer(p);
         });
 
         // This must be done manually for now (maybe will change in the future).
@@ -271,17 +78,15 @@ module.exports = function(node, channel, gameRoom) {
         });
 
         // This callback is executed when a player connects to the channel.
-        node.on.pconnect(connectingPlayer);
+        node.on.pconnect(cbs.connectingPlayer);
 
         // This callback is executed when a player connects to the channel.
         node.on.pdisconnect(function(p) {
-
             // Client really disconnected (not moved into another game room).
             if (channel.registry.clients.disconnected.get(p.id)) {
                 // Free up the code.
                 dk.markValid(p.id);
-            }
-
+            }            
         });
 
     });
@@ -292,7 +97,7 @@ module.exports = function(node, channel, gameRoom) {
 
     stager
         .init()
-        .loop('waiting');
+        .next('waiting');
 
     return {
         nodename: 'wroom',

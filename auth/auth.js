@@ -41,6 +41,7 @@ module.exports = function(auth) {
     // his socketId property, since no clientId has been created yet.
 
     function authPlayers(channel, info) {
+
         var code, player, token;
         playerId = info.cookies.player;
         token = info.cookies.token;
@@ -66,13 +67,13 @@ module.exports = function(auth) {
         code = dk.codeExists(token);
 
         // Code not existing.
-    if (!code) {
+        if (!code) {
             console.log('not existing token: ', token);
             return false;
         }
 
         // Code in use.
-    if (code.usage) {
+        if (code.usage) {
             if (code.disconnected) {
                 return true;
             }
@@ -80,7 +81,7 @@ module.exports = function(auth) {
                 console.log('token already in use: ', token);
                 return false;
             }
-    }
+        }
 
         // Client Authorized
         return true;
@@ -106,12 +107,12 @@ module.exports = function(auth) {
         if (cookies.token) {
 
             if (!ids[cookies.token] || ids[cookies.token].disconnected) {
-            return cookies.token;
-        }
-        else {
-            console.log("already in ids", cookies.token)
-            return false;
-        }
+                return cookies.token;
+            }
+            else {
+                console.log("already in ids", cookies.token)
+                return false;
+            }
         }
     }
     /////////////////////////////// MTurk Version ///////////////////////////

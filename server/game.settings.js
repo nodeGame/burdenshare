@@ -24,6 +24,8 @@ module.exports = {
     // AUTH: 'remote'
     AUTH: 'none',
 
+    WAIT_ROOM_TIMEOUT: 600000, // 600000 == 10 min
+
     //CHOSEN_TREATMENT: "ra", "sa",
     CHOSEN_TREATMENT: "ra",
 

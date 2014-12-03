@@ -1,9 +1,21 @@
-module.exports = {
+/**
+ * # Functions used by the Logic and Client of Burden-share Game
+ * Copyright(c) 2014 Stefano Balietti
+ * MIT Licensed
+ *
+ * http://www.nodegame.org
+ */
 
+module.exports = {
     decorateMongoObj: decorateMongoObj,
     round: round
-
 };
+
+var node = module.parent.exports.node;
+var channel = module.parent.exports.channel;
+var gameRoom = module.parent.exports.gameRoom;
+var settings = module.parent.exports.settings;
+var dk = module.parent.exports.dk;
 
 function decorateMongoObj(mongo) {
 
