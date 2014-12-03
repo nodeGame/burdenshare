@@ -9,7 +9,7 @@
 module.exports = function(node, channel, gameRoom) {
 
     // Reads in descil-mturk configuration.
-    var basedir = channel.resolveGameDir('burdenRAHR');
+    var basedir = channel.resolveGameDir('burdenshare');
     var confPath = basedir + '/auth/descil.conf.js';
     var settings = require(basedir + '/server/game.settings.js');
 
@@ -196,7 +196,7 @@ module.exports = function(node, channel, gameRoom) {
 
             console.log('-----------Player connected ' + p.id);
 
-            dk.markInvalid(p.id);      
+            dk.markInvalid(p.id);
 
             wRoom = channel.waitingRoom.clients.player;
 
@@ -237,16 +237,11 @@ module.exports = function(node, channel, gameRoom) {
 
             tmpPlayerList = wRoom.shuffle().limit(NPLAYERS);
 
-            //room = channel.createGameRoom({
-            //group: 'burdenRAHR',
-            //clients: tmpPlayerList,
-            //channel: channel,
-            //logicPath: logicPath
-            //});
+
             room = channel.createGameRoom({
                 group: 'burdenshare',
                 clients: tmpPlayerList,
-                gameName: 'burdenRAHR',
+                gameName: 'burdenshare',
                 treatmentName: settings.CHOSEN_TREATMENT
 
             });
@@ -255,14 +250,6 @@ module.exports = function(node, channel, gameRoom) {
             room.startGame(true, tmpPlayerList.id.getAllKeys());
 
             //// Setting metadata, settings, and plot
-            //tmpPlayerList.each(function (p) {
-            //node.remoteSetup('game_metadata',  p.id, client.metadata);
-            //node.remoteSetup('game_settings', p.id, client.settings);
-            //node.remoteSetup('plot', p.id, client.plot);
-            //node.remoteSetup('env', p.id, client.env);
-            //node.remoteCommand('start', p.id);
-            //});
-            //room.startGame();
 
             // Send room number to admin
             channel.admin.socket.send2roomAdmins(node.msg.create({
@@ -275,18 +262,6 @@ module.exports = function(node, channel, gameRoom) {
                 }
             }), room);
             counter ++;
-
-            // Save User ID permanently such that he or she can onlyparticipate once
-            // var fs = require('fs');
-            // // fs.appendFile(__dirname + "/codes.json", dk.codes.stringify(false), function(err) {
-            // // });
-            // var auth_codes = require(__dirname + "/codes.json");
-            // for (i = 0; i<dk.codes.db.length; i++) {
-            // if (dk.codes.db[i].usage == 1) {
-            // auth_codes.push(dk.codes.db[i]);
-            // }
-            // }
-            // fs.writeFile(__dirname + "/codes.json", JSON.stringify(auth_codes));
         }
 
         // This callback is executed whenever a previously disconnected

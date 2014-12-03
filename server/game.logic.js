@@ -42,7 +42,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
 
     // Reads in descil-mturk configuration.
-    var basedir = channel.resolveGameDir('burdenRAHR');
+    var basedir = channel.resolveGameDir('burdenshare');
     var confPath = basedir + '/auth/descil.conf.js';
     var dk = require('descil-mturk')();
     var settings = require(basedir + '/server/game.settings.js');
@@ -95,7 +95,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
             });
 
-            console.log('Disconnection in Stage: ' + node.player.stage);            
+            console.log('Disconnection in Stage: ' + node.player.stage);
         });
 
         var disconnected;

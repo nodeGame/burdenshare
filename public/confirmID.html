@@ -8,55 +8,55 @@
 
 
 <body>
-	<script
-		src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-	<script src="js/bootstrap.js"></script>
-	<script src="js/bootbox.min.js"></script>
-	<script>
-		function checkID(){
-			bootbox.dialog({
-				  message: "Please make sure you entered the correct ID! If the ID is incorrect we are not able to make your payment. ",
-				  buttons: {
-				    danger: {
-				      label: "Check ID again",
-				      className: "btn-danger",
-				      callback: function() {
-				      }
-				    },
-				    success: {
-				      label: "ID is correct",
-				      className: "btn-success",
-				      callback: function() {
-					  		var saveId = {
-									Player_ID: 666
-							}; 
-					  		node.emit('player_id',saveId);
-							<!-- node.set('player_id',saveId); -->
-							
-				    	  location.href="http://localhost:8080/pairs/";
-				      }
-				    },
-				  }
-				});
-		}
-	</script>
+    <script
+        src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/bootbox.min.js"></script>
+    <script>
+        function checkID(){
+            bootbox.dialog({
+                  message: "Please make sure you entered the correct ID! If the ID is incorrect we are not able to make your payment. ",
+                  buttons: {
+                    danger: {
+                      label: "Check ID again",
+                      className: "btn-danger",
+                      callback: function() {
+                      }
+                    },
+                    success: {
+                      label: "ID is correct",
+                      className: "btn-success",
+                      callback: function() {
+                            var saveId = {
+                                    Player_ID: 666
+                            };
+                            node.emit('player_id',saveId);
+                            <!-- node.set('player_id',saveId); -->
 
-	<noscript>Sorry, you need to enable javascript in order to
-		play this game.</noscript>
-	<div class="container" id="waitingForPlayers" style="display:;">
-		<div class="jumbotron">
-			<h3>
-				Welcome to the game!<br> <br> Please insert your
-				"Identification Number" below: <br>
-			</h3>
-			<div class="form-group">
-				<input type="text" class="form-control"
-					placeholder="Please insert your ID" style="width: 300px;">
-			</div>
+                          location.href="http://localhost:8080/pairs/";
+                      }
+                    },
+                  }
+                });
+        }
+    </script>
 
-			<button type="button" class="btn btn-primary" onclick='checkID()'>
-				<span class="glyphicon glyphicon-ok"></span> Confirm
-			</button>
-		</div>
-	</div>
+    <noscript>Sorry, you need to enable javascript in order to
+        play this game.</noscript>
+    <div class="container" id="waitingForPlayers" style="display:;">
+        <div class="jumbotron">
+            <h3>
+                Welcome to the game!<br> <br> Please insert your
+                "Identification Number" below: <br>
+            </h3>
+            <div class="form-group">
+                <input type="text" class="form-control"
+                    placeholder="Please insert your ID" style="width: 300px;">
+            </div>
+
+            <button type="button" class="btn btn-primary" onclick='checkID()'>
+                <span class="glyphicon glyphicon-ok"></span> Confirm
+            </button>
+        </div>
+    </div>
 </body>

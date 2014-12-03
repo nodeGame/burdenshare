@@ -10,7 +10,7 @@
 module.exports = function(node, channel, room) {
 
     // Reads in descil-mturk configuration.
-    var basedir = channel.resolveGameDir('burdenRAHR');
+    var basedir = channel.resolveGameDir('burdenshare');
     var confPath = basedir + '/auth/descil.conf.js';
 
     var settings = require(basedir + '/server/game.settings.js');
@@ -95,7 +95,7 @@ module.exports = function(node, channel, room) {
             return {
                 success: true,
                 msg: 'Code validated.',
-                gameLink: '/burdenRAHR/html/informedConsent.html'
+                gameLink: '/burdenshare/html/informedConsent.html'
                 // gameLink: '/burdenHR/index.htm'
             };
         });

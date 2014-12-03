@@ -67,18 +67,18 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
         // condition for one of the two game versions
         if (node.game.costGE === 30) {
-            node.game.url_bidder = gameName + '/html/' + gameName + '/bidder_30.html';
-            node.game.url_resp = gameName + '/html/' + gameName + '/resp_30.html';
-            node.game.url_initprop = gameName + '/html/' + gameName + '/initialSituationProp_30.htm';
-            node.game.url_initresp = gameName + '/html/' + gameName + '/initialSituationResp_30.htm';
-            node.game.url_preGame = gameName + '/html/' + gameName + '/preGame_30.html';
+            node.game.url_bidder = '/burdenshare/html/' + gameName + '/bidder_30.html';
+            node.game.url_resp = '/burdenshare/html/' + gameName + '/resp_30.html';
+            node.game.url_initprop = '/burdenshare/html/' + gameName + '/initialSituationProp_30.htm';
+            node.game.url_initresp = '/burdenshare/html/' + gameName + '/initialSituationResp_30.htm';
+            node.game.url_preGame = '/burdenshare/html/' + gameName + '/preGame_30.html';
         }
         else if (node.game.costGE === 80) {
-            node.game.url_bidder = gameName + '/html/' + gameName + '/bidder_80.html';
-            node.game.url_resp = gameName + '/html/' + gameName + '/resp_80.html';
-            node.game.url_initprop = gameName + '/html/' + gameName + '/initialSituationProp_80.htm';
-            node.game.url_initresp = gameName + '/html/' + gameName + '/initialSituationResp_80.htm';
-            node.game.url_preGame = gameName + '/html/' + gameName + '/preGame_80.html';
+            node.game.url_bidder = '/burdenshare/html/' + gameName + '/bidder_80.html';
+            node.game.url_resp = '/burdenshare/html/' + gameName + '/resp_80.html';
+            node.game.url_initprop = '/burdenshare/html/' + gameName + '/initialSituationProp_80.htm';
+            node.game.url_initresp = '/burdenshare/html/' + gameName + '/initialSituationResp_80.htm';
+            node.game.url_preGame = '/burdenshare/html/' + gameName + '/preGame_80.html';
 
         }
 
@@ -140,7 +140,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
             // node.set('bsc_gameTime',gameTimeResp);
 
             // short question at the end of each round
-            W.loadFrame(gameName + '/html/' + gameName + '/questionRounds_prop.html', function() {
+            W.loadFrame('/burdenshare/html/' + gameName + '/questionRounds_prop.html', function() {
                 node.game.timequestionsRounds = Date.now();
                 var options = {
                     // count down time
@@ -273,7 +273,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
             // node.set('bsc_gameTime',gameTimeResp);
 
             //Check if data for playerID and current round already exists
-            W.loadFrame(gameName + '/html/' + gameName + '/questionRounds_resp.html', function() {
+            W.loadFrame('/burdenshare/html/' + gameName + '/questionRounds_resp.html', function() {
                 node.game.timequestionsRounds = Date.now();
                 var options = {
                     milliseconds: 2000, //240000, // 240000 ms is equivalent to 4 minutes (reading time approximately 2 minutes times 2)
@@ -408,7 +408,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
             // var timeResponse = {timeResponse: node.game.timeResponse};
             // node.set('bsc_time',timeResponse);
 
-            W.loadFrame(gameName + '/html/' + gameName + '/resultResponder.html', function() {
+            W.loadFrame('/burdenshare/html/' + gameName + '/resultResponder.html', function() {
                 if (node.player.stage.round == 1) {
                     // Test Round
                     W.getElementById('practice3').style.display = '';
@@ -670,7 +670,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
         console.log('instructions');
 
-        W.loadFrame(gameName + '/html/' + gameName + '/instructions.html', function() {
+        W.loadFrame('/burdenshare/html/' + gameName + '/instructions.html', function() {
             node.game.timeInstruction = Date.now();
             var options = {
                 milliseconds: 2000, //480000, // 240000 ms is equivalent to 6 minutes (reading time approximately 2 minutes times 2)
@@ -708,7 +708,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         });
 
         function instructions2() {
-            W.loadFrame(gameName + '/html/' + gameName + '/instructions2.html', function() {
+            W.loadFrame('/burdenshare/html/' + gameName + '/instructions2.html', function() {
                 node.game.timeInstruction2 = Date.now();
                 var options = {
                     milliseconds: 2000, //480000, // 480000 ms is equivalent to 8 minutes (reading time approximately 4 minutes times 2)
@@ -748,7 +748,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         }
 
         function instructions3() {
-            W.loadFrame(gameName + '/html/' + gameName + '/instructions3.html', function() {
+            W.loadFrame('/burdenshare/html/' + gameName + '/instructions3.html', function() {
                 node.game.timeInstruction3 = Date.now();
                 var options = {
                     milliseconds: 2000, //480000, // 480000 ms is equivalent to 8 minutes (reading time approximately 4 minutes times 2)
@@ -797,14 +797,14 @@ module.exports = function(gameRoom, treatmentName, settings) {
         }
 
         function instructions4() {
-            W.loadFrame(gameName + '/html/' + gameName + '/instructions4.html', function() {
+            W.loadFrame('/burdenshare/html/' + gameName + '/instructions4.html', function() {
                 node.game.timeInstruction4 = Date.now();
                 var initEndow = {
                     playerID: {Player_ID: node.game.ownID},
                     addEndow: {Initial_Endowment: node.game.endowment_own, Climate_Risk: node.game.risk}
                 };
                 var options = {
-                    milliseconds: 480000, // 240000 ms is equivalent to 8 minutes (reading time approximately 4 minutes times 2)
+                    milliseconds: 2000, //480000, // 240000 ms is equivalent to 8 minutes (reading time approximately 4 minutes times 2)
                     timeup: function() {
                         node.game.timeInstruction4 = Math.round(Math.abs(node.game.timeInstruction4 - Date.now())/1000);
                         var timeInstr = {
@@ -896,7 +896,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 }
                 node.game.pgCounter++;
                 var options = {
-                    milliseconds: 40000, // 40000 ms is equal to 40 seconds
+                    milliseconds: 2000, //40000, // 40000 ms is equal to 40 seconds
                     timeup: function() {
                         var initEndow = {
                             playerID: {Player_ID: node.game.ownID},
@@ -1271,7 +1271,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
                 node.on("in.say.DATA", function(msg) {
                     if (msg.text == "ACCEPT") {
-                        W.loadFrame(gameName + '/html/' + gameName + '/resultProposer.html', function() {
+                        W.loadFrame('/burdenshare/html/' + gameName + '/resultProposer.html', function() {
                             if (node.player.stage.round == 1) {
                                 // Test Round
                                 W.getElementById(
@@ -1552,7 +1552,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
             // currentAnswer to database and advance the executor.
             function makePageLoad(block, page, onDoneCallback, onLoadCallback) {
                 return function(executor) {
-                    W.loadFrame(gameName + '/html/questionnaire/'+ block + '/' +
+                    W.loadFrame('/burdenshare/html/questionnaire/'+ block + '/' +
                         page + '.html', function() {
                             if (onLoadCallback) {
                                 onLoadCallback(block, page);
@@ -1628,7 +1628,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 });
 
                 // At the beginning of the block is an instructions page.
-                W.loadFrame(gameName + '/html/questionnaire/' +
+                W.loadFrame('/burdenshare/html/questionnaire/' +
                     'socialValueOrientation/instructions.html', function() {
                         W.getElementById('done').onclick = function() {
                             randomPageExecutor.execute();
@@ -1701,7 +1701,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 });
 
                 // At the beginning of the block is an instructions page.
-                W.loadFrame(gameName + '/html/questionnaire/' +
+                W.loadFrame('/burdenshare/html/questionnaire/' +
                     'newEcologicalParadigm/instructions.html', function() {
                         W.getElementById('done').onclick = function() {
                             randomPageExecutor.execute();
@@ -1747,7 +1747,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                     },
                     // Final operation
                     done: function() {
-                        W.loadFrame(gameName + '/html/' + gameName +
+                        W.loadFrame('/burdenshare/html/' + gameName +
                             '/profit_adjustment.html', function() {
                                 W.getElementById(
                                     'continue'
@@ -1825,7 +1825,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         node.on.data("win", function(msg) {
             if (msg.text === "win") {
                 // W.clearFrame();
-                W.loadFrame(gameName + '/html/' + gameName + '/ended.html', function() {
+                W.loadFrame('/burdenshare/html/' + gameName + '/ended.html', function() {
                     W.writeln("Exit code: " + msg.data);
                     node.game.timer.stop();
                     node.game.timer.setToZero();
@@ -1846,7 +1846,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 if (msg.data.Payout_Round != "none") {
                     node.game.bonus = node.game.globals.round((msg.data.Profit/50),2);
                     console.log("Bonus: " + node.game.bonus);
-                    W.loadFrame(gameName + '/html/' + gameName + '/questionnaire1.html', function() {
+                    W.loadFrame('/burdenshare/html/' + gameName + '/questionnaire1.html', function() {
                         var payoutText = W.getElementById("payout");
                         W.write("Payout so far: " + msg.data.Payout_Round, payoutText);
                         var round = W.getElementById("payoutRound");
@@ -1890,7 +1890,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
                 else {
                     node.game.bonus = 0.0;
-                    W.loadFrame(gameName + '/html/' + gameName + '/questionnaire12.html', function() {
+                    W.loadFrame('/burdenshare/html/' + gameName + '/questionnaire12.html', function() {
                         var payoutText = W.getElementById("payout");
                         W.write("Unfortunately you did not complete any of the 3 rounds (excluding the test round) to be played. For your participation in the experiment you will be paid out a fixed amount of 1.00 $.", payoutText);
 

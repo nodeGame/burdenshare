@@ -66,13 +66,13 @@ module.exports = function(auth) {
         code = dk.codeExists(token);
 
         // Code not existing.
-	if (!code) {
+    if (!code) {
             console.log('not existing token: ', token);
             return false;
         }
 
         // Code in use.
-	if (code.usage) {
+    if (code.usage) {
             if (code.disconnected) {
                 return true;
             }
@@ -80,7 +80,7 @@ module.exports = function(auth) {
                 console.log('token already in use: ', token);
                 return false;
             }
-	}
+    }
 
         // Client Authorized
         return true;
@@ -97,7 +97,7 @@ module.exports = function(auth) {
             dk.codes.insert({
                 AccessCode: cid,
                 ExitCode: cid + '_exit'
-            });            
+            });
             return cid;
         }
 
@@ -106,19 +106,19 @@ module.exports = function(auth) {
         if (cookies.token) {
 
             if (!ids[cookies.token] || ids[cookies.token].disconnected) {
-   	        return cookies.token;
-   	    }
-   	    else {
-   	        console.log("already in ids", cookies.token)
-   	        return false;
-   	    }
+            return cookies.token;
+        }
+        else {
+            console.log("already in ids", cookies.token)
+            return false;
+        }
         }
     }
     /////////////////////////////// MTurk Version ///////////////////////////
 
 
     // Assigning the auth callbacks to the player server.
-    auth.authorization('burdenRAHR', 'player', authPlayers);
-    auth.clientIdGenerator('burdenRAHR', 'player', idGen);
+    auth.authorization('burdenshare', 'player', authPlayers);
+    auth.clientIdGenerator('burdenshare', 'player', idGen);
 
 };

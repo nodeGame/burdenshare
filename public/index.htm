@@ -137,10 +137,10 @@
             // Connecting to waiting room.
             if (location.search) {
                 // Pass query arguments on.
-                node.connect("/burdenRAHR", { query: location.search.substr(1) });
+                node.connect("/burdenshare", { query: location.search.substr(1) });
             }
             else {
-                node.connect("/burdenRAHR");
+                node.connect("/burdenshare");
             }
 
             timeCheck = setInterval(function() {
