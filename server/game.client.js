@@ -95,7 +95,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         W.generateFrame();
 
         // node.game.stateofgame = node.widgets.append('StateOfGame', header);
-        node.game.timer = node.widgets.append('VisualRound', header);
+        node.game.visualRound = node.widgets.append('VisualRound', header);
         node.game.timer = node.widgets.append('VisualTimer', header);
 
         // indication of current state at the upper left corner of the page
@@ -631,6 +631,8 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     function instructions() {
 
+        node.game.visualRound.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL']);
+
         var gameName = node.game.globals.gameName;
         var chosenTreatment = node.game.globals.chosenTreatment;
 
@@ -661,10 +663,10 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
         var waitingForPlayers =  W.getElementById('waitingForPlayers');
         waitingForPlayers.style.display = 'none';
-        
+
         // Set state in Header
         // document.getElementById('state').innerHTML = "Instruction";
-        
+
 
         console.log('instructions');
 
@@ -1054,12 +1056,16 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
 
     function initialSituation() {
+
+        node.game.visualRound.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
+                                              'COUNT_UP_ROUNDS_TO_TOTAL']);
+
         var gameName = node.game.globals.gameName;
         var chosenTreatment = node.game.globals.chosenTreatment;
 
         // Set state in Header
         // document.getElementById('state').innerHTML = 'Game Period: ' +  node.player.stage.round + " - of - " + node.game.nbrRounds ;
-        
+
 
         var IDs = {
             ownPlayerId: node.game.ownID,
@@ -1173,6 +1179,9 @@ module.exports = function(gameRoom, treatmentName, settings) {
     }
 
     function decision() {
+
+        node.game.visualRound.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
+                                              'COUNT_UP_ROUNDS_TO_TOTAL']);
 
         var gameName = node.game.globals.gameName;
         var chosenTreatment = node.game.globals.chosenTreatment;
@@ -1524,6 +1533,8 @@ module.exports = function(gameRoom, treatmentName, settings) {
     ////////////////////////////QUESTIONAIRE ////////////////////////////
 
     function questionnaire() {
+
+        node.game.visualRound.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL']);
 
         var gameName = node.game.globals.gameName;
         var chosenTreatment = node.game.globals.chosenTreatment;
