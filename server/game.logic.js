@@ -48,25 +48,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     var settings = require(basedir + '/server/game.settings.js');
 
 
-    // Load code database
-    dk.readConfiguration(confPath);
-    if (settings.AUTH !== 'none') {
-        if (settings.AUTH === 'remote') {
-            dk.getCodes(function() {
-                if (!dk.codes.size()) {
-                    throw new Error('game.logic: no codes found.');
-                }
-            });
-        }
-        else {
-            dk.readCodes(function() {
-                if (!dk.codes.size()) {
-                    throw new Error('game.logic: no codes found.');
-                }
-            });
-        }
-    }
-
     // Import the stager.
     var gameSequence = require(__dirname + '/game.stages.js')(settings);
     var stager = ngc.getStager(gameSequence);

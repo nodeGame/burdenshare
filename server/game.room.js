@@ -16,25 +16,6 @@ module.exports = function(node, channel, gameRoom) {
     // Load the code database.
     var dk = require('descil-mturk')();
 
-    // Load code database
-    dk.readConfiguration(confPath);
-    if (settings.AUTH !== 'none') {
-        if (settings.AUTH === 'remote') {
-            dk.getCodes(function() {
-                if (!dk.codes.size()) {
-                    throw new Error('game.room: no codes found.');
-                }
-            });
-        }
-        else {
-            dk.readCodes(function() {
-                if (!dk.codes.size()) {
-                    throw new Error('game.room: no codes found.');
-                }
-            });
-        }
-    }
-
     // If NO authorization is found, local codes will be used,
     // and assigned automatically.
     var noAuthCounter = -1;
@@ -209,7 +190,7 @@ module.exports = function(node, channel, gameRoom) {
 
             // Wait for all players to connect.
             if (wRoom.size() < NPLAYERS) {
-                // channel.connectPhantom();
+                channel.connectPhantom();
                 return;
             }
 

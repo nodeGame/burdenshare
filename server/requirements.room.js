@@ -27,20 +27,21 @@ module.exports = function(node, channel, room) {
 
         console.log('********Requirements Room Created*****************');
 
-        // Load code database
-        dk.readConfiguration(confPath);
+        
         if (settings.AUTH !== 'none') {
+            dk.readConfiguration(confPath);
+            // Load code database.        
             if (settings.AUTH === 'remote') {
                 dk.getCodes(function() {
                     if (!dk.codes.size()) {
-                        throw new Error('requirements.room: no codes found.');
+                        throw new Error('requirement.room: no codes found.');
                     }
                 });
             }
             else {
                 dk.readCodes(function() {
                     if (!dk.codes.size()) {
-                        throw new Error('requirements.room: no codes found.');
+                        throw new Error('requirement.room: no codes found.');
                     }
                 });
             }
