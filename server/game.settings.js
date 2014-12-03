@@ -24,10 +24,12 @@ module.exports = {
     // AUTH: 'remote'
     AUTH: 'none',
 
-    CHOSEN_TREATMENT: "ra", // "sa"
+    //CHOSEN_TREATMENT: "ra",
+    CHOSEN_TREATMENT: "sa",
 
     // How much does an agreement cost? (30 or 80).
-    COSTGE: 30, // 80
+    COSTGE: 30,
+    //COSTGE: 80,
 
     treatments: {
         sa: {
