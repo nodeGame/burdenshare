@@ -650,7 +650,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             // if syncStepping = false
             node.remoteCommand('goto_step', 'ALL', '3.1');
             node.game.gotoStep(new GameStage('3.1'));
-        }, 60000);
+        }, settings.timer.notEnoughPlayers);
     }
 
     // Adds an 'other'-bonus to all players and calls dk.checkOut iff all
@@ -688,6 +688,11 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
                         // Adding the bonusToOther from the next player in the
                         // list.
+
+
+                        // TODO: I got this error:
+                        // TypeError: Cannot read property '1' of undefined
+
                         bonus += node.game.pl.otherBonus[
                             node.game.pl.id.resolve[idList[(i+1)%idList.length]]
                         ];
