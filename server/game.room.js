@@ -8,9 +8,7 @@
  */
 module.exports = function(node, channel, gameRoom) {
 
-    // Reads in descil-mturk configuration.
     var basedir = channel.resolveGameDir('burdenshare');
-    var confPath = basedir + '/auth/descil.conf.js';
     var settings = require(basedir + '/server/game.settings.js');
 
     // Load the code database.

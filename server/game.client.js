@@ -17,7 +17,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
     stager = ngc.getStager(gameSequence);
 
     var game = {};
-    var cbs = require(__dirname + '/includes/logic.callbacks.js');
+    var cbs = require(__dirname + '/includes/client.callbacks.js');
 
     //INIT and GAMEOVER
     stager.setOnInit(function() {
@@ -1970,47 +1970,34 @@ module.exports = function(gameRoom, treatmentName, settings) {
     }
 
 
-    function clearFrame() {
-        node.emit('INPUT_DISABLE');
-        return true;
-    }
-
-    function notEnoughPlayers() {
-        node.game.pause();
-        W.lockScreen('One player disconnected. We are now waiting to see if ' +
-                     ' he or she reconnects. If there is no reconnection within 60 seconds the game will be terminated and you will be forwarded to the questionnaire.');
-    }
-
-    function syncGroup(stage, myStageLevel, pl, game) {
-        var p = node.game.pl.get(node.game.otherID);
-        if (p.stageLevel === node.constants.stageLevels.DONE) {
-            if (myStageLevel === node.constants.stageLevels.DONE) {
-                return true;
-            }
-        }
-    }
-
     stager.extendStep('instructions', {
         cb: instructions,
-        minPlayers: [ 4, notEnoughPlayers ],
+        minPlayers: [ 4, cbs.notEnoughPlayers ],
         steprule: stepRules.SYNC_STAGE,
         syncOnLoaded: false,
-        done: clearFrame
+        done: cbs.clearFrame
     });
 
     stager.addStep({
         id: "initialSituation",
         cb: initialSituation,
-        stepRule: syncGroup,
+        stepRule: cbs.syncGroup,
         timer: {
-            //milliseconds: settings.CHOSEN_TREATMENT === 'sa' ? 36000 : 18000,
-            milliseconds: 2000,
+            milliseconds: settings.timer.initialSituation,
             update: 1000,
             timeup: function() {
+                
                 node.game.timer.stop();
-                node.game.timeInitialSituation = Math.round(Math.abs(node.game.timeInitialSituation - Date.now())/1000);
-                node.game.timeInitialSituationResp = Math.round(Math.abs(node.game.timeInitialSituationResp - Date.now())/1000);
-                var timeInitialSituation = {timeInitialSituation: node.game.timeInitialSituation};
+                node.game.timeInitialSituation = 
+                    Math.round(Math.abs(node.game.timeInitialSituation - Date.now())/1000);
+                node.game.timeInitialSituationResp = 
+                    Math.round(Math.abs(node.game.timeInitialSituationResp - Date.now())/1000);
+
+                // TODO what is this for????
+                var timeInitialSituation = {
+                    timeInitialSituation: node.game.timeInitialSituation
+                };
+
                 node.emit('DONE');
             },
         }
@@ -2019,7 +2006,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
     stager.addStep({
         id: "decision",
         cb: decision,
-        stepRule: syncGroup
+        stepRule: cbs.syncGroup
     });
 
     stager.addStep({
@@ -2034,14 +2021,14 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 node.emit("DONE");
             });
         },
-        stepRule: syncGroup
+        stepRule: cbs.syncGroup
     });
 
     stager.extendStage('burdenSharingControl', {
         steps: ["syncGroups", "initialSituation", "decision"],
-        minPlayers: [ 4, notEnoughPlayers ],
+        minPlayers: [ 4, cbs.notEnoughPlayers ],
         steprule: stepRules.SYNC_STEP,
-        done: clearFrame
+        done: cbs.clearFrame
     });
 
     stager.extendStep('questionnaire', {
@@ -2077,7 +2064,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
     };
 
     game.window = {
-        promptOnleave: true
+        promptOnleave: !settings.debug
     };
 
     return game;

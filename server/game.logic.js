@@ -40,14 +40,9 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                                                     treatmentName,
                                                     settings);
 
-
     // Reads in descil-mturk configuration.
-    var basedir = channel.resolveGameDir('burdenshare');
-    var confPath = basedir + '/auth/descil.conf.js';
     var dk = require('descil-mturk')();
-    var settings = require(basedir + '/server/game.settings.js');
-
-
+    
     // Import the stager.
     var gameSequence = require(__dirname + '/game.stages.js')(settings);
     var stager = ngc.getStager(gameSequence);
@@ -418,6 +413,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                 }
             });
         });
+
         node.on.data('bsc_instrTimeUpdate',function(msg) {
             mdbInstrTime.update(msg.data);
         });

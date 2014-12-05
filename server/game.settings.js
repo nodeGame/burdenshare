@@ -24,14 +24,36 @@ module.exports = {
     // AUTH: 'remote'
     AUTH: 'none',
 
-    WAIT_ROOM_TIMEOUT: 600000, // 600000 == 10 min
+    WAIT_ROOM_TIMEOUT: 10000, // 600000 == 10 min
 
     //CHOSEN_TREATMENT: "ra", "sa",
     CHOSEN_TREATMENT: "ra",
 
     // How much does an agreement cost? (30 or 80).
-    //COSTGE: 30,
     COSTGE: 80,
+
+    timer: {
+        instructions1: 300000,
+        instructions2: 180000,
+        quiz: 120000,
+        questionnaire: 120000,
+        bid: function() {
+	    if (node.game.part == 1 &&
+                node.game.getCurrentGameStage().round < 3) return 30000;
+	    return 15000;
+	},
+        initialSituation: function() {           
+            if (node.game.globals.chosenTreatment === "sa") return 36000;
+	    return 18000;
+        },
+        // Logic
+        breakPart1: 10000,
+        // Waiting Room
+        dispatch: 3000
+    },
+
+    // If TRUE, throws errors. For testing.
+    debug: true,
 
     treatments: {
         sa: {
