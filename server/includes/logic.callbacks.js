@@ -7,7 +7,6 @@
  */
 
 module.exports = {
-    decorateMongoObj: decorateMongoObj,
     round: round,
     playerReconnect: playerReconnect,
     //    writePlayerData: writePlayerData
