@@ -22,17 +22,19 @@ function decision() {
 
     if (node.game.role == 'PROPOSER') {
         W.loadFrame(node.game.url_bidder, function() {
+            var options;
+
+            // debugger
             if (node.player.stage.round == 1) {
                 // Test Round
-
                 W.getElementById(
-                    chosenTreatment === 'ra' ?
-                        'practice1' : 'practice2'
+                    chosenTreatment === 'ra' ? 'practice1' : 'practice2'
                 ).style.display = '';
             }
             W.getElementById("offer").selectedIndex = -1;
             node.game.timeMakingOffer = Date.now();
-            var options = {
+
+            options = {
                 milliseconds: node.game.globals.timer.proposer,
                 timeup: function() {
                     W.getElementById("fieldset").disabled = true;
@@ -40,7 +42,6 @@ function decision() {
                     var randnum = Math.floor(1+Math.random()*node.game.costGE);
                     var offer = W.getElementById('offer');
                     node.game.proposal = offer.value;
-                    // W.write(randnum, offer);
                     node.game.decisionOffer = 0;
                     node.emit('BID_DONE', randnum, node.game.otherID);
                 }

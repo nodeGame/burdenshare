@@ -19,7 +19,6 @@ module.exports = function(node, channel, room) {
     // Creates a stager object to define the game stages.
     var stager = new node.Stager();
 
-
     // Functions
 
     function init() {
@@ -101,11 +100,6 @@ module.exports = function(node, channel, room) {
             };
         });
 
-
-        node.on.pdisconnect(function(player) {
-
-        });
-
         // Results of the requirements check.
         node.on.data('requirements', function(msg) {
             console.log('requirements');
@@ -123,18 +117,9 @@ module.exports = function(node, channel, room) {
 
     stager.setOnInit(init);
 
-    // A unique game stage that will handle all incoming connections.
-    stager.addStage({
-        id: 'requirements',
-        cb: function() {
-            // Returning true in a stage callback means execution ok.
-            return true;
-        }
-    });
-
     stager
         .init()
-        .loop('requirements');
+        .next('requirements');
 
     // Return the game.
     game = {};

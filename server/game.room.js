@@ -17,23 +17,22 @@ module.exports = function(node, channel, gameRoom) {
     // Keep timeouts for all 4 players.
     var timeOuts = [undefined, undefined, undefined, undefined];
 
-    var cbs = channel.require(__dirname + '/includes/room.callbacks.js', {
+    // Objects shared with the included libraries.
+    var sharedObjs = {
         node: node,
         gameRoom: gameRoom,
         dk: dk,
         settings: settings,
         timeOuts: timeOuts
-    });
+    };
+
+    var cbs = channel.require(__dirname + '/includes/room.callbacks.js', sharedObjs);
 
     // If NO authorization is found, local codes will be used,
     // and assigned automatically.
     var noAuthCounter = -1;
     ///////////////////////////// MTurk Version ///////////////////////////
 
-
-    var Database = require('nodegame-db').Database;
-    var ngdb = new Database(node);
-    var mdb = ngdb.getLayer('MongoDB');
 
     var stager = new node.Stager();
     var logicPath = __dirname + '/game.logic';
@@ -45,9 +44,12 @@ module.exports = function(node, channel, gameRoom) {
         ngc: ngc
     });
 
+    // DBS functions. Open Connections.
+    // Objects are cached for further use by require.
+    channel.require(__dirname + '/game.db.js', { node : node });
+
     stager.setOnInit(function() {
 
-        this.channel = channel;
         console.log('********Waiting Room Created*****************');
 
         // This callback is executed whenever a previously disconnected

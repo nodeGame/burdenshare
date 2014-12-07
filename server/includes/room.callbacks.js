@@ -79,15 +79,18 @@ function connectingPlayer(p) {
     wRoom = channel.waitingRoom.clients.player;
 
     for (i = 0; i < wRoom.size(); i++) {
-        // console.log(wRoom.db[i].id);
         node.say("PLAYERSCONNECTED", wRoom.db[i].id, wRoom.size());
     }
 
     makeTimeOut(p.id, wRoom.size());
 
-    debugger
     // Wait for all players to connect.
     if (wRoom.size() < NPLAYERS) {
+//         channel.connectBot({
+//             room: gameRoom,
+//             clientType: 'bot',
+//             loadGame: false
+//         });
         // channel.connectPhantom();
         return;
     }

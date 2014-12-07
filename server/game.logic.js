@@ -8,19 +8,9 @@ var J = ngc.JSUS;
 var counter = 0;
 var PLAYING_STAGE = 1;
 
-//Round 1 of 4 is a test round
+// Round 1 of 4 is a test round.
 
 var DUMP_DIR = path.resolve(__dirname, '..', '/data');
-
-/////////////////////////// mongoDB ///////////////////////////
-// 1. Setting up database connection.
-var Database = require('nodegame-db').Database;
-
-// Open the collection where the categories will be stored.
-var mdbWrite_idData, mdbWrite, mdbWrite_questTime, mdbWrite_gameTime, mdbGetProfit,
-mdbCheckData, mdbDelet, mdbDeletTime, mdbWriteProfit, mdbCheckProfit,
-mdbgetInitEndow, mdbInstrTime;
-
 
 // Here we export the logic function. Receives three parameters:
 // - node: the NodeGameClient object.
@@ -31,9 +21,9 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     var REPEAT, MIN_PLAYERS;
 
     // Requiring additiinal functions.
-    var cbs = require(__dirname + '/includes/logic.callbacks.js');
-
-
+    var cbs = channel.require(__dirname + '/includes/logic.callbacks.js', {
+        ngc: ngc
+    });
 
     // Client game to send to reconnecting players.
     var client = require(gameRoom.gamePaths.player)(gameRoom,
@@ -47,6 +37,11 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     var gameSequence = require(__dirname + '/game.stages.js')(settings);
     var stager = ngc.getStager(gameSequence);
 
+
+    // DBS functions.
+    // Objects were created and cached in previous call in game.room.
+    var dbs = require(__dirname + '/game.db.js');
+
     // Settings variables.
 
     REPEAT = settings.REPEAT;
@@ -57,6 +52,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     stager.setOnInit(function() {
         console.log('********************** Burden-Sharing-Control - SessionID: ' +
                     gameRoom.name);
+        
+        console.log('init');
 
         ++counter;
 
@@ -83,7 +80,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         });
 
         function addQuestionnaireBonus(msg) {
-            mdbCheckProfit.checkProfit(msg.data.player, function(rows, items) {
+            dbs.mdbCheckProfit.checkProfit(msg.data.player, function(rows, items) {
                 // Adds to the profit a bonus depending on the
                 // choice made in the SVO questionnaire block.
                 var choicesMade = msg.data.choices;
@@ -143,7 +140,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                 var newAmountUCE = profit.Amount_UCE + bonusFromSelf;
                 var newAmountUSD = cbs.round((newAmountUCE/50),2);
 
-                mdbWriteProfit.update({
+                dbs.mdbWriteProfit.update({
                     playerID: {
                         "Player_ID": msg.data.player
                     },
@@ -167,260 +164,27 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
         // Player reconnecting.
         // Reconnections must be handled by the game developer.
-        node.on.preconnect(function(p) {
-
-            var code;
-            console.log('Oh...somebody reconnected!', p);
-            code = dk.codeExists(p.id);
-
-            if (!code) {
-                console.log('game.logic: reconnecting player not found in ' +
-                        'code db: ' + p.id);
-                return;
-            }
-            if (!code.disconnected) {
-                console.log('game.logic: reconnecting player that was not ' +
-                        'marked disconnected: ' + p.id);
-                return;
-            }
-
-            if (node.game.pl.exist(p)) {
-                console.log("should not happen");
-                console.log(p);
-            }
-
-            // Mark code as connected.
-            code.disconnected = false;
-
-            // Delete countdown to terminate the game.
-            clearTimeout(this.countdown);
-
-            // Notify other player he is back.
-            // TODO: add it automatically if we return TRUE? It must be done
-            // both in the alias and the real event handler
-            node.game.pl.each(function(player) {
-                node.socket.send(node.msg.create({
-                    target: 'PCONNECT',
-                    data: p,
-                    to: player.id
-                }));
-            });
-
-            // Send currently connected players to reconnecting.
-            node.socket.send(node.msg.create({
-                target: 'PLIST',
-                data: node.game.pl.db,
-                to: p.id
-            }));
-
-            // We could slice the game plot, and send just what we need
-            // however here we resend all the stages, and move their game plot.
-            console.log('** Player reconnected: ' + p.id + ' **');
-            // Setting metadata, settings, and plot.
-            node.remoteSetup('game_metadata',  p.id, client.metadata);
-            node.remoteSetup('game_settings', p.id, client.settings);
-            node.remoteSetup('plot', p.id, client.plot);
-            node.remoteSetup('env', p.id, client.env);
-
-            var RECON_STAGE = node.player.stage;
-
-            if (!GameStage.compare(node.player.stage, '2.2.1') ||
-            !GameStage.compare(node.player.stage, '2.2.2') ||
-            !GameStage.compare(node.player.stage, '2.2.3')) {
-
-                RECON_STAGE = node.game.plot.previous(RECON_STAGE);
-            }
-            else if (!GameStage.compare(node.player.stage, '2.3.1') ||
-                 !GameStage.compare(node.player.stage, '2.3.2') ||
-                 !GameStage.compare(node.player.stage, '2.3.3')) {
-
-                RECON_STAGE = node.game.plot.jump(RECON_STAGE, -2);
-            }
-
-            // Start the game on the reconnecting client.
-            node.remoteCommand('start', p.id);
-            // Pause the game on the reconnecting client, will be resumed later.
-            // node.remoteCommand('pause', p.id);
-
-            // It is not added automatically.
-            // TODO: add it automatically if we return TRUE? It must be done
-            // both in the alias and the real event handler
-            node.game.pl.add(p);
-
-            // Pause the game on the reconnecting client, will be resumed later.
-            //node.remoteCommand('pause', p.id);
-
-            if (!node.game.checkPlistSize()) {
-                console.log('Player reconnected, but not yet enough players');
-                return;
-            }
-
-            // The client pauses itself if there aren't enough players, so this
-            // has to come after checkPlistSize (this is the last player
-            // reconnecting):
-            // node.remoteCommand('pause', p.id);
-
-            // Move logic to previous stage.
-            node.game.gotoStep(RECON_STAGE);
-
-            if (!GameStage.compare(node.player.stage, '3.1.1')) {
-                node.remoteCommand('goto_step', p.id, RECON_STAGE);
-
-                // IF ALREADY CHECKOUT
-                if (code.checkout) {
-                    node.say("win", p.id, code.ExitCode);
-                }
-            }
-
-            else {
-                // Will send all the players to current stage
-                // (also those who were there already).
-                // node.remoteCommand('goto_step', 'ALL', node.player.stage);
-                node.remoteCommand('goto_step', 'ALL', RECON_STAGE);
-                setTimeout(function() {
-                    // Pause the game on the reconnecting client, will be resumed later.
-                    //  node.remoteCommand('pause', p.id);
-                    // Unpause ALL players
-                    node.game.pl.each(function(player) {
-                        if (player.id !== p.id) {
-                            node.remoteCommand('resume', player.id);
-                        }
-                    });
-                }, 1000);
-            }
-            //Clear the Count Down in the index.htm
-            setTimeout(function() {
-                node.say("CLEAR_COUNTDOWN", p.id, 'clearCountDown');
-            }, 3000);
-        });
-
-        console.log('init');
-
-            // Open DB connections only when the first LOGIC client is created.
-        if (!mdbWrite_idData) {
-            /////////////////////////// mongoDB ///////////////////////////
-            // 1. Setting up database connection.
-            ngdb = new Database(node);
-
-            // Open the collection where the categories will be stored.
-            mdbWrite_idData = ngdb.getLayer('MongoDB', {
-                dbName: 'burden_sharing_rahr80',
-                collectionName: 'bsc_idData'
-            });
-
-            cbs.decorateMongoObj(mdbWrite_idData);
-
-            mdbWrite = ngdb.getLayer('MongoDB', {
-                dbName: 'burden_sharing_rahr80',
-                collectionName: 'bsc_data'
-            });
-
-            cbs.decorateMongoObj(mdbWrite);
-
-            mdbWrite_questTime = ngdb.getLayer('MongoDB', {
-                dbName: 'burden_sharing_rahr80',
-                collectionName: 'bsc_questTime'
-            });
-
-            cbs.decorateMongoObj(mdbWrite_questTime);
-
-            mdbWrite_gameTime = ngdb.getLayer('MongoDB', {
-                dbName: 'burden_sharing_rahr80',
-                collectionName: 'bsc_gameTime'
-            });
-
-            cbs.decorateMongoObj(mdbWrite_gameTime);
-
-            mdbGetProfit = ngdb.getLayer('MongoDB', {
-            dbName: 'burden_sharing_rahr80',
-            collectionName: 'bsc_data'
-            });
-
-            cbs.decorateMongoObj(mdbGetProfit);
-
-            mdbCheckData = ngdb.getLayer('MongoDB', {
-                dbName: 'burden_sharing_rahr80',
-                collectionName: 'bsc_data'
-            });
-
-            cbs.decorateMongoObj(mdbCheckData);
-
-            mdbDelet = ngdb.getLayer('MongoDB', {
-                dbName: 'burden_sharing_rahr80',
-                collectionName: 'bsc_data'
-            });
-
-            cbs.decorateMongoObj(mdbDelet);
+        node.on.preconnect(cbs.playerReconnects);
 
 
-            mdbDeletTime = ngdb.getLayer('MongoDB', {
-                dbName: 'burden_sharing_rahr80',
-                collectionName: 'bsc_gameTime'
-            });
-
-            cbs.decorateMongoObj(mdbDeletTime);
-
-            mdbWriteProfit = ngdb.getLayer('MongoDB', {
-                dbName: 'burden_sharing_rahr80',
-                collectionName: 'bsc_profit'
-            });
-
-            cbs.decorateMongoObj(mdbWriteProfit);
-
-            mdbCheckProfit = ngdb.getLayer('MongoDB', {
-                dbName: 'burden_sharing_rahr80',
-                collectionName: 'bsc_profit'
-            });
-
-            cbs.decorateMongoObj(mdbCheckProfit);
-
-            mdbgetInitEndow = ngdb.getLayer('MongoDB', {
-                dbName: 'burden_sharing_rahr80',
-                collectionName: 'bsc_idData'
-            });
-
-            cbs.decorateMongoObj(mdbgetInitEndow);
-
-            mdbInstrTime = ngdb.getLayer('MongoDB', {
-                dbName: 'burden_sharing_rahr80',
-                collectionName: 'bsc_instrTime'
-            });
-
-            cbs.decorateMongoObj(mdbInstrTime);
-
-            // Opening the database for writing the profit data.
-            mdbWriteProfit.connect(function() {});
-            // Opening the database for writing the resultdata.
-            mdbWrite.connect(function() {});
-            // Check if data for current round already exist
-            mdbCheckData.connect(function() {});
-            // Delete already existing data in case of a reconnection
-            mdbDelet.connect(function() {});
-            // Check if profit data already exist
-            mdbCheckProfit.connect(function() {});
-            // Opening the database for retrieveing the profit of each player.
-            mdbGetProfit.connect(function() {});
-            mdbgetInitEndow.connect(function() {});
-        }
-
-        // mdbInstrTime.connect(function() {});
+        // dbs.mdbInstrTime.connect(function() {});
         node.on.data('bsc_instrTime',function(msg) {
-            //checking if game time has been saved already
-            bsc_check_instrData = mdbInstrTime.checkData(msg.data, function(rows, items) {
+            // Checking if game time has been saved already.
+            bsc_check_instrData = dbs.mdbInstrTime.checkData(msg.data, function(rows, items) {
                 var currentRound = items;
                 if (currentRound === '') {
-                    mdbInstrTime.store(msg.data);
+                    dbs.mdbInstrTime.store(msg.data);
                 }
             });
         });
 
         node.on.data('bsc_instrTimeUpdate',function(msg) {
-            mdbInstrTime.update(msg.data);
+            dbs.mdbInstrTime.update(msg.data);
         });
 
         node.on.data('Write_Profit',function(msg) {
             console.log('Writing Profit Data!!!');
-            mdbWriteProfit.store(msg.data);
+            dbs.mdbWriteProfit.store(msg.data);
         });
 
         node.on.data('add_questionnaire_bonus', function(msg) {
@@ -429,7 +193,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         });
         node.on.data('bsc_data',function(msg) {
             console.log('Writing Result Data!!!');
-            mdbWrite.store(msg.data);
+            dbs.mdbWrite.store(msg.data);
         });
 
         node.on.data('questionnaireAnswer', function(msg) {
@@ -437,27 +201,22 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             mdnWrite.store(msg.data);
         });
 
+        
         function writePlayerData() {
             var IDPlayer = node.game.pl.id.getAllKeys();
-            for(var i = 0; i < IDPlayer.length; i++) {
+            for (var i = 0; i < IDPlayer.length; i++) {
                 var idData = {
                     Player_ID: IDPlayer[i],
                     Session_ID: gameRoom.name
                 };
-                mdbWrite_idData.store(idData);
+                dbs.mdbWrite_idData.store(idData);
             }
         }
-
-        if (!mdbWrite_idData.activeCollection) {
-            // Opening the database for writing the id data.
-            mdbWrite_idData.connect(writePlayerData);
-        }
-        else {
-            writePlayerData();
-        }
+        
+        writePlayerData();        
 
         node.on.data('check_Data',function(msg) {
-            bsc_check_data = mdbCheckData.checkData(msg.data, function(rows, items) {
+            bsc_check_data = dbs.mdbCheckData.checkData(msg.data, function(rows, items) {
                 var currentRound = items;
                 node.socket.send(node.msg.create({
                     text:'CheckData',
@@ -469,14 +228,14 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
         // Delet data from the database
         node.on.data('delete_data',function(msg) {
-            mdbDelet.deleting(msg.data.Player_ID, msg.data.Current_Round);
+            dbs.mdbDelet.deleting(msg.data.Player_ID, msg.data.Current_Round);
         });
 
         // Check whether profit data has been saved already.
         // If not, save it, otherwise ignore it
         node.on.data('get_Profit',function(msg) {
 
-            bsc_check_profit = mdbCheckProfit.checkProfit(msg.data,
+            bsc_check_profit = dbs.mdbCheckProfit.checkProfit(msg.data,
                 function(rows, items) {
                     var prof = items;
 
@@ -493,7 +252,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                     }
 
                     else {
-                        bsc_data_table = mdbGetProfit.getCollectionObj(msg.data,
+                        bsc_data_table = dbs.mdbGetProfit.getCollectionObj(msg.data,
                             function(rows, items) {
                                 var profit = items;
                                 console.log(profit);
@@ -519,7 +278,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                                     };
 
                                     console.log('Writing Profit Data!!!');
-                                    mdbWriteProfit.store(write_profit);
+                                    dbs.mdbWriteProfit.store(write_profit);
 
                                     var profit_data = {
                                         Payout_Round: payoutRound,
@@ -541,7 +300,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                                         Nbr_Completed_Rounds: 0
                                     };
                                     console.log('Writing Profit Data!!!');
-                                    mdbWriteProfit.store(write_profit);
+                                    dbs.mdbWriteProfit.store(write_profit);
                                     var profit_data = {
                                         Payout_Round: "none",
                                         Profit: "show up fee"
@@ -560,63 +319,59 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             );
         });
 
-        // Opening the database for writing the game time.
-        // mdbWrite_gameTime.connect(function() {});
-
         node.on.data('bsc_gameTime',function(msg) {
             //checking if game time has been saved already
-            bsc_check_data = mdbCheckData.checkData(msg.data, function(rows, items) {
+            bsc_check_data = dbs.mdbCheckData.checkData(msg.data, function(rows, items) {
                 var currentRound = items;
                 if (currentRound === '') {
-                    mdbWrite_gameTime.store(msg.data);
+                    dbs.mdbWrite_gameTime.store(msg.data);
                 }
                 else {
                     // first delete and then save new data
-                    mdbDeletTime.deleting(msg.data.Player_ID, msg.data.Current_Round);
-                    mdbWrite_gameTime.store(msg.data);
+                    dbs.mdbDeletTime.deleting(msg.data.Player_ID, msg.data.Current_Round);
+                    dbs.mdbWrite_gameTime.store(msg.data);
                 }
             });
         });
 
-        // Opening the database for writing the time.
-        // mdbWrite_questTime.connect(function() {});
-
         node.on.data('bsc_questionnaireTime',function(msg) {
             console.log('Writing Time Questionaire!!!');
-            mdbWrite_questTime.store(msg.data);
+            dbs.mdbWrite_questTime.store(msg.data);
         });
 
         node.on.data('bsc_questTime',function(msg) {
-            mdbWrite_questTime.update(msg.data);
+            dbs.mdbWrite_questTime.update(msg.data);
         });
 
         node.on.data("econGrowth", function(msg) {
-            mdbWrite_idData.update(msg.data);
+            dbs.mdbWrite_idData.update(msg.data);
         });
 
         node.on.data("initEndow", function(msg) {
-            mdbWrite_idData.updateEndow(msg.data);
+            debugger
+            dbs.mdbWrite_idData.updateEndow(msg.data);
         });
 
         node.on.data('get_InitEndow',function(msg) {
-            bsc_get_initEndow = mdbgetInitEndow.getInitEndow(msg.data.otherPlayerId, function(rows, items) {
+            bsc_get_initEndow = dbs.mdbgetInitEndow.getInitEndow(msg.data.otherPlayerId, function(rows, items) {
                 var endow = items;
-                if (typeof endow[0] !== 'undefined') {
+                // debugger;
+                if (!J.isEmpty(endow[0])) {
                     var init_vals = {
-                    init_Endow: endow[0].Initial_Endowment,
-                    cl_Risk: endow[0].Climate_Risk
+                        init_Endow: endow[0].Initial_Endowment,
+                        cl_Risk: endow[0].Climate_Risk
                     };
                     node.socket.send(node.msg.create({
-                    text:'Endow',
-                    to: msg.data.ownPlayerId,
-                    data: init_vals
+                        text:'Endow',
+                        to: msg.data.ownPlayerId,
+                        data: init_vals
                     }));
                 }
                 else {
                     node.socket.send(node.msg.create({
-                    text:'Endow',
-                    to: msg.data.ownPlayerId,
-                    data:'We are sorry. The endowment can not be shown.'
+                        text:'Endow',
+                        to: msg.data.ownPlayerId,
+                        data:'We are sorry. The endowment can not be shown.'
                     }));
                 }
             });
@@ -633,7 +388,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             node.set('bsc_idData',idData);
         }
         node.on.data('bsc_surveyID', function(msg) {
-            mdbWrite_idData.update(msg.data);
+            dbs.mdbWrite_idData.update(msg.data);
         });
 
         node.on.data("QUEST_OVER", function(msg) {
@@ -677,7 +432,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             if (!node.game.pl.checkout) {
                 node.game.pl.checkout = true;
                 // Gets profit for all players
-                mdbCheckProfit.checkProfit({ $in : idList}, function(rows, items) {
+                dbs.mdbCheckProfit.checkProfit({ $in : idList}, function(rows, items) {
                     var profit;
                     var bonus;
                     var code;

@@ -169,17 +169,43 @@ function instructions() {
                     node.game.risk = 7.5;
                     initEndow.addEndow.Initial_Endowment = 0;
                     initEndow.addEndow.Climate_Risk = 0;
-                    node.set('initEndow',initEndow);
-                    for(var j = 1; j <= 5; j++) {
+
+                    node.set('initEndow', initEndow);
+
+                    for (var j = 1; j <= 5; j++) {
                         node.game.EGRnd[j] = 0;
                         switch(j) {
-                        case 1: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd1: node.game.EGRnd[j]}}; break;
-                        case 2: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd2: node.game.EGRnd[j]}}; break;
-                        case 3: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd3: node.game.EGRnd[j]}}; break;
-                        case 4: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd4: node.game.EGRnd[j]}}; break;
-                        case 5: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd5: node.game.EGRnd[j]}}; break;
+                        case 1: 
+                            var setDBEconGrowth = {
+                                playerID : {Player_ID: node.game.ownID},
+                                add: {EGRnd1: node.game.EGRnd[j]}
+                            }; 
+                            break;
+                        case 2:
+                            var setDBEconGrowth = {
+                                playerID : {Player_ID: node.game.ownID},
+                                add: {EGRnd2: node.game.EGRnd[j]}
+                            };
+                            break;
+                        case 3:
+                            var setDBEconGrowth = {
+                                playerID : {Player_ID: node.game.ownID},
+                                add: {EGRnd3: node.game.EGRnd[j]}
+                            };
+                            break;
+                        case 4:
+                            var setDBEconGrowth = {
+                                playerID: {Player_ID: node.game.ownID},
+                                add: {EGRnd4: node.game.EGRnd[j]}
+                            }; 
+                            break;
+                        case 5: 
+                            var setDBEconGrowth = {
+                                playerID : {Player_ID: node.game.ownID},
+                                add: {EGRnd5: node.game.EGRnd[j]}};
+                            break;
                         }
-                        node.set("econGrowth",setDBEconGrowth);
+                        node.set("econGrowth", setDBEconGrowth);
                     }
                     chooseEconGrowth();
                 }
@@ -295,6 +321,7 @@ function instructions() {
                         chooseEconGrowth();
                     }
                     else {
+                        debugger
                         initEndow.addEndow.Initial_Endowment = node.game.endowment_own;
                         initEndow.addEndow.Climate_Risk = node.game.risk;
                         node.set('initEndow',initEndow);
@@ -351,8 +378,7 @@ function instructions() {
                     }
                     else {
                         W.getElementById("propEndow").innerHTML = node.game.endowment_own;
-                        W.getElementById("clRiskOwn").innerHTML = node.game.risk - 7.5;
-
+                        W.getElementById("clRiskOwn").innerHTML = node.game.risk - 7.5;                        
                         initEndow.addEndow.Initial_Endowment = node.game.endowment_own;
                         initEndow.addEndow.Climate_Risk = node.game.risk;
                         node.set('initEndow',initEndow);

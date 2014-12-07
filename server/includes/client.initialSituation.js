@@ -23,7 +23,7 @@ function initialSituation() {
     };
     node.set('get_InitEndow', IDs);
     node.on.data("Endow", function(msg) {
-
+        debugger
         var initialEndow = msg.data.init_Endow;
         node.game.ClimateRisk = msg.data.cl_Risk + node.game.risk;
         node.game.riskOwn = node.game.risk - 7.5;
@@ -32,6 +32,9 @@ function initialSituation() {
             node.game.endowment_responder = initialEndow;
             node.game.endowment_proposer = node.game.endowment_own;
             W.loadFrame(node.game.url_initprop, function() {
+
+                debugger
+
                 var initText1 = "Due to economic growth, you have received " + (node.game.endowment_own-25) + " ECU which will be added ";
                 initText1 = initText1 + "to your initial endowment.";
                 var initText2 = "This level of growth means that your economy ";
@@ -81,6 +84,9 @@ function initialSituation() {
             node.game.endowment_responder = node.game.endowment_own;
 
             W.loadFrame(node.game.url_initresp, function() {
+
+                debugger
+
                 var initText1 = "Due to economic growth, you have received " + (node.game.endowment_own-25) + " ECU which will be added ";
                 initText1 = initText1 + "to your initial endowment.";
                 var initText2 = "This level of growth means that your economy ";

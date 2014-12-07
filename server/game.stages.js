@@ -14,7 +14,6 @@ module.exports = function(settings) {
     .repeat('burdenSharingControl', settings.REPEAT)
     .next('questionnaire');
 
-    debugger
     // Modifty the stager to skip one stage.
     // stager.skip('instructions');
 
