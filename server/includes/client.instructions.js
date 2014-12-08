@@ -25,7 +25,7 @@ function instructions() {
         var options = {
             milliseconds: node.game.globals.timer.instructions1,
             timeup: function() {
-                node.game.timeInstruction = 
+                node.game.timeInstruction =
                     Math.round(Math.abs(node.game.timeInstruction - Date.now())/1000);
                 var timeInstr = {
                     Player_ID: node.game.ownID,
@@ -175,11 +175,11 @@ function instructions() {
                     for (var j = 1; j <= 5; j++) {
                         node.game.EGRnd[j] = 0;
                         switch(j) {
-                        case 1: 
+                        case 1:
                             var setDBEconGrowth = {
                                 playerID : {Player_ID: node.game.ownID},
                                 add: {EGRnd1: node.game.EGRnd[j]}
-                            }; 
+                            };
                             break;
                         case 2:
                             var setDBEconGrowth = {
@@ -197,9 +197,9 @@ function instructions() {
                             var setDBEconGrowth = {
                                 playerID: {Player_ID: node.game.ownID},
                                 add: {EGRnd4: node.game.EGRnd[j]}
-                            }; 
+                            };
                             break;
-                        case 5: 
+                        case 5:
                             var setDBEconGrowth = {
                                 playerID : {Player_ID: node.game.ownID},
                                 add: {EGRnd5: node.game.EGRnd[j]}};
@@ -308,11 +308,11 @@ function instructions() {
                     node.game.endowment_own = node.game.endowment_own + node.game.growth[ind][rnd];
 
                     switch(node.game.pgCounter) {
-                    case 1: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd1: node.game.EGRnd[node.game.pgCounter]}}; break;
-                    case 2: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd2: node.game.EGRnd[node.game.pgCounter]}}; break;
-                    case 3: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd3: node.game.EGRnd[node.game.pgCounter]}}; break;
-                    case 4: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd4: node.game.EGRnd[node.game.pgCounter]}}; break;
-                    case 5: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd5: node.game.EGRnd[node.game.pgCounter]}}; break;
+                        case 1: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd1: node.game.EGRnd[node.game.pgCounter]}}; break;
+                        case 2: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd2: node.game.EGRnd[node.game.pgCounter]}}; break;
+                        case 3: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd3: node.game.EGRnd[node.game.pgCounter]}}; break;
+                        case 4: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd4: node.game.EGRnd[node.game.pgCounter]}}; break;
+                        case 5: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd5: node.game.EGRnd[node.game.pgCounter]}}; break;
                     }
                     node.set("econGrowth",setDBEconGrowth);
                     node.game.timer.stop();
@@ -363,11 +363,11 @@ function instructions() {
                     node.game.endowment_own = node.game.endowment_own + node.game.growth[ind][rnd];
                     console.log("Growth Endowment = " + node.game.growth[ind][rnd]);
                     switch(node.game.pgCounter) {
-                    case 1: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd1: node.game.EGRnd[node.game.pgCounter]}}; break;
-                    case 2: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd2: node.game.EGRnd[node.game.pgCounter]}}; break;
-                    case 3: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd3: node.game.EGRnd[node.game.pgCounter]}}; break;
-                    case 4: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd4: node.game.EGRnd[node.game.pgCounter]}}; break;
-                    case 5: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd5: node.game.EGRnd[node.game.pgCounter]}}; break;
+                        case 1: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd1: node.game.EGRnd[node.game.pgCounter]}}; break;
+                        case 2: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd2: node.game.EGRnd[node.game.pgCounter]}}; break;
+                        case 3: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd3: node.game.EGRnd[node.game.pgCounter]}}; break;
+                        case 4: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd4: node.game.EGRnd[node.game.pgCounter]}}; break;
+                        case 5: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd5: node.game.EGRnd[node.game.pgCounter]}}; break;
                     }
                     node.set("econGrowth",setDBEconGrowth);
                     node.game.timer.stop();
@@ -377,7 +377,7 @@ function instructions() {
                     }
                     else {
                         W.getElementById("propEndow").innerHTML = node.game.endowment_own;
-                        W.getElementById("clRiskOwn").innerHTML = node.game.risk - 7.5;                        
+                        W.getElementById("clRiskOwn").innerHTML = node.game.risk - 7.5;
                         initEndow.addEndow.Initial_Endowment = node.game.endowment_own;
                         initEndow.addEndow.Climate_Risk = node.game.risk;
                         node.set('initEndow',initEndow);

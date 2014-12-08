@@ -122,6 +122,6 @@ function initialSituation() {
                     node.emit('DONE');
                 };
             });
-        }        
+        }
     });
 }

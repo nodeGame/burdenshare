@@ -14,7 +14,7 @@ module.exports = {
         logic:    "game.logic.js",
         player:   "game.client.js",
         bot:      "game.bot.js",
-        autoplay: "game.autoplay.js",        
+        autoplay: "game.autoplay.js",
     },
 
     REPEAT: 4,
@@ -36,16 +36,16 @@ module.exports = {
     timer: {
 
         // Instructions.
-        instructions1: 1000000, //480000, 
-        instructions2: 1000000, //480000, 
-        instructions3: 1000000, //480000, 
-        instructions4: 1000000, //480000, 
+        instructions1: 480000,
+        instructions2: 480000,
+        instructions3: 480000,
+        instructions4: 480000,
 
         // Game.
         initialSituation: function() {
-            return 100000;
+            return 10000;
             if (node.game.globals.chosenTreatment === "sa") return 36000;
-	    return 18000;
+            return 18000;
         },
         econGrowth: 100000, //40000, // 40000 ms is equal to 40 seconds
         proposer: 200000, //90000, // 120000 ms is equivalent to 2 minutes
@@ -56,8 +56,8 @@ module.exports = {
         responseDone: 20000, //120000, // 120000 ms is equivalent to 2 minutes
 
         // Questionnaire.
-        quest: 2000, // 1800000, // 30minutes
-        questProfit: 2000, //60000,
+        questionnaire: 1800000, // 30 minutes
+        questProfit: 60000, // 1 minute
 
         // Logic.
         notEnoughPlayers: 100000,

@@ -13,7 +13,7 @@ function init() {
     var gameName = node.game.globals.gameName;
     var chosenTreatment = node.game.globals.chosenTreatment;
 
-    // basic amount of own endowment (here 25). 
+    // basic amount of own endowment (here 25).
     node.game.endowment_own = 25;
     node.game.endowment_responder = 0;
     node.game.endowment_proposer = 0;
@@ -50,6 +50,7 @@ function init() {
     node.game.ClimateRisk = 0;
     // offer in each round of the game, used at the end of each round in a short question for the participant
     node.game.proposal = 0;
+
     // node.game.response is either "accept" or "reject", used at the end of each round in a short question for the participant
     node.game.response = '';
 
@@ -79,20 +80,20 @@ function init() {
     node.game.visualRound = node.widgets.append('VisualRound', W.getHeader());
     node.game.timer = node.widgets.append('VisualTimer', W.getHeader());
 
-    
+
     // Function called as soon as proposer made his offer (bid).
     node.on('BID_DONE', function(offer, to) {
         var timeMakingOffer, bidDone, span_dots;
 
-        node.game.timeMakingOffer = 
+        node.game.timeMakingOffer =
             Math.round(Math.abs(node.game.timeMakingOffer - Date.now())/1000);
         timeMakingOffer = {timeMakingOffer: node.game.timeMakingOffer};
-        
+
         W.getElementById('submitOffer').disabled = 'disabled';
         bidDone = W.getElementById('offered');
         bidDone.innerHTML = ' You offer to pay ' +  offer.toString() +
             '. Please wait until the experiment continues <br> <span id="span_dots">.</span> ';
-        
+
         span_dots = W.getElementById('span_dots');
         // Refreshing the dots...
         setInterval(function() {
@@ -104,16 +105,16 @@ function init() {
             }
         }, 1000);
 
-        node.say('OFFER',node.game.otherID, offer);
+        node.say('OFFER', node.game.otherID, offer);
     });
 
     // Function called as soon as proposer has finished the current round.
     node.on('PROPOSER_DONE', function(data) {
         var gameTimeResp;
 
-        node.game.timeResultProp = 
+        node.game.timeResultProp =
             Math.round(Math.abs(node.game.timeResultProp - Date.now())/1000);
-        
+
         gameTimeResp = {
             Player_ID: data.Player_ID,
             Current_Round: data.Current_Round,
@@ -125,7 +126,7 @@ function init() {
         // short question at the end of each round
         W.loadFrame('/burdenshare/html/' + gameName + '/questionRounds_prop.html', function() {
             var options, quest, string, next;
-            
+
             node.game.timequestionsRounds = Date.now();
 
             options = {
@@ -134,10 +135,10 @@ function init() {
                 // if count down elapsed and no action has been taken by participant function is called
                 timeup: function() {
                     var timeInstr, answerQR, dataExist;
-                    
-                    node.game.timequestionsRounds = 
+
+                    node.game.timequestionsRounds =
                         Math.round(Math.abs(node.game.timequestionsRounds - Date.now())/1000);
-                    
+
                     timeInstr = {
                         playerID: {Player_ID: node.game.ownID},
                         add: {TimeQuestionRounds: node.game.timequestionsRounds}
@@ -147,7 +148,7 @@ function init() {
                     this.disabled = "disabled";
                     answerQR = W.getElementById('questRounds').value;
                     node.game.results.P_QuestRound = answerQR;
-                    
+
                     // Check if data for playerID
                     // and current round already exists.
                     dataExist = {
@@ -186,8 +187,14 @@ function init() {
 
             // short question at the end of each round
             quest = W.getElementById("quest");
-            string = 'Why did you propose ' + node.game.proposal + ' ECU ?';
-            W.write(string, quest);
+            if (node.game.decisionOffer === 1) {
+                string = 'Why did you propose ' + node.game.proposal + ' ECU ?';
+                W.write(string, quest);
+            }
+            else {
+                quest.style.display = 'none';
+                W.getElementById("questRounds").style.display = 'none';
+            }
 
             next = W.getElementById("continue");
             next.onclick = function() {
@@ -230,7 +237,7 @@ function init() {
     node.on('RESPONDER_DONE', function(data) {
         var gameTimeResp, quest, string, next;
 
-        node.game.timeResultResp = 
+        node.game.timeResultResp =
             Math.round(Math.abs(node.game.timeResultResp - Date.now())/1000);
 
         gameTimeResp = {
@@ -241,7 +248,7 @@ function init() {
             timeResultResp: node.game.timeResultResp
         };
         console.log("Time InitResp:" + gameTimeResp.timeInitSituaResp);
-        
+
         // Check if data for playerID
         // and current round already exists.
         W.loadFrame('/burdenshare/html/' + gameName + '/questionRounds_resp.html', function() {
@@ -253,7 +260,7 @@ function init() {
                 milliseconds: node.game.globals.timer.respondentDone,
                 timeup: function() {
                     var timeInstr, answerQR, dataExist;
-                    node.game.timequestionsRounds = 
+                    node.game.timequestionsRounds =
                         Math.round(Math.abs(node.game.timequestionsRounds - Date.now())/1000);
 
                     timeInstr = {
@@ -263,10 +270,10 @@ function init() {
 
                     node.game.timer.stop();
                     this.disabled = "disabled";
-                    
+
                     answerQR = W.getElementById('questRounds').value;
                     node.game.results.R_QuestRound = answerQR;
-                    
+
                     // Check if data for playerID
                     // and current round already exists.
                     dataExist = {
@@ -304,16 +311,22 @@ function init() {
 
             // Short question at the end of each round
             quest = W.getElementById("quest");
-            string = 'Why did you ' + node.game.response + ' the proposal ?';
-            W.write(string, quest);
-            
+            if (node.game.decisionResponse === 1) {
+                string = 'Why did you ' + node.game.response + ' the proposal ?';
+                W.write(string, quest);
+            }
+            else {
+                quest.style.display = 'none';
+                W.getElementById("questRounds").style.display = 'none';
+            }
+
             next = W.getElementById("continue");
             next.onclick = function() {
                 var answerQR, datExist;
 
                 answerQR = W.getElementById('questRounds').value;
                 node.game.results.R_QuestRound = answerQR;
-                
+
                 // Check if data for playerID
                 // and current round already exists
                 dataExist = {
@@ -344,13 +357,13 @@ function init() {
 
     // Function called as soon as responder made his descision (accept or reject the offer)
     node.on('RESPONSE_DONE', function(response, offer, from) {
-        node.game.timeResponse = 
+        node.game.timeResponse =
             Math.round(Math.abs(node.game.timeResponse - Date.now())/1000);
 
         W.loadFrame('/burdenshare/html/' + gameName + '/resultResponder.html', function() {
             var options, proceed;
             var catastrObj;
-            
+
             var cc, acceptPlayer;
 
             if (node.player.stage.round == 1) {
@@ -381,12 +394,12 @@ function init() {
                 node.say('ACCEPT', node.game.otherID, catastrObj);
                 acceptPlayer = 1;
                 cc = 0;
-                
+
                 // Display to the user.
                 node.game.globals.writeOfferAccepted(offer);
             }
-            else {                    
-                acceptPlayer = 0;                    
+            else {
+                acceptPlayer = 0;
 
                 catastrObj.remainEndowResp = node.game.endowment_responder;
 
@@ -395,7 +408,7 @@ function init() {
                 if (Math.random() <= (node.game.ClimateRisk/100)) {
                     // Climate catastrophy happened.
                     catastrObj.cc = 1;
-                    catastrObj.remainEndowResp = node.game.endowment_responder/2;                        
+                    catastrObj.remainEndowResp = node.game.endowment_responder/2;
                     cc = 1;
                     node.game.globals.writeCatastrophe();
                 }
@@ -428,7 +441,7 @@ function init() {
                 GroupRisk: (node.game.riskOwn + node.game.riskOther + 15)
             };
 
-            
+
             proceed = W.getElementById('continue');
             proceed.onclick = function() {
                 node.game.timer.stop();
@@ -471,7 +484,6 @@ function init() {
         var accepted = Math.round(Math.random());
         console.log('randomaccept');
         console.log(dataResp + ' ' + other);
-        node.game.decisionResponse = 0;
         if (accepted) {
             node.game.response = 'accept';
             node.emit('RESPONSE_DONE', 'ACCEPT', dataResp, other);

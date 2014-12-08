@@ -41,7 +41,7 @@ function decision() {
                     node.game.timer.stop();
                     var randnum = Math.floor(1+Math.random()*node.game.costGE);
                     var offer = W.getElementById('offer');
-                    node.game.proposal = offer.value;
+                    node.game.proposal = ""+randnum;
                     node.game.decisionOffer = 0;
                     node.emit('BID_DONE', randnum, node.game.otherID);
                 }
@@ -249,7 +249,7 @@ function decision() {
                         this.disabled = "disabled";
                         node.emit('PROPOSER_DONE', node.game.results, node.game.ownID);
                     };
-                });                
+                });
             });
 
         });
@@ -296,6 +296,7 @@ function decision() {
                         milliseconds: node.game.globals.timer.respondent,
                         timeup: function() {
                             node.game.timer.stop();
+                            node.game.decisionResponse = 0;
                             that.randomAccept(msg.data, node.game.otherID);
                         }
                     };
@@ -317,6 +318,9 @@ function decision() {
 
                     var accept = W.getElementById('accept');
                     var reject = W.getElementById('reject');
+
+                    node.game.offer = msg.data;
+                    node.game.respPay = ""+respPay;
 
                     accept.onclick = function() {
                         node.game.response = 'accept';

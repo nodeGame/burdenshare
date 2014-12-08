@@ -223,7 +223,7 @@ function questionnaire() {
                 },
                 // Final operation
                 done: function() {
-                    W.loadFrame('/burdenshare/html/' + gameName +
+                    W.loadFrame('/burdenshare/html/questionnaire' +
                                 '/profit_adjustment.html', function() {
                                     W.getElementById(
                                         'continue'
@@ -334,7 +334,7 @@ function questionnaire() {
                     var options = {
                         milliseconds:  node.game.globals.timer.questProfit,
                         timeup: function() {
-                            node.game.timeResult = 
+                            node.game.timeResult =
                                 Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
                             var timeResultProp = {
                                 Player_ID : node.game.ownID,
@@ -371,7 +371,7 @@ function questionnaire() {
                     var options = {
                         milliseconds: node.game.globals.timer.questProfit,
                         timeup: function() {
-                            node.game.timeResult = 
+                            node.game.timeResult =
                                 Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
                             var timeResultProp = {
                                 Player_ID : node.game.ownID,
@@ -386,7 +386,7 @@ function questionnaire() {
 
                     var quest2 = W.getElementById('continue');
                     quest2.onclick = function () {
-                        node.game.timeResult = 
+                        node.game.timeResult =
                             Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
                         var timeResultProp = {
                             Player_ID : node.game.ownID,
