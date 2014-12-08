@@ -23,7 +23,7 @@ function initialSituation() {
     };
     node.set('get_InitEndow', IDs);
     node.on.data("Endow", function(msg) {
-        debugger
+        //debugger
         var initialEndow = msg.data.init_Endow;
         node.game.ClimateRisk = msg.data.cl_Risk + node.game.risk;
         node.game.riskOwn = node.game.risk - 7.5;
@@ -33,7 +33,7 @@ function initialSituation() {
             node.game.endowment_proposer = node.game.endowment_own;
             W.loadFrame(node.game.url_initprop, function() {
 
-                debugger
+                //debugger
 
                 var initText1 = "Due to economic growth, you have received " + (node.game.endowment_own-25) + " ECU which will be added ";
                 initText1 = initText1 + "to your initial endowment.";
@@ -85,7 +85,7 @@ function initialSituation() {
 
             W.loadFrame(node.game.url_initresp, function() {
 
-                debugger
+                //debugger
 
                 var initText1 = "Due to economic growth, you have received " + (node.game.endowment_own-25) + " ECU which will be added ";
                 initText1 = initText1 + "to your initial endowment.";
@@ -129,6 +129,6 @@ function initialSituation() {
                     node.emit('DONE');
                 };
             });
-        }        
+        }
     });
 }

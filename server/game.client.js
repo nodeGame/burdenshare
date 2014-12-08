@@ -5,7 +5,7 @@
  *
  * This file contains all the building blocks (functions, and configuration)
  * that will be sent to each connecting player.
- * 
+ *
  * http://www.nodegame.org
  */
 var ngc = require('nodegame-client');
@@ -22,7 +22,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
     stager = ngc.getStager(gameSequence);
 
     var game = {};
-    var cbs = require(__dirname + '/includes/client.callbacks.js');    
+    var cbs = require(__dirname + '/includes/client.callbacks.js');
 
     stager.setOnInit(cbs.init);
 
@@ -42,11 +42,11 @@ module.exports = function(gameRoom, treatmentName, settings) {
             milliseconds: settings.timer.initialSituation,
             update: 1000,
             timeup: function() {
-                
+
                 node.game.timer.stop();
-                node.game.timeInitialSituation = 
+                node.game.timeInitialSituation =
                     Math.round(Math.abs(node.game.timeInitialSituation - Date.now())/1000);
-                node.game.timeInitialSituationResp = 
+                node.game.timeInitialSituationResp =
                     Math.round(Math.abs(node.game.timeInitialSituationResp - Date.now())/1000);
 
                 // TODO what is this for????
@@ -68,7 +68,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
     stager.addStep({
         id: "syncGroups",
         cb: function() {
-            
+
             // Getting the player ID of the other player and the group number
             // depending on whether this player is the proposer or the responder
             // in the current round.
@@ -78,14 +78,14 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 node.game.nbrGroup = msg.data.groupR;
                 node.done();
             });
-            
+
             node.on.data("RESPONDENT", function(msg) {
                 node.game.role = "RESPONDENT";
                 node.game.otherID = msg.data.proposer;
                 node.game.nbrGroup = msg.data.groupP;
                 node.done();
             });
-            
+
             node.socket.send(node.msg.create({
                 to: 'ALL',
                 text: 'Round_Over',
