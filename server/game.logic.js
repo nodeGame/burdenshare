@@ -32,7 +32,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
     // Reads in descil-mturk configuration.
     var dk = require('descil-mturk')();
-    
+
     // Import the stager.
     var gameSequence = require(__dirname + '/game.stages.js')(settings);
     var stager = ngc.getStager(gameSequence);
@@ -52,7 +52,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     stager.setOnInit(function() {
         console.log('********************** Burden-Sharing-Control - SessionID: ' +
                     gameRoom.name);
-        
+
         console.log('init');
 
         ++counter;
@@ -201,7 +201,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             mdnWrite.store(msg.data);
         });
 
-        
+
         function writePlayerData() {
             var IDPlayer = node.game.pl.id.getAllKeys();
             for (var i = 0; i < IDPlayer.length; i++) {
@@ -212,8 +212,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                 dbs.mdbWrite_idData.store(idData);
             }
         }
-        
-        writePlayerData();        
+
+        writePlayerData();
 
         node.on.data('check_Data',function(msg) {
             bsc_check_data = dbs.mdbCheckData.checkData(msg.data, function(rows, items) {
@@ -348,7 +348,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         });
 
         node.on.data("initEndow", function(msg) {
-            debugger
             dbs.mdbWrite_idData.updateEndow(msg.data);
         });
 
@@ -433,9 +432,13 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                 node.game.pl.checkout = true;
                 // Gets profit for all players
                 dbs.mdbCheckProfit.checkProfit({ $in : idList}, function(rows, items) {
-                    var profit;
+                    var j;
                     var bonus;
                     var code;
+                    var idResolve = node.game.pl.id.resolve;
+                    var otherBonus = node.game.pl.otherBonus || [];
+                    var otherPlayer;
+                    var postPayoffs = []
 
                     for (i = 0; i < idList.length; ++i) {
                         code = dk.codes.id.get(idList[i]);
@@ -443,16 +446,27 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
                         // Adding the bonusToOther from the next player in the
                         // list.
+                        if ('undefined' !==
+                                typeof otherBonus[idResolve[idList[i]]]) {
 
+                            for (j = 1; j < idList.length; ++j) {
+                                otherPlayer = idResolve[
+                                    idList[(i+j)%idList.length]];
 
-                        // TODO: I got this error:
-                        // TypeError: Cannot read property '1' of undefined
+                                if ('undefined' !==
+                                        typeof otherBonus[otherPlayer]) {
 
-                        bonus += node.game.pl.otherBonus[
-                            node.game.pl.id.resolve[idList[(i+1)%idList.length]]
-                        ];
+                                    bonus += otherBonus[otherPlayer];
+                                    break;
+                                }
+                            }
+                        }
                         profit = cbs.round((bonus/50),2);
-                        //dk.checkOut(code.AccessCode, code.ExitCode, profit);
+                        postPayoffs[i] = {
+                            "AccessCode": code.AccessCode,
+                            "Bonus": profit,
+                            "BonusReason": "Full Bonus"
+                        };
                     }
                 });
 
