@@ -20,11 +20,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
     var REPEAT, MIN_PLAYERS;
 
-    // Requiring additiinal functions.
-    var cbs = channel.require(__dirname + '/includes/logic.callbacks.js', {
-        ngc: ngc
-    });
-
     // Client game to send to reconnecting players.
     var client = require(gameRoom.gamePaths.player)(gameRoom,
                                                     treatmentName,
@@ -32,6 +27,17 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
     // Reads in descil-mturk configuration.
     var dk = require('descil-mturk')();
+
+    // Requiring additiinal functions.
+    var cbs = channel.require(__dirname + '/includes/logic.callbacks.js', {
+        ngc: ngc,
+        client: client,
+        dk: dk,
+        settings: settings,
+        gameRoom: gameRoom,
+        node: node
+    }, true);
+
     
     // Import the stager.
     var gameSequence = require(__dirname + '/game.stages.js')(settings);
@@ -348,7 +354,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         });
 
         node.on.data("initEndow", function(msg) {
-            debugger
             dbs.mdbWrite_idData.updateEndow(msg.data);
         });
 
