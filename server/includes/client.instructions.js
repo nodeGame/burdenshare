@@ -321,7 +321,6 @@ function instructions() {
                         chooseEconGrowth();
                     }
                     else {
-                        debugger
                         initEndow.addEndow.Initial_Endowment = node.game.endowment_own;
                         initEndow.addEndow.Climate_Risk = node.game.risk;
                         node.set('initEndow',initEndow);

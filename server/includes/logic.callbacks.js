@@ -40,16 +40,14 @@ function playerReconnects(p) {
         return;
     }
 
-    if (node.game.pl.exist(p)) {
-        console.log("should not happen");
-        console.log(p);
-    }
-
     // Mark code as connected.
     code.disconnected = false;
 
     // Delete countdown to terminate the game.
     clearTimeout(this.countdown);
+
+    // Clear any message in the buffer from.
+    node.remoteCommand('erase_buffer', 'ROOM');
 
     // Notify other player he is back.
     // TODO: add it automatically if we return TRUE? It must be done
@@ -62,10 +60,11 @@ function playerReconnects(p) {
         }));
     });
 
-    // Send currently connected players to reconnecting.
+    // Send currently connected players to reconnecting one.
     node.socket.send(node.msg.create({
         target: 'PLIST',
-        data: node.game.pl.db,
+        data: node.game.pl.fetchSubObj('id'),
+        // data: node.game.pl.db,
         to: p.id
     }));
 
@@ -94,7 +93,8 @@ function playerReconnects(p) {
     }
 
     // Start the game on the reconnecting client.
-    node.remoteCommand('start', p.id);
+    node.remoteCommand('start', p.id, { step: false });
+
     // Pause the game on the reconnecting client, will be resumed later.
     // node.remoteCommand('pause', p.id);
 
@@ -131,13 +131,16 @@ function playerReconnects(p) {
     else {
         // Will send all the players to current stage
         // (also those who were there already).
-        // node.remoteCommand('goto_step', 'ALL', node.player.stage);
-        node.remoteCommand('goto_step', 'ALL', RECON_STAGE);
+        // node.remoteCommand('goto_step', 'ROOM', RECON_STAGE);
+        // was to ALL. Moved in the loop below.
+
+
         setTimeout(function() {
             // Pause the game on the reconnecting client, will be resumed later.
             //  node.remoteCommand('pause', p.id);
             // Unpause ALL players
             node.game.pl.each(function(player) {
+                node.remoteCommand('goto_step', player.id, RECON_STAGE);
                 if (player.id !== p.id) {
                     node.remoteCommand('resume', player.id);
                 }
