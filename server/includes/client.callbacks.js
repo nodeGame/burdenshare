@@ -113,7 +113,7 @@ function writeNoCatastrophe() {
     W.write(remProp.toString(),remainProp);
 }
 
-function writeOfferRejected() {    
+function writeOfferRejected() {
     var result1, result2;
     result1 = W.getElementById('result1');
     result2 = W.getElementById('result2');
@@ -156,13 +156,29 @@ function buildTables() {
     var respDecision = W.getElementById('respDecision');
     var agreement = W.getElementById('agreement');
     var climateCatastrophe = W.getElementById('climateCatastrophe');
-    var remainProp = W.getElementById('remainProp');
-    W.write(node.game.offer,propOffer);
-    W.write(node.game.respPay,respToPay);
-    W.write(node.game.decision,respDecision);
-    W.write(node.game.agreement,agreement);
-    W.write(node.game.catastrophe,climateCatastrophe);
-    W.write(node.game.remainProp,remainProp);
+    var remainProp = W.getElementById('remainProp')
+    var remainResp = W.getElementById('remainResp');
+    if (!!propOffer) {
+        W.write(node.game.offer,propOffer);
+    }
+    if (!!respToPay) {
+        W.write(node.game.respPay,respToPay);
+    }
+    if (!!respDecision) {
+        W.write(node.game.decision,respDecision);
+    }
+    if (!!agreement) {
+        W.write(node.game.agreement,agreement);
+    }
+    if (!!climateCatastrophe) {
+        W.write(node.game.catastrophe,climateCatastrophe);
+    }
+    if (!!remainProp) {
+        W.write(node.game.remainProp,remainProp);
+    }
+    if (!!remainResp) {
+        W.write(node.game.remainResp, remainResp);
+    }
 }
 
 /**
