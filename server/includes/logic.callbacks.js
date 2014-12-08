@@ -8,7 +8,7 @@
 
 module.exports = {
     round: round,
-    playerReconnect: playerReconnect,
+    playerReconnects: playerReconnects,
     //    writePlayerData: writePlayerData
 };
 
@@ -17,12 +17,14 @@ var channel = module.parent.exports.channel;
 var gameRoom = module.parent.exports.gameRoom;
 var settings = module.parent.exports.settings;
 var dk = module.parent.exports.dk;
-// var mdbWrite_idData = module.parent.exports.mdbWrite_idData;
+var client = module.parent.exports.client;
+var ngc = module.parent.exports.ngc;
 
-
-function playerReconnect(p) {
-
+function playerReconnects(p) {
+    debugger
     var code;
+    var GameStage = ngc.GameStage;
+    
     console.log('Oh...somebody reconnected!', p);
     code = dk.codeExists(p.id);
 
