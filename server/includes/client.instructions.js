@@ -9,14 +9,10 @@
 module.exports = instructions;
 
 function instructions() {
-
     node.game.visualRound.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL']);
 
     var gameName = node.game.globals.gameName;
     var chosenTreatment = node.game.globals.chosenTreatment;
-
-    var waitingForPlayers =  W.getElementById('waitingForPlayers');
-    waitingForPlayers.style.display = 'none';
 
     console.log('instructions');
 

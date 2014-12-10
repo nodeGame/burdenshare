@@ -48,6 +48,8 @@ function notEnoughPlayers() {
 
 function syncGroup(stage, myStageLevel, pl, game) {
     var p = node.game.pl.get(node.game.otherID);
+    //if (p.stage.stage !== stage.stage ||
+    //    p.stage.step !== stage.step) return false;
     if (p.stageLevel === node.constants.stageLevels.DONE) {
         if (myStageLevel === node.constants.stageLevels.DONE) {
             return true;

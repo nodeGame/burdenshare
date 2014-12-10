@@ -10,6 +10,12 @@ module.exports = init;
 
 function init() {
 
+    // Clear the WaitPage, if still there.
+    var waitingForPlayers =  W.getElementById('waitingForPlayers');
+    if (waitingForPlayers) {
+        waitingForPlayers.style.display = 'none';
+    }
+
     var gameName = node.game.globals.gameName;
     var chosenTreatment = node.game.globals.chosenTreatment;
 
