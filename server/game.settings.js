@@ -21,9 +21,9 @@ module.exports = {
 
     N_PLAYERS: 4,
 
-    AUTH: 'local',
+    // AUTH: 'local',
     // AUTH: 'remote',
-    //AUTH: 'none',
+    AUTH: 'none',
 
     WAIT_ROOM_TIMEOUT: 600000, // 10 min
 
@@ -36,7 +36,6 @@ module.exports = {
     timer: {
 
         // Instructions.
-<<<<<<< HEAD
         instructions1: 20000,
         instructions2: 20000,
         instructions3: 20000,
