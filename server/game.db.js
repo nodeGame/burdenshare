@@ -31,13 +31,6 @@ mdbWrite_idData = ngdb.getLayer('MongoDB', {
 
 decorateMongoObj(mdbWrite_idData);
 
-// mdbgetInitEndow = ngdb.getLayer('MongoDB', {
-//     dbName: 'burden_sharing',
-//     collectionName: 'bsc_idData'
-// });
-//
-// decorateMongoObj(mdbgetInitEndow);
-
 
 mdbWrite = ngdb.getLayer('MongoDB', {
     dbName: 'burden_sharing',
@@ -46,27 +39,6 @@ mdbWrite = ngdb.getLayer('MongoDB', {
 
 decorateMongoObj(mdbWrite);
 
-// mdbGetProfit = ngdb.getLayer('MongoDB', {
-//     dbName: 'burden_sharing',
-//     collectionName: 'bsc_data'
-// });
-//
-// decorateMongoObj(mdbGetProfit);
-//
-// mdbCheckData = ngdb.getLayer('MongoDB', {
-//     dbName: 'burden_sharing',
-//     collectionName: 'bsc_data'
-// });
-//
-// decorateMongoObj(mdbCheckData);
-//
-// mdbDelet = ngdb.getLayer('MongoDB', {
-//     dbName: 'burden_sharing',
-//     collectionName: 'bsc_data'
-// });
-//
-// decorateMongoObj(mdbDelet);
-
 
 mdbWrite_gameTime = ngdb.getLayer('MongoDB', {
     dbName: 'burden_sharing',
@@ -74,13 +46,6 @@ mdbWrite_gameTime = ngdb.getLayer('MongoDB', {
 });
 
 decorateMongoObj(mdbWrite_gameTime);
-
-// mdbDeletTime = ngdb.getLayer('MongoDB', {
-//     dbName: 'burden_sharing',
-//     collectionName: 'bsc_gameTime'
-// });
-//
-// decorateMongoObj(mdbDeletTime);
 
 
 mdbWrite_questTime = ngdb.getLayer('MongoDB', {
@@ -106,12 +71,6 @@ mdbWriteProfit = ngdb.getLayer('MongoDB', {
 
 decorateMongoObj(mdbWriteProfit);
 
-// mdbCheckProfit = ngdb.getLayer('MongoDB', {
-//     dbName: 'burden_sharing',
-//     collectionName: 'bsc_profit'
-// });
-//
-// decorateMongoObj(mdbCheckProfit);
 
 // Connections.
 
@@ -119,26 +78,10 @@ decorateMongoObj(mdbWriteProfit);
 mdbWrite.connect(function() {});
 
 mdbWrite_idData.connect(function() {});
-// mdbgetInitEndow.connect(function() {});
 
 // Opening the database for writing the profit data.
 mdbWriteProfit.connect(function() {});
 
-
-// TODO: check below.
-// ?? What about all the other TIME connections ???
-
-// Check if data for current round already exist
-// mdbCheckData.connect(function() {});
-
-// Delete already existing data in case of a reconnection
-// mdbDelet.connect(function() {});
-
-// Check if profit data already exist
-// mdbCheckProfit.connect(function() {});
-
-// Opening the database for retrieveing the profit of each player.
-// mdbGetProfit.connect(function() {});
 
 
 function decorateMongoObj(mongo) {
