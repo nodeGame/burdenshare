@@ -412,7 +412,6 @@ function init() {
                 }
 
                 node.say('REJECT',node.game.otherID, catastrObj);
-                debugger;
                 node.game.globals.writeOfferRejected();
             }
 

@@ -95,7 +95,6 @@ function writeOfferAccepted(offer) {
 }
 
 function writeCatastrophe() {
-    debugger;
     var climateCatastrophe = W.getElementById('climateCatastrophe');
     W.write('Yes',climateCatastrophe);
     node.game.catastrophe =  'Yes';
@@ -105,7 +104,6 @@ function writeCatastrophe() {
 }
 
 function writeNoCatastrophe() {
-    debugger;
     var result3 = W.getElementById('result3');
     W.write('However, no climate catastrophe has happened.', result3);
     var climateCatastrophe = W.getElementById('climateCatastrophe');
