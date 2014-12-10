@@ -40,7 +40,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         node: node
     }, true);
 
-    
+
     // Import the stager.
     var gameSequence = require(__dirname + '/game.stages.js')(settings);
     var stager = ngc.getStager(gameSequence);
@@ -153,10 +153,11 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                         "Player_ID": msg.data.player
                     },
                     add: {
-                        Amount_UCE: newAmountUCE,
-                        Amount_USD: newAmountUSD
+                        SelfBonus_UCE: bonusFromSelf,
                     },
                 });
+
+                dbs.mdbWriteProfit
 
                 node.socket.send(node.msg.create({
                     text: 'ADDED_QUESTIONNAIRE_BONUS',
@@ -439,14 +440,19 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             if (!node.game.pl.checkout) {
                 node.game.pl.checkout = true;
                 // Gets profit for all players
-                dbs.mdbCheckProfit.checkProfit({ $in : idList}, function(rows, items) {
+                dbs.mdbCheckProfit.checkProfit({ $in : idList},
+                    function(rows, items) {
+
                     var j;
                     var bonus;
                     var code;
                     var idResolve = node.game.pl.id.resolve;
                     var otherBonus = node.game.pl.otherBonus || [];
-                    var otherPlayer;
-                    var postPayoffs = []
+                    var otherPlayer = [];
+                    var postPayoffs = [];
+                    var bonusFromOther;
+                    var bonusFromSelf;
+                    var writeProfitUpdate;
 
                     for (i = 0; i < idList.length; ++i) {
                         code = dk.codes.id.get(idList[i]);
@@ -454,8 +460,12 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
                         // Adding the bonusToOther from the next player in the
                         // list.
+                        // If player has finished SVO questionnaire:
                         if ('undefined' !==
                                 typeof otherBonus[idResolve[idList[i]]]) {
+
+                            bonusFromSelf = items[i].SelfBonus_UCE;
+                            bonus += bonusFromSelf;
 
                             for (j = 1; j < idList.length; ++j) {
                                 otherPlayer = idResolve[
@@ -464,18 +474,43 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                                 if ('undefined' !==
                                         typeof otherBonus[otherPlayer]) {
 
-                                    bonus += otherBonus[otherPlayer];
+                                    bonusFromOther = otherBonus[otherPlayer];
+                                    bonus += bonusFromOther;
                                     break;
                                 }
                             }
+                            writeProfitUpdate = {
+                                OtherBonus_UCE: bonusFromOther
+                            };
                         }
+                        else {
+                            writeProfitUpdate = {
+                                OtherBonus_UCE: "NA",
+                                SelfBonus_UCE: "NA"
+                            };
+                        }
+
                         profit = cbs.round((bonus/50),2);
+
+                        dbs.mdbWriteProfit.update({
+                            playerID: {
+                                "Player_ID": idList[i]
+                            },
+                            add: writeProfitUpdate
+                        });
+
                         postPayoffs[i] = {
                             "AccessCode": code.AccessCode,
                             "Bonus": profit,
                             "BonusReason": "Full Bonus"
                         };
                     }
+                    dk.postPayoff(postPayoffs, function(err, response, body) {
+                        if (err) {
+                            console.log("adjustPayoffAndCheckout: " +
+                                "dk.postPayoff: " + err);
+                        };
+                    });
                 });
 
             }

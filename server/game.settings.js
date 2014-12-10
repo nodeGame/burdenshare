@@ -21,14 +21,14 @@ module.exports = {
 
     N_PLAYERS: 4,
 
-    // AUTH: 'local'
-    // AUTH: 'remote'
-    AUTH: 'none',
+    AUTH: 'local',
+    // AUTH: 'remote',
+    //AUTH: 'none',
 
     WAIT_ROOM_TIMEOUT: 600000, // 10 min
 
     // "ra", "sa",
-    CHOSEN_TREATMENT: "sa",
+    CHOSEN_TREATMENT: "ra",
 
     // How much does an agreement cost? (30 or 80).
     COSTGE: 80,
@@ -36,6 +36,7 @@ module.exports = {
     timer: {
 
         // Instructions.
+<<<<<<< HEAD
         instructions1: 20000,
         instructions2: 20000,
         instructions3: 20000,

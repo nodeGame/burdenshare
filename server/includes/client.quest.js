@@ -319,13 +319,13 @@ function questionnaire() {
                 console.log("Bonus: " + node.game.bonus);
                 W.loadFrame('/burdenshare/html/' + gameName + '/questionnaire1.html', function() {
                     var payoutText = W.getElementById("payout");
-                    W.write("Payout so far: " + msg.data.Payout_Round, payoutText);
+                    payoutText.innerHTML = "<strong>Payout so far: </strong>";
                     var round = W.getElementById("payoutRound");
                     W.write(msg.data.Payout_Round , round);
                     var amountUCE = W.getElementById("amountECU");
                     W.write(msg.data.Profit + " ECU" , amountUCE);
                     var amountUSD = W.getElementById("amountUSD");
-                    var profitUSD = node.game.bonus + 1.0;
+                    var profitUSD = (node.game.bonus + 1.0).toFixed(2);
                     console.log("Profit" + profitUSD);
                     W.write(profitUSD + " $" , amountUSD);
 

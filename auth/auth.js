@@ -89,9 +89,9 @@ module.exports = function(auth) {
 
     // Assigns Player Ids based on cookie token.
     function idGen(channel, info) {
-        var cid, cookies, validCookie;
-
-        cid = channel.registry.generateClientId();
+        var cid = channel.registry.generateClientId();
+        var cookies;
+        var ids;
 
         if (settings.AUTH === 'none' || settings.AUTH === 'NO') {
             // If no auth, add the new code to the db.
@@ -102,8 +102,11 @@ module.exports = function(auth) {
             return cid;
         }
 
+
         // // Return the id only if token was validated.
         // // More checks could be done here to ensure that token is unique in ids.
+        ids = channel.registry.getIds();
+        cookies  = info.cookies;
         if (cookies.token) {
 
             if (!ids[cookies.token] || ids[cookies.token].disconnected) {
