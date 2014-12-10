@@ -24,7 +24,7 @@ function playerReconnects(p) {
     debugger
     var code;
     var GameStage = ngc.GameStage;
-    
+
     console.log('Oh...somebody reconnected!', p);
     code = dk.codeExists(p.id);
 
@@ -175,6 +175,7 @@ function playerReconnects(p) {
  * @param {number} value the floating point number to be rounded
  * @param {number} exp the number of decimal places
  *
+ * @see http://stackoverflow.com/a/21323513
  */
 function round(value, exp) {
     if (typeof exp === 'undefined' || +exp === 0)

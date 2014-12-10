@@ -21,14 +21,14 @@ module.exports = {
 
     N_PLAYERS: 4,
 
-    // AUTH: 'local'
-    // AUTH: 'remote'
-    AUTH: 'none',
+    AUTH: 'local',
+    // AUTH: 'remote',
+    //AUTH: 'none',
 
     WAIT_ROOM_TIMEOUT: 600000, // 10 min
 
     // "ra", "sa",
-    CHOSEN_TREATMENT: "sa",
+    CHOSEN_TREATMENT: "ra",
 
     // How much does an agreement cost? (30 or 80).
     COSTGE: 80,
@@ -36,24 +36,24 @@ module.exports = {
     timer: {
 
         // Instructions.
-        instructions1: 480000,
-        instructions2: 480000,
-        instructions3: 480000,
-        instructions4: 480000,
+        instructions1: 2000, // 480000,
+        instructions2: 2000, //480000,
+        instructions3: 2000, //480000,
+        instructions4: 2000, //480000,
 
         // Game.
         initialSituation: function() {
-            return 10000;
+            return 2000; //10000;
             if (node.game.globals.chosenTreatment === "sa") return 36000;
             return 18000;
         },
-        econGrowth: 100000, //40000, // 40000 ms is equal to 40 seconds
-        proposer: 200000, //90000, // 120000 ms is equivalent to 2 minutes
-        reply2Prop: 20000, //120000, // 120000 ms is equivalent to 2 minutes
-        respondent: 20000, //60000, // 120000 ms is equivalent to 2 minutes
-        proposerDone: 20000, //240000, // 240000 ms is equivalent to 6 minutes
-        respondentDone: 20000, //240000, // 240000 ms is equivalent to 6 minutes
-        responseDone: 20000, //120000, // 120000 ms is equivalent to 2 minutes
+        econGrowth: 2000, //100000, //40000, // 40000 ms is equal to 40 seconds
+        proposer: 2000, //200000, //90000, // 120000 ms is equivalent to 2 minutes
+        reply2Prop: 2000, //20000, //120000, // 120000 ms is equivalent to 2 minutes
+        respondent: 2000, //20000, //60000, // 120000 ms is equivalent to 2 minutes
+        proposerDone: 2000, //20000, //240000, // 240000 ms is equivalent to 6 minutes
+        respondentDone: 2000, //20000, //240000, // 240000 ms is equivalent to 6 minutes
+        responseDone: 2000, //20000, //120000, // 120000 ms is equivalent to 2 minutes
 
         // Questionnaire.
         questionnaire: 1800000, // 30 minutes
