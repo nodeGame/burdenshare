@@ -238,20 +238,22 @@ function questionnaire() {
                                                  node.game.bonus.newAmountUSD);
                                     };
                                     W.write(node.game.bonus.newAmountUCE,
-                                            W.getElementById("amountECU")
-                                           );
+                                        W.getElementById("amountECU")
+                                    );
                                     W.write(node.game.bonus.oldAmountUCE,
-                                            W.getElementById("ECUfromGame")
-                                           );
-                                    W.write(node.game.bonus.newAmountUCE -
+                                        W.getElementById("ECUfromGame")
+                                    );
+                                    W.write(
+                                        node.game.bonus.newAmountUCE -
                                             node.game.bonus.oldAmountUCE,
-                                            W.getElementById("ECUfromQuest")
-                                           );
-                                    W.write(node.game.bonus.newAmountUSD + 1.0,
-                                            W.getElementById("amountUSD")
-                                           );
+                                        W.getElementById("ECUfromQuest")
+                                    );
+                                    W.write(node.game.bonus.newAmountUSD + 1.0
+                                            + ' $',
+                                        W.getElementById("amountUSD")
+                                    );
                                 }
-                               );
+                    );
                 }
             };
 
@@ -314,7 +316,7 @@ function questionnaire() {
             console.log("Payout round: " + msg.data.Payout_Round);
             console.log("Profit: " + msg.data.Profit);
 
-            if (msg.data.Payout_Round != "none") {
+            if (msg.data.Payout_Round !== "none") {
                 node.game.bonus = node.game.globals.round((msg.data.Profit/50),2);
                 console.log("Bonus: " + node.game.bonus);
                 W.loadFrame('/burdenshare/html/' + gameName + '/questionnaire1.html', function() {
