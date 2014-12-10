@@ -21,9 +21,9 @@ module.exports = {
 
     N_PLAYERS: 4,
 
-    AUTH: 'local',
+    //AUTH: 'local',
     // AUTH: 'remote',
-    //AUTH: 'none',
+    AUTH: 'none',
 
     WAIT_ROOM_TIMEOUT: 600000, // 10 min
 
@@ -48,16 +48,16 @@ module.exports = {
             return 18000;
         },
         econGrowth: 2000, //100000, //40000, // 40000 ms is equal to 40 seconds
-        proposer: 2000, //200000, //90000, // 120000 ms is equivalent to 2 minutes
-        reply2Prop: 2000, //20000, //120000, // 120000 ms is equivalent to 2 minutes
-        respondent: 2000, //20000, //60000, // 120000 ms is equivalent to 2 minutes
-        proposerDone: 2000, //20000, //240000, // 240000 ms is equivalent to 6 minutes
-        respondentDone: 2000, //20000, //240000, // 240000 ms is equivalent to 6 minutes
-        responseDone: 2000, //20000, //120000, // 120000 ms is equivalent to 2 minutes
+        proposer: 20000, //200000, //90000, // 120000 ms is equivalent to 2 minutes
+        reply2Prop: 20000, //20000, //120000, // 120000 ms is equivalent to 2 minutes
+        respondent: 20000, //20000, //60000, // 120000 ms is equivalent to 2 minutes
+        proposerDone: 20000, //20000, //240000, // 240000 ms is equivalent to 6 minutes
+        respondentDone: 20000, //20000, //240000, // 240000 ms is equivalent to 6 minutes
+        responseDone: 20000, //20000, //120000, // 120000 ms is equivalent to 2 minutes
 
         // Questionnaire.
         questionnaire: 1800000, // 30 minutes
-        questProfit: 60000, // 1 minute
+        questProfit: 600000, // 1 minute
 
         // Logic.
         notEnoughPlayers: 100000,

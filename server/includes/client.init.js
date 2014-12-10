@@ -161,18 +161,14 @@ function init() {
                     node.on("in.say.DATA", function(msg) {
                         if (msg.text == "CheckData") {
                             console.log('Current Round: ' + msg.data[0]);
-                            if ('undefined' === typeof msg.data[0]) {
-                                node.set('bsc_data',node.game.results);
-                                node.emit('DONE');
-                            }
-                            else {
+                            if ('undefined' !== typeof msg.data[0]) {
                                 // if data already exists, delete and save the new data
                                 console.log('Data Exist: ' + dataExist.Player_ID);
                                 node.set('delete_data', dataExist);
                                 console.log('Player already finished this round.');
-                                node.set('bsc_data',node.game.results);
-                                node.emit('DONE');
                             }
+                            node.set('bsc_data',node.game.results);
+                            node.emit('DONE');
                         }
                     });
                 }
@@ -216,22 +212,19 @@ function init() {
                 node.on("in.say.DATA", function(msg) {
                     if (msg.text == "CheckData") {
                         console.log('Current Round: ' + msg.data[0]);
-                        if (msg.data[0] === undefined) {
-                            node.set('bsc_data',node.game.results);
-                            node.emit('DONE');
-                        }
-                        else {
+                        if ('undefined' !== typeof msg.data[0]) {
                             console.log('Data Exist: ' + dataExist.Player_ID);
                             node.set('delete_data', dataExist);
                             console.log('Player already finished this round.');
-                            node.set('bsc_data',node.game.results);
-                            node.emit('DONE');
                         }
+                        node.set('bsc_data',node.game.results);
+                        node.emit('DONE');
                     }
                 });
             };
         });
     });
+
 
     // Function called as soon as responder has finished the current round.
     node.on('RESPONDER_DONE', function(data) {
@@ -419,6 +412,7 @@ function init() {
                 }
 
                 node.say('REJECT',node.game.otherID, catastrObj);
+                debugger;
                 node.game.globals.writeOfferRejected();
             }
 

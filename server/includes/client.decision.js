@@ -24,7 +24,6 @@ function decision() {
         W.loadFrame(node.game.url_bidder, function() {
             var options;
 
-            // debugger
             if (node.player.stage.round == 1) {
                 // Test Round
                 W.getElementById(

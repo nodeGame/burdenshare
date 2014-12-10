@@ -56,6 +56,7 @@ function syncGroup(stage, myStageLevel, pl, game) {
 }
 
 function writeOfferAccepted(offer) {
+
     var result1, result2;
     result1 = W.getElementById('result1');
     result2 = W.getElementById('result2');
@@ -94,6 +95,7 @@ function writeOfferAccepted(offer) {
 }
 
 function writeCatastrophe() {
+    debugger;
     var climateCatastrophe = W.getElementById('climateCatastrophe');
     W.write('Yes',climateCatastrophe);
     node.game.catastrophe =  'Yes';
@@ -103,6 +105,7 @@ function writeCatastrophe() {
 }
 
 function writeNoCatastrophe() {
+    debugger;
     var result3 = W.getElementById('result3');
     W.write('However, no climate catastrophe has happened.', result3);
     var climateCatastrophe = W.getElementById('climateCatastrophe');
@@ -124,15 +127,27 @@ function writeOfferRejected() {
 
     node.game.decision =  'Reject';
     node.game.agreement =  'No';
+
     var respDecision = W.getElementById('respDecision');
     W.write('Reject',respDecision);
     var agreement = W.getElementById('agreement');
     W.write('No',agreement);
+
+    if (node.game.catastrophe ===  'Yes') {
+        node.game.remainNum = node.game.endowment_responder / 2;
+    }
+    else {
+        node.game.remainNum = node.game.endowment_responder;
+    }
+
+
     var remainResp = W.getElementById('remainResp');
 //     node.game.remainResp = catastrYes.remainEndowResp.toString();
 //     W.write(catastrYes.remainEndowResp.toString(),remainResp);
-    node.game.remainResp = node.game.endowment_responder.toString();
+    node.game.remainResp = node.game.remainNum.toString();
     W.write(node.game.remainResp, remainResp);
+
+
 }
 
 function buildTables() {
