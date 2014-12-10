@@ -25,14 +25,14 @@ ngdb = new Database(node);
 
 // Open the collection where the categories will be stored.
 mdbWrite_idData = ngdb.getLayer('MongoDB', {
-    dbName: 'burden_sharing_rahr80',
+    dbName: 'burden_sharing',
     collectionName: 'bsc_idData'
 });
 
 decorateMongoObj(mdbWrite_idData);
 
 // mdbgetInitEndow = ngdb.getLayer('MongoDB', {
-//     dbName: 'burden_sharing_rahr80',
+//     dbName: 'burden_sharing',
 //     collectionName: 'bsc_idData'
 // });
 //
@@ -40,28 +40,28 @@ decorateMongoObj(mdbWrite_idData);
 
 
 mdbWrite = ngdb.getLayer('MongoDB', {
-    dbName: 'burden_sharing_rahr80',
+    dbName: 'burden_sharing',
     collectionName: 'bsc_data'
 });
 
 decorateMongoObj(mdbWrite);
 
 // mdbGetProfit = ngdb.getLayer('MongoDB', {
-//     dbName: 'burden_sharing_rahr80',
+//     dbName: 'burden_sharing',
 //     collectionName: 'bsc_data'
 // });
 //
 // decorateMongoObj(mdbGetProfit);
 //
 // mdbCheckData = ngdb.getLayer('MongoDB', {
-//     dbName: 'burden_sharing_rahr80',
+//     dbName: 'burden_sharing',
 //     collectionName: 'bsc_data'
 // });
 //
 // decorateMongoObj(mdbCheckData);
 //
 // mdbDelet = ngdb.getLayer('MongoDB', {
-//     dbName: 'burden_sharing_rahr80',
+//     dbName: 'burden_sharing',
 //     collectionName: 'bsc_data'
 // });
 //
@@ -69,14 +69,14 @@ decorateMongoObj(mdbWrite);
 
 
 mdbWrite_gameTime = ngdb.getLayer('MongoDB', {
-    dbName: 'burden_sharing_rahr80',
+    dbName: 'burden_sharing',
     collectionName: 'bsc_gameTime'
 });
 
 decorateMongoObj(mdbWrite_gameTime);
 
 // mdbDeletTime = ngdb.getLayer('MongoDB', {
-//     dbName: 'burden_sharing_rahr80',
+//     dbName: 'burden_sharing',
 //     collectionName: 'bsc_gameTime'
 // });
 //
@@ -84,7 +84,7 @@ decorateMongoObj(mdbWrite_gameTime);
 
 
 mdbWrite_questTime = ngdb.getLayer('MongoDB', {
-    dbName: 'burden_sharing_rahr80',
+    dbName: 'burden_sharing',
     collectionName: 'bsc_questTime'
 });
 
@@ -92,7 +92,7 @@ decorateMongoObj(mdbWrite_questTime);
 
 
 mdbInstrTime = ngdb.getLayer('MongoDB', {
-    dbName: 'burden_sharing_rahr80',
+    dbName: 'burden_sharing',
     collectionName: 'bsc_instrTime'
 });
 
@@ -100,17 +100,17 @@ decorateMongoObj(mdbInstrTime);
 
 
 mdbWriteProfit = ngdb.getLayer('MongoDB', {
-    dbName: 'burden_sharing_rahr80',
+    dbName: 'burden_sharing',
     collectionName: 'bsc_profit'
 });
 
 decorateMongoObj(mdbWriteProfit);
 
 // mdbCheckProfit = ngdb.getLayer('MongoDB', {
-//     dbName: 'burden_sharing_rahr80',
+//     dbName: 'burden_sharing',
 //     collectionName: 'bsc_profit'
 // });
-// 
+//
 // decorateMongoObj(mdbCheckProfit);
 
 // Connections.

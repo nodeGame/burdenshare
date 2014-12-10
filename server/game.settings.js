@@ -21,9 +21,9 @@ module.exports = {
 
     N_PLAYERS: 4,
 
-    //AUTH: 'local',
+    AUTH: 'local',
     // AUTH: 'remote',
-    AUTH: 'none',
+    //AUTH: 'none',
 
     WAIT_ROOM_TIMEOUT: 600000, // 10 min
 
@@ -57,7 +57,7 @@ module.exports = {
 
         // Questionnaire.
         questionnaire: 1800000, // 30 minutes
-        questProfit: 600000, // 1 minute
+        questProfit: 60000, // 1 minute
 
         // Logic.
         notEnoughPlayers: 100000,

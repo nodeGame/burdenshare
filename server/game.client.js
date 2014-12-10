@@ -37,7 +37,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
     stager.addStep({
         id: "initialSituation",
         cb: cbs.initialSituation,
-        stepRule: cbs.syncGroup,
+        // stepRule: cbs.syncGroup,
         timer: {
             milliseconds: settings.timer.initialSituation,
             update: 1000,
@@ -62,7 +62,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
     stager.addStep({
         id: "decision",
         cb: cbs.decision,
-        stepRule: cbs.syncGroup
+        // stepRule: cbs.syncGroup
     });
 
     stager.addStep({
@@ -92,13 +92,13 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 data: node.player.stage.round
             }));
         },
-        stepRule: cbs.syncGroup
+        // stepRule: cbs.syncGroup
     });
 
     stager.extendStage('burdenSharingControl', {
         steps: ["syncGroups", "initialSituation", "decision"],
         minPlayers: [ 4, cbs.notEnoughPlayers ],
-        steprule: stepRules.SYNC_STEP,
+        steprule:  stepRules.SYNC_STEP,
         done: cbs.clearFrame
     });
 
@@ -118,7 +118,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         writeCatastrophe: cbs.writeCatastrophe,
         writeNoCatastrophe: cbs.writeNoCatastrophe,
         writeOfferRejected: cbs.writeOfferRejected,
-        writeOfferAccepted: cbs.writeOfferAccepted,
+        writeOfferAccepted: cbs.writeOfferAccepted
     });
 
     //We serialize the game sequence before sending it
