@@ -44,7 +44,7 @@ module.exports = {
 
         // Game.
         initialSituation: function() {
-            return 2000; //10000;
+            return 3000; //10000;
             if (node.game.globals.chosenTreatment === "sa") return 36000;
             return 18000;
         },
@@ -57,8 +57,8 @@ module.exports = {
         responseDone: 2000, //20000, //120000, // 120000 ms is equivalent to 2 minutes
 
         // Questionnaire.
-        questionnaire: 3000, // 1800000, // 30 minutes
-        questProfit: 3000, // 60000, // 1 minute
+        questionnaire: 3000000, // 1800000, // 30 minutes
+        questProfit: 3000000, // 60000, // 1 minute
 
         // Logic.
         notEnoughPlayers: 100000,
