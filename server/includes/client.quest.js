@@ -116,16 +116,13 @@ function questionnaire() {
         // Callback for the New Ecological Paradigm block.
         // Loads all of the NEP questions in an random order.
         newEcologicalParadigm = function(randomBlockExecutor) {
-            var randomPageExecutor = new RandomOrderExecutor();
             var numberOfQuestions = 15;
             var questionsPerPage = 5;
             var i;
+            var questionsDone = 0
             var pageName = 'allNEP';
             var pageNameArray = [];
 
-            for (i = 0; i < numberOfQuestions; i += questionsPerPage) {
-                pageNameArray = pageNameArray.concat([pageName]);
-            }
             node.game.questionnaire.NEPQuestions = [];
             for (i = 0; i < numberOfQuestions; ++i) {
                 node.game.questionnaire.NEPQuestions[i] = {
@@ -135,55 +132,75 @@ function questionnaire() {
                 };
             }
 
-
-            randomPageExecutor.setCallbacks(
-                makeBlockArray(
-                    'newEcologicalParadigm',
-                    pageNameArray,
-                    false,
-                    function() {
-                        // Unhides `numberOfQuestions` questions on the
-                        // page.
-                        var NEPQuestions =
-                            node.game.questionnaire.NEPQuestions;
-                        var question, i;
-                        var currentAnswersMade =
-                            W.getFrame().contentWindow.currentAnswersMade;
-
-                        NEPQuestions.sort(function(left,right) {
-                            return left.rank < right.rank ? -1 : 1;
-                        });
-                        // Unhides the 5 questions with lowest rank.
-                        for (i = 0; i < numberOfQuestions; ++i) {
-                            if (i < questionsPerPage) {
-                                NEPQuestions[i].rank = 2; // Push to back.
-                            }
-                            // Hide the question.
-                            else {
-                                currentAnswersMade[
-                                    NEPQuestions[i].position
-                                ] = true;
-                                question = W.getElementById(
-                                    NEPQuestions[i].questionId
-                                );
-                                question.style.display = "none";
-                            }
-                        }
-                    }
-                )
-            );
-            randomPageExecutor.setOnDone(function() {
-                randomBlockExecutor.next();
-            });
-
+            node.timer.setTimestamp('newEcologicalParadigm');
             // At the beginning of the block is an instructions page.
             W.loadFrame('/burdenshare/html/questionnaire/' +
                         'newEcologicalParadigm/instructions.html', function() {
                             W.getElementById('done').onclick = function() {
-                                randomPageExecutor.execute();
+                                loadAllNEP();
                             };
                         }
                        );
+            function loadAllNEP() {
+                W.loadFrame('/burdenshare/html/questionnaire/' +
+                        'newEcologicalParadigm/allNEP.html', function() {
+                    // Unhides `numberOfQuestions` questions on the
+                    // page.
+                    var NEPQuestions =
+                        node.game.questionnaire.NEPQuestions;
+                    var question, i;
+                    var currentAnswersMade =
+                        W.getFrame().contentWindow.currentAnswersMade;
+
+                    NEPQuestions.sort(function(left,right) {
+                        return left.rank < right.rank ? -1 : 1;
+                    });
+                    // Unhides the 5 questions with lowest rank.
+                    for (i = 0; i < numberOfQuestions; ++i) {
+                        if (i < questionsPerPage) {
+                            NEPQuestions[i].rank = 2; // Push to back.
+                        }
+                        // Hide the question.
+                        else {
+                            currentAnswersMade[
+                                NEPQuestions[i].position
+                            ] = true;
+                            question = W.getElementById(
+                                NEPQuestions[i].questionId
+                            );
+                            question.style.display = "none";
+                        }
+                    }
+                    W.getElementById('done').onclick = function() {
+                        var questionnaire =
+                            node.game.questionnaire;
+
+                        if (questionnaire.currentAnswerMade) {
+                            questionsDone += questionsPerPage;
+                            if (questionsDone < numberOfQuestions) {
+                                loadAllNEP();
+                            }
+                            else {
+                                finishNEP();
+                            }
+                        }
+                        else {
+                            alert('Please select an option.');
+                        }
+                    };
+                });
+            }
+            function finishNEP() {
+                node.set('bsc_data',{
+                    player: node.game.ownID,
+                    question: 'newEcologicalParadigm',
+                    answer: node.game.questionnaire.currentAnswer,
+                    timeElapsed:
+                    node.timer.getTimeSince('newEcologicalParadigm'),
+                    clicks: questionnaire.numberOfClicks
+                });
+                randomBlockExecutor.next();
+            }
         };
 
         // Callback for the Risk block.
@@ -248,8 +265,8 @@ function questionnaire() {
                                             node.game.bonus.oldAmountUCE,
                                         W.getElementById("ECUfromQuest")
                                     );
-                                    W.write(node.game.bonus.newAmountUSD + 1.0
-                                            + ' $',
+                                    W.write(node.game.bonus.newAmountUSD + 1.0 +
+                                            ' $',
                                         W.getElementById("amountUSD")
                                     );
                                 }

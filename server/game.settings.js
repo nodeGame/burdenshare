@@ -21,9 +21,9 @@ module.exports = {
 
     N_PLAYERS: 4,
 
-    AUTH: 'local',
+    //AUTH: 'local',
     // AUTH: 'remote',
-    //AUTH: 'none',
+    AUTH: 'none',
 
     WAIT_ROOM_TIMEOUT: 600000, // 10 min
 
@@ -47,7 +47,7 @@ module.exports = {
             if (node.game.globals.chosenTreatment === "sa") return 36000;
             return 18000;
         },
-        econGrowth: 2000, //100000, //40000, // 40000 ms is equal to 40 seconds
+        econGrowth: 20000, //100000, //40000, // 40000 ms is equal to 40 seconds
         proposer: 20000, //200000, //90000, // 120000 ms is equivalent to 2 minutes
         reply2Prop: 20000, //20000, //120000, // 120000 ms is equivalent to 2 minutes
         respondent: 20000, //20000, //60000, // 120000 ms is equivalent to 2 minutes
