@@ -10,23 +10,29 @@ module.exports = questionnaire;
 
 function questionnaire() {
 
-    node.game.visualRound.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL']);
-
     var gameName = node.game.globals.gameName;
     var chosenTreatment = node.game.globals.chosenTreatment;
+    var randomBlockExecutor;
+    var socialValueOrientation, newEcologicalParadigm, risk;
+    var makePageLoad, makeBlockArray;
 
-    function randomOrderQuestionnaire() {
-        var randomBlockExecutor;
-        var socialValueOrientation, newEcologicalParadigm, risk;
+    // The first time this stage is executed, we set all listeners and callbacks
+    // We also initialize node.game.questionnaire, which is why we use it for
+    // this check.
+    if ('undefined' === typeof node.game.questionnaire) {
+        node.game.visualRound.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
+                                              'COUNT_UP_ROUNDS_TO_TOTAL']);
+
 
         // Initializing storage.
         node.game.questionnaire = {};
 
+        randomBlockExecutor = new RandomOrderExecutor();
 
         // Makes a callback which loads a single questionnaire page and
         // listens to onclick of the element with id 'done', to write
         // currentAnswer to database and advance the executor.
-        function makePageLoad(block, page, onDoneCallback, onLoadCallback) {
+        makePageLoad = function(block, page, onDoneCallback, onLoadCallback) {
             return function(executor) {
                 W.loadFrame('/burdenshare/html/questionnaire/'+ block + '/' +
                             page + '.html', function() {
@@ -50,7 +56,7 @@ function questionnaire() {
                                                                     '/' + page),
                                             clicks: questionnaire.numberOfClicks
                                         });
-                                        executor.next();
+                                        node.emit("DONE");
                                     }
                                     else {
                                         alert('Please select an option.');
@@ -62,7 +68,8 @@ function questionnaire() {
         }
 
         // Makes an array of page load callbacks
-        function makeBlockArray(block, pages, onDoneCallback, onLoadCallback) {
+        makeBlockArray = function(block, pages,
+                                  onDoneCallback, onLoadCallback) {
             var i, result = [];
             for (i = 0; i < pages.length; ++i) {
                 result.push(
@@ -76,13 +83,11 @@ function questionnaire() {
             return result;
         }
 
-
-        randomBlockExecutor = new RandomOrderExecutor();
-
         // Callback for the Social Value Orientation block.
         // Loads all of the SVO questions in an random order.
         socialValueOrientation = function(randomBlockExecutor) {
             var randomPageExecutor = new RandomOrderExecutor();
+            node.game.questionnaire.pageExecutor = randomPageExecutor;
             node.game.questionnaire.SVOChoices = {length: 0};
             randomPageExecutor.setCallbacks(
                 makeBlockArray(
@@ -123,25 +128,7 @@ function questionnaire() {
             var pageName = 'allNEP';
             var pageNameArray = [];
 
-            node.game.questionnaire.NEPQuestions = [];
-            for (i = 0; i < numberOfQuestions; ++i) {
-                node.game.questionnaire.NEPQuestions[i] = {
-                    position: i,
-                    questionId: 'Question' + i,
-                    rank: Math.random()
-                };
-            }
-
-            node.timer.setTimestamp('newEcologicalParadigm');
-            // At the beginning of the block is an instructions page.
-            W.loadFrame('/burdenshare/html/questionnaire/' +
-                        'newEcologicalParadigm/instructions.html', function() {
-                            W.getElementById('done').onclick = function() {
-                                loadAllNEP();
-                            };
-                        }
-                       );
-            function loadAllNEP() {
+            var loadAllNEP = function() {
                 W.loadFrame('/burdenshare/html/questionnaire/' +
                         'newEcologicalParadigm/allNEP.html', function() {
                     // Unhides `numberOfQuestions` questions on the
@@ -178,7 +165,7 @@ function questionnaire() {
                         if (questionnaire.currentAnswerMade) {
                             questionsDone += questionsPerPage;
                             if (questionsDone < numberOfQuestions) {
-                                loadAllNEP();
+                                node.emit("DONE");
                             }
                             else {
                                 finishNEP();
@@ -190,7 +177,7 @@ function questionnaire() {
                     };
                 });
             }
-            function finishNEP() {
+            var finishNEP = function() {
                 node.set('bsc_data',{
                     player: node.game.ownID,
                     question: 'newEcologicalParadigm',
@@ -201,11 +188,35 @@ function questionnaire() {
                 });
                 randomBlockExecutor.next();
             }
+            node.game.questionnaire.pageExecutor = {
+                next: loadAllNEP
+            };
+
+            node.game.questionnaire.NEPQuestions = [];
+            for (i = 0; i < numberOfQuestions; ++i) {
+                node.game.questionnaire.NEPQuestions[i] = {
+                    position: i,
+                    questionId: 'Question' + i,
+                    rank: Math.random()
+                };
+            }
+
+            node.timer.setTimestamp('newEcologicalParadigm');
+            // At the beginning of the block is an instructions page.
+            W.loadFrame('/burdenshare/html/questionnaire/' +
+                        'newEcologicalParadigm/instructions.html', function() {
+                            W.getElementById('done').onclick = function() {
+                                loadAllNEP();
+                            };
+                        }
+                       );
+
         };
 
         // Callback for the Risk block.
         risk = function(randomBlockExecutor) {
             var randomPageExecutor = new RandomOrderExecutor();
+            node.game.questionnaire.pageExecutor = randomPageExecutor;
 
             randomPageExecutor.setCallbacks(
                 makeBlockArray('risk', [
@@ -274,6 +285,8 @@ function questionnaire() {
                 }
             };
 
+            node.game.questionnaire.pageExecutor = linearPageExecutor;
+
             linearPageExecutor.callbacks = makeBlockArray('demographics', [
                 'gender', 'education', 'dateOfBirth', 'politics', 'income',
                 'occupation', 'participation']);
@@ -298,153 +311,165 @@ function questionnaire() {
             linearPageExecutor.execute();
         };
 
-        // Execute the SVO, NEP and RISK block in random order, then execute
-        // demographics.
-        randomBlockExecutor.execute(
+        // Setup to execute the SVO, NEP and RISK block in random order, then
+        // execute demographics.
+        randomBlockExecutor.setCallbacks(
             [
                 newEcologicalParadigm,
                 socialValueOrientation,
                 risk
-            ],
+            ]
+        );
+        randomBlockExecutor.setOnDone(
             demographics
         );
+
+        // Listeners for PROFIT DATA in the on the very first round.
+        node.on("in.say.DATA", function(msg) {
+            var bonus;
+
+            console.log(msg.text);
+            if (msg.text == "PROFIT") {
+                console.log("Payout round: " + msg.data.Payout_Round);
+                console.log("Profit: " + msg.data.Profit);
+
+                if (msg.data.Payout_Round !== "none") {
+                    node.game.bonus = node.game.globals.round((msg.data.Profit/50),2);
+                    console.log("Bonus: " + node.game.bonus);
+                    W.loadFrame('/burdenshare/html/' + gameName + '/questionnaire1.html', function() {
+                        var payoutText = W.getElementById("payout");
+                        payoutText.innerHTML = "<strong>Payout so far: </strong>";
+                        var round = W.getElementById("payoutRound");
+                        W.write(msg.data.Payout_Round , round);
+                        var amountUCE = W.getElementById("amountECU");
+                        W.write(msg.data.Profit + " ECU" , amountUCE);
+                        var amountUSD = W.getElementById("amountUSD");
+                        var profitUSD = (node.game.bonus + 1.0).toFixed(2);
+                        console.log("Profit" + profitUSD);
+                        W.write(profitUSD + " $" , amountUSD);
+
+                        node.game.timeResult = Date.now();
+
+                        var options = {
+                            milliseconds:  node.game.globals.timer.questProfit,
+                            timeup: function() {
+                                node.game.timeResult =
+                                    Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
+                                var timeResultProp = {
+                                    Player_ID : node.game.ownID,
+                                    timeResult: node.game.timeResult
+                                };
+                                questionnaire(1);
+                            }
+                        };
+
+                        node.game.timer.init(options);
+                        node.game.timer.updateDisplay();
+                        node.game.timer.start(options);
+
+                        var quest2 = W.getElementById('continue');
+                        quest2.onclick = function () {
+                            node.game.timeResult = Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
+                            var timeResultProp = {
+                                Player_ID : node.game.ownID,
+                                timeResult: node.game.timeResult
+                            };
+                            node.game.timer.stop();
+                            questionnaire(0);
+                        };
+                    });
+                }
+
+                else {
+                    node.game.bonus = 0.0;
+                    W.loadFrame('/burdenshare/html/' + gameName + '/questionnaire12.html', function() {
+                        var payoutText = W.getElementById("payout");
+                        W.write("Unfortunately you did not complete any of the 3 rounds (excluding the test round) to be played. For your participation in the experiment you will be paid out a fixed amount of 1.00 $.", payoutText);
+
+                        node.game.timeResult = Date.now();
+                        var options = {
+                            milliseconds: node.game.globals.timer.questProfit,
+                            timeup: function() {
+                                node.game.timeResult =
+                                    Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
+                                var timeResultProp = {
+                                    Player_ID : node.game.ownID,
+                                    timeResult: node.game.timeResult
+                                };
+                                questionnaire(1);
+                            }
+                        };
+                        node.game.timer.init(options);
+                        node.game.timer.updateDisplay();
+                        node.game.timer.start(options);
+
+                        var quest2 = W.getElementById('continue');
+                        quest2.onclick = function () {
+                            node.game.timeResult =
+                                Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
+                            var timeResultProp = {
+                                Player_ID : node.game.ownID,
+                                timeResult: node.game.timeResult
+                            };
+                            node.game.timer.stop();
+                            questionnaire(0);
+                        };
+                    });
+                }
+
+                console.log('Postgame including Questionaire');
+
+                // Goto questionnaire.
+                function questionnaire(timeout) {
+                    console.log("Bonus: " + node.game.bonus);
+
+                    var options = {
+                        milliseconds: node.game.globals.timer.questionnaire,
+                        timeup: function() {
+                            node.game.timeQuest1 = Math.round(Math.abs(node.game.timeQuest1 - Date.now())/1000);
+                            var timeResultProp = {
+                                playerID : {Player_ID: node.game.ownID},
+                                add: {timeQuest1: node.game.timeQuest1}
+                            };
+                            node.say("QUEST_DONE", "SERVER", node.game.bonus);
+                        },
+                        stopOnDone: false
+                    };
+                    node.game.timer.init(options);
+                    node.game.timer.updateDisplay();
+                    node.game.timer.start(options);
+
+                    randomBlockExecutor.execute();
+                }
+            }
+        });
+
+
+        // Request profit.
+        node.set('get_Profit',node.game.ownID);
     }
+    // If questionnaire is defined, we are repeating the stage.
+    // We do not do the initialization.
+    else {
+        node.on("in.say.DATA", function(msg) {
+            if (msg.text == 'ADDED_QUESTIONNAIRE_BONUS') {
+                console.log("Profit Adjustment" + msg.data.oldAmountUCE +
+                            "+" + msg.data.newAmountUCE);
+                node.game.bonus = msg.data;
+            }
+        });
 
-    // Shows last page.
-
-    node.set('get_Profit',node.game.ownID);
-
-    node.on.data("win", function(msg) {
-        if (msg.text === "win") {
-            // W.clearFrame();
-            W.loadFrame('/burdenshare/html/' + gameName + '/ended.html', function() {
-                W.writeln("Exit code: " + msg.data);
-                node.game.timer.stop();
-                node.game.timer.setToZero();
-            });
-        }
-    });
-
-    node.on("in.say.DATA", function(msg) {
-        var bonus;
-
-        console.log(msg.text);
-        if (msg.text == "PROFIT") {
-            console.log("Payout round: " + msg.data.Payout_Round);
-            console.log("Profit: " + msg.data.Profit);
-
-            if (msg.data.Payout_Round !== "none") {
-                node.game.bonus = node.game.globals.round((msg.data.Profit/50),2);
-                console.log("Bonus: " + node.game.bonus);
-                W.loadFrame('/burdenshare/html/' + gameName + '/questionnaire1.html', function() {
-                    var payoutText = W.getElementById("payout");
-                    payoutText.innerHTML = "<strong>Payout so far: </strong>";
-                    var round = W.getElementById("payoutRound");
-                    W.write(msg.data.Payout_Round , round);
-                    var amountUCE = W.getElementById("amountECU");
-                    W.write(msg.data.Profit + " ECU" , amountUCE);
-                    var amountUSD = W.getElementById("amountUSD");
-                    var profitUSD = (node.game.bonus + 1.0).toFixed(2);
-                    console.log("Profit" + profitUSD);
-                    W.write(profitUSD + " $" , amountUSD);
-
-                    node.game.timeResult = Date.now();
-
-                    var options = {
-                        milliseconds:  node.game.globals.timer.questProfit,
-                        timeup: function() {
-                            node.game.timeResult =
-                                Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
-                            var timeResultProp = {
-                                Player_ID : node.game.ownID,
-                                timeResult: node.game.timeResult
-                            };
-                            questionnaire(1);
-                        }
-                    };
-
-                    node.game.timer.init(options);
-                    node.game.timer.updateDisplay();
-                    node.game.timer.start(options);
-
-                    var quest2 = W.getElementById('continue');
-                    quest2.onclick = function () {
-                        node.game.timeResult = Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
-                        var timeResultProp = {
-                            Player_ID : node.game.ownID,
-                            timeResult: node.game.timeResult
-                        };
-                        node.game.timer.stop();
-                        questionnaire(0);
-                    };
+        node.on.data("win", function(msg) {
+            if (msg.text === "win") {
+                // W.clearFrame();
+                W.loadFrame('/burdenshare/html/' + gameName + '/ended.html', function() {
+                    W.writeln("Exit code: " + msg.data);
+                    node.game.timer.stop();
+                    node.game.timer.setToZero();
                 });
             }
+        });
 
-            else {
-                node.game.bonus = 0.0;
-                W.loadFrame('/burdenshare/html/' + gameName + '/questionnaire12.html', function() {
-                    var payoutText = W.getElementById("payout");
-                    W.write("Unfortunately you did not complete any of the 3 rounds (excluding the test round) to be played. For your participation in the experiment you will be paid out a fixed amount of 1.00 $.", payoutText);
-
-                    node.game.timeResult = Date.now();
-                    var options = {
-                        milliseconds: node.game.globals.timer.questProfit,
-                        timeup: function() {
-                            node.game.timeResult =
-                                Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
-                            var timeResultProp = {
-                                Player_ID : node.game.ownID,
-                                timeResult: node.game.timeResult
-                            };
-                            questionnaire(1);
-                        }
-                    };
-                    node.game.timer.init(options);
-                    node.game.timer.updateDisplay();
-                    node.game.timer.start(options);
-
-                    var quest2 = W.getElementById('continue');
-                    quest2.onclick = function () {
-                        node.game.timeResult =
-                            Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
-                        var timeResultProp = {
-                            Player_ID : node.game.ownID,
-                            timeResult: node.game.timeResult
-                        };
-                        node.game.timer.stop();
-                        questionnaire(0);
-                    };
-                });
-            }
-
-            console.log('Postgame including Questionaire');
-
-            // Goto questionnaire.
-            function questionnaire(timeout) {
-                console.log("Bonus: " + node.game.bonus);
-
-                var options = {
-                    milliseconds: node.game.globals.timer.questionnaire,
-                    timeup: function() {
-                        node.game.timeQuest1 = Math.round(Math.abs(node.game.timeQuest1 - Date.now())/1000);
-                        var timeResultProp = {
-                            playerID : {Player_ID: node.game.ownID},
-                            add: {timeQuest1: node.game.timeQuest1}
-                        };
-                        node.say("QUEST_DONE", "SERVER", node.game.bonus);
-                    }
-                };
-                node.game.timer.init(options);
-                node.game.timer.updateDisplay();
-                node.game.timer.start(options);
-
-                randomOrderQuestionnaire();
-            }
-        }
-        if (msg.text == 'ADDED_QUESTIONNAIRE_BONUS') {
-            console.log("Profit Adjustment" + msg.data.oldAmountUCE +
-                        "+" + msg.data.newAmountUCE);
-            node.game.bonus = msg.data;
-        }
-    });
+        node.game.questionnaire.pageExecutor.next();
+    }
 }
