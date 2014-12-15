@@ -82,7 +82,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         var disconnected;
         disconnected = {};
 
-        
+
         // Adds treatment name to incoming SET messages.
         // Must be registered before other listeners.
         node.on('in.set.DATA', function(msg) {
@@ -282,13 +282,13 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                                 nbrRounds = 0;
                             }
                             console.log("Number Rounds: " + nbrRounds);
-                            
+
                             write_profit = {
                                 treatment: treatmentName,
                                 costGE: settings.COSTGE,
                                 Player_ID: msg.data
                             };
-                              
+
                             if (nbrRounds >= 1) {
                                 payoutRound = Math.floor((Math.random()*nbrRounds) + 2);
 
@@ -320,7 +320,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
                             console.log('Writing Profit Data!!!');
                             dbs.mdbWriteProfit.store(write_profit);
-                            
+
                             // Sending to client.
                             node.socket.send(node.msg.create({
                                 text:'PROFIT',
@@ -469,7 +469,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                             bonusFromSelf = items[i].SelfBonus_UCE;
                             bonus += bonusFromSelf;
 
-                            for (j = 1; j < idList.length; ++j) {
+                            for (j = 1; j <= idList.length; ++j) {
                                 otherPlayer = idResolve[
                                     idList[(i+j)%idList.length]];
 
