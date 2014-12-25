@@ -84,6 +84,7 @@ function decision() {
                         W.getElementById(
                             'practice3'
                         ).style.display = '';
+                        W.getElementById("practiceAccept").style.display = "";
                     }
                     node.game.timeResultProp = Date.now();
                     // Start the timer.
@@ -166,6 +167,10 @@ function decision() {
                             // Test Round
                             var practice3 = W.getElementById('practice3');
                             practice3.style.display = '';
+                            W.getElementById("practiceReject").style.display = "";
+                            W.getElementById('practice' + (msg.data.cc === 0 ? 'No':'') +
+                            'Catastrophe').style.display = '';
+
                         }
                     }
                     node.game.timeResultProp = Date.now();
@@ -219,6 +224,7 @@ function decision() {
                         remResp = node.game.endowment_responder / 2;
                         W.write(remResp.toString(),remainResp);
                     }
+
                     node.game.decision =  'Reject';
                     node.game.agreement =  'No';
                     var respDecision = W.getElementById('respDecision');
@@ -257,13 +263,6 @@ function decision() {
     /////////////////////////////////// RESPONDENT ///////////////////////////////////
     else if (node.game.role == 'RESPONDENT') {
         W.loadFrame(node.game.url_resp, function() {
-            if (node.player.stage.round == 1) {
-                // Test Round
-                W.getElementById(
-                    chosenTreatment === 'ra' ?
-                        'practice2' : 'practice3'
-                ).style.display = '';
-            }
             var span_dot = W.getElementById('span_dot');
             // Refreshing the dots...
             setInterval(function() {
@@ -317,6 +316,19 @@ function decision() {
 
                     var accept = W.getElementById('accept');
                     var reject = W.getElementById('reject');
+
+
+                    if (node.player.stage.round == 1) {
+                        // Test Round
+                        W.getElementById(
+                            chosenTreatment === 'ra' ?
+                                'practice2' : 'practice3'
+                        ).style.display = '';
+                        W.getElementById('otherContribution').innerHTML =
+                            msg.data.toString();
+                        W.getElementById('yourContribution').innerHTML =
+                            respPay;
+                    }
 
                     node.game.offer = msg.data;
                     node.game.respPay = ""+respPay;

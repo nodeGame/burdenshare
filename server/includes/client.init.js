@@ -368,6 +368,9 @@ function init() {
             if (node.player.stage.round == 1) {
                 // Test Round.
                 W.getElementById('practice3').style.display = '';
+                W.getElementById('practice' +
+                    (response ==='ACCEPT' ? 'Accept' : 'Reject')
+                ).style.display = '';
             }
             node.game.timeResultResp = Date.now();
 
@@ -417,6 +420,11 @@ function init() {
                     node.game.globals.writeNoCatastrophe();
                 }
 
+                // Practice round.
+                if (node.player.stage.round === 1) {
+                    W.getElementById('practice' + (cc === 0 ? 'No':'') +
+                        'Catastrophe').style.display = '';
+                }
                 node.say('REJECT',node.game.otherID, catastrObj);
                 node.game.globals.writeOfferRejected();
             }
