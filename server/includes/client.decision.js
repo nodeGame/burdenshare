@@ -86,6 +86,7 @@ function decision() {
                         ).style.display = '';
                         W.getElementById("practiceAccept").style.display = "";
                     }
+
                     node.game.timeResultProp = Date.now();
                     // Start the timer.
                     var options = {
@@ -162,17 +163,16 @@ function decision() {
 
             node.on.data("REJECT", function(msg) {
                 W.loadFrame('html/' + gameName + '/resultProposer.html', function () {
-                    if (chosenTreatment === 'sa') {
-                        if (node.player.stage.round === 1) {
-                            // Test Round
-                            var practice3 = W.getElementById('practice3');
-                            practice3.style.display = '';
-                            W.getElementById("practiceReject").style.display = "";
-                            W.getElementById('practice' + (msg.data.cc === 0 ? 'No':'') +
-                            'Catastrophe').style.display = '';
+                    if (node.player.stage.round === 1) {
+                        // Test Round
+                        var practice3 = W.getElementById('practice3');
+                        practice3.style.display = '';
+                        W.getElementById("practiceReject").style.display = "";
+                        W.getElementById('practice' + (msg.data.cc === 0 ? 'No':'') +
+                        'Catastrophe').style.display = '';
 
-                        }
                     }
+
                     node.game.timeResultProp = Date.now();
                     // Start the timer.
                     var options = {
