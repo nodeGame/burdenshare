@@ -328,7 +328,7 @@ function decision() {
                             msg.data.toString();
                         W.getElementById('yourContribution').innerHTML =
                             respPay;
-                        W.getElementById('climateRisk').innterHTML =
+                        W.getElementById('climateRisk').innerHTML =
                             node.game.ClimateRisk;
                     }
 
