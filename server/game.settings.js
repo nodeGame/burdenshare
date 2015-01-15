@@ -37,24 +37,24 @@ module.exports = {
 
         // Instructions.
 
-        instructions1: 2000, // 480000,
-        instructions2: 2000, //480000,
-        instructions3: 2000, //480000,
-        instructions4: 2000, //480000,
+        instructions1: 48000, // 2000,
+        instructions2: 48000, 
+        instructions3: 48000,
+        instructions4: 48000,
 
         // Game.
         initialSituation: function() {
-            return 3000; //10000;
+            return 300000; //10000;
             if (node.game.globals.chosenTreatment === "sa") return 36000;
             return 18000;
         },
-        econGrowth: 2000, //100000, //40000, // 40000 ms is equal to 40 seconds
-        proposer: 2000, //200000, //90000, // 120000 ms is equivalent to 2 minutes
-        reply2Prop: 2000, //20000, //120000, // 120000 ms is equivalent to 2 minutes
-        respondent: 2000, //20000, //60000, // 120000 ms is equivalent to 2 minutes
-        proposerDone: 2000, //20000, //240000, // 240000 ms is equivalent to 6 minutes
-        respondentDone: 2000, //20000, //240000, // 240000 ms is equivalent to 6 minutes
-        responseDone: 2000, //20000, //120000, // 120000 ms is equivalent to 2 minutes
+        econGrowth: 200000, //100000, //40000, // 40000 ms is equal to 40 seconds
+        proposer: 200000, //200000, //90000, // 120000 ms is equivalent to 2 minutes
+        reply2Prop: 200000, //20000, //120000, // 120000 ms is equivalent to 2 minutes
+        respondent: 200000, //20000, //60000, // 120000 ms is equivalent to 2 minutes
+        proposerDone: 200000, //20000, //240000, // 240000 ms is equivalent to 6 minutes
+        respondentDone: 200000, //20000, //240000, // 240000 ms is equivalent to 6 minutes
+        responseDone: 200000, //20000, //120000, // 120000 ms is equivalent to 2 minutes
 
         // Questionnaire.
         questionnaire: 3000000, // 1800000, // 30 minutes

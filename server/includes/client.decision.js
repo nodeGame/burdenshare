@@ -328,6 +328,8 @@ function decision() {
                             msg.data.toString();
                         W.getElementById('yourContribution').innerHTML =
                             respPay;
+                        W.getElementById('climateRisk').innerHTML =
+                            node.game.ClimateRisk;
                     }
 
                     node.game.offer = msg.data;

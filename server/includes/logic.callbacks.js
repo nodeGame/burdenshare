@@ -21,7 +21,6 @@ var client = module.parent.exports.client;
 var ngc = module.parent.exports.ngc;
 
 function playerReconnects(p) {
-    debugger
     var code;
     var GameStage = ngc.GameStage;
 
