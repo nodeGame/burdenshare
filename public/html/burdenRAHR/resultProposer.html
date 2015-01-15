@@ -7,25 +7,28 @@
     <script src="/burdenshare/js/jquery.min.js"></script>
     <script src="/burdenshare/js/bootstrap.js"></script>
     <div id="instructions">
-        <center>
+        <left>
             <div id="practice3" style="display: none;">
-                This page shows you the result of this round. In the table you can
+                This page shows you the result of this round. In the table, you can
                 see how much you offered to pay, and whether the other player accepted
-                your offer or not.
-                <br>
-                <span id=practiceAccept style="display: none;">In this example, the other player accepted
+	      your offer or not. <br>
+	      <span id=practiceAccept style="display: none;">In this example, the other player accepted
                     and thus no climate catastrophe happened. Both of you had to pay their
-                    share of the total cost.</span>
-                <span id=practiceReject style="display: none;">In this example, the other player </span>
-                <span id=practiceCatastrophe style="display: none;"> and the computer randomly determined that a climate catastrophe happened. Because of this, both of you lost half of their wealth. </span>
-                <span id=practiceNoCatastrophe style="display: none;"> and the computer randomly determined that no climate catastrophe happened. Because of this, both of you keep all of your wealth from the beginning of this round.</span>
-                <br>
-          The table below shows how much each of you have left at the end of this round.
-            </div><br>
-            <div id="result1"></div>
-            <div id="result2"></div>
-            <div id="result3"></div>
-            <br> <br> <br>
+                    share of the total cost.</span><span
+    id=practiceReject style="display: none;">In this example, the
+    other player rejected your offer </span>
+                <span id=practiceCatastrophe style="display: none;">
+    and the computer randomly determined that <b> a climate catastrophe
+    occurred </b>. Because of this, <font color="red"> both of you loose half of your
+    wealth.</font> </span> <span id=practiceNoCatastrophe
+    style="display: none;"> and the computer randomly determined that
+    <b>no climate catastrophe occurred</b>. Because of this, <font
+    color="red"> both of you keep all of your wealth from the
+    beginning of this round</font>.</span> The table below shows how many ECU each of you have left at
+	      the end of this round.</div> 
+	    <br>
+	    </left>
+	     <center>
             <table class="table" style="max-width:600px;">
                 <tr class="active">
                     <td align="left"></td>
@@ -44,9 +47,6 @@
                 </tr>
             </table>
             <br> <br>
-            The amount to pay for the other player is <font id="respToPay"></font> ECU. <br>
-            Agreement against global warming: <font id="agreement"></font> <br>
-            Climate catastrophy: <font id="climateCatastrophe"></font> <br>
             <br> <br> <a class="btn btn-primary" id="continue">Continue</a>
             <br/>
             <br/>
