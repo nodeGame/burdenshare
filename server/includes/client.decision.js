@@ -63,8 +63,8 @@ function decision() {
             var submitoffer = W.getElementById('submitOffer');
             submitoffer.onclick = function() {
                 var offer = W.getElementById('offer');
-                node.game.proposal = offer.value;
-                if (!that.isValidBid(offer.value)) {
+                node.game.proposal = Math.round(offer.value);
+                if (!that.isValidBid(node.game.proposal)) {
                     var msg = 'Please choose a number between 0 and ' +
                         node.game.costGE;
                     node.game.globals.checkID(msg);
@@ -74,7 +74,7 @@ function decision() {
                 node.game.timer.setToZero();
                 W.getElementById("fieldset").disabled = true;
                 node.game.decisionOffer = 1;
-                node.emit('BID_DONE', offer.value, node.game.otherID);
+                node.emit('BID_DONE', node.game.proposal, node.game.otherID);
             };
 
             node.on.data("ACCEPT", function(msg) {

@@ -512,8 +512,9 @@ function init() {
      * @return {boolean} true or false
      *
      */
-    this.isValidBid = function (n) {
-        n = parseInt(n);
+    this.isValidBid = function(n) {
+        var r = parseFloat(n);
+        n = Math.round(r);
         return !isNaN(n) && isFinite(n) && n >= 0 && n <= node.game.costGE;
     };
 }

@@ -67,9 +67,7 @@ function writeOfferAccepted(offer) {
     node.game.offer = offer.toString();
     W.write(offer.toString(), propOffer);
     var resp = node.game.costGE - offer;
-    var respToPay = W.getElementById('respToPay');
     node.game.respPay =  resp.toString();
-    W.write(resp.toString(),respToPay);
     if (node.player.stage.round !== 1) {
         W.write('You have accepted the offer.', result1);
         W.write('You have successfully reached an agreement against global warming.', result2);
@@ -80,10 +78,6 @@ function writeOfferAccepted(offer) {
     var respDecision = W.getElementById('respDecision');
     node.game.decision =  'Accept';
     W.write('Accept',respDecision);
-    var agreement = W.getElementById('agreement');
-    W.write('Yes',agreement);
-    var climateCatastrophe = W.getElementById('climateCatastrophe');
-    W.write('No', climateCatastrophe);
     var remain = node.game.endowment_responder - resp;
     if (remain < 0) {remain = 0;}
     node.game.remainResp = remain.toString();
@@ -98,8 +92,6 @@ function writeOfferAccepted(offer) {
 }
 
 function writeCatastrophe() {
-    var climateCatastrophe = W.getElementById('climateCatastrophe');
-    W.write('Yes',climateCatastrophe);
     node.game.catastrophe =  'Yes';
     remProp = node.game.endowment_proposer / 2;
     var remainProp = W.getElementById('remainProp');
@@ -111,9 +103,7 @@ function writeNoCatastrophe() {
     if (node.player.stage.round !== 1) {
         W.write('However, no climate catastrophe has happened.', result3);
     }
-    var climateCatastrophe = W.getElementById('climateCatastrophe');
     node.game.catastrophe =  'No';
-    W.write('No',climateCatastrophe);
     remProp = node.game.endowment_proposer;
     var remainProp = W.getElementById('remainProp');
     W.write(remProp.toString(),remainProp);
@@ -135,8 +125,6 @@ function writeOfferRejected() {
 
     var respDecision = W.getElementById('respDecision');
     W.write('Reject',respDecision);
-    var agreement = W.getElementById('agreement');
-    W.write('No',agreement);
 
     if (node.game.catastrophe ===  'Yes') {
         node.game.remainNum = node.game.endowment_responder / 2;
