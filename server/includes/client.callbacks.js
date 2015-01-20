@@ -70,9 +70,10 @@ function writeOfferAccepted(offer) {
     var respToPay = W.getElementById('respToPay');
     node.game.respPay =  resp.toString();
     W.write(resp.toString(),respToPay);
-
-    W.write('You have accepted the offer.', result1);
-    W.write('You have successfully reached an agreement against global warming.', result2);
+    if (node.player.stage.round !== 1) {
+        W.write('You have accepted the offer.', result1);
+        W.write('You have successfully reached an agreement against global warming.', result2);
+    }
     node.game.decision =  'Accept';
     node.game.agreement =  'Yes';
     node.game.catastrophe =  'No';
@@ -107,7 +108,9 @@ function writeCatastrophe() {
 
 function writeNoCatastrophe() {
     var result3 = W.getElementById('result3');
-    W.write('However, no climate catastrophe has happened.', result3);
+    if (node.player.stage.round !== 1) {
+        W.write('However, no climate catastrophe has happened.', result3);
+    }
     var climateCatastrophe = W.getElementById('climateCatastrophe');
     node.game.catastrophe =  'No';
     W.write('No',climateCatastrophe);
@@ -118,12 +121,14 @@ function writeNoCatastrophe() {
 
 function writeOfferRejected() {
     var result1, result2;
-    result1 = W.getElementById('result1');
-    result2 = W.getElementById('result2');
+    if (node.player.stage.round !== 1) {
+        result1 = W.getElementById('result1');
+        result2 = W.getElementById('result2');
 
-    W.write('You have rejected the offer.', result1);
-    W.write('You have not been able to reach an ' +
-            'agreement against global warming.', result2);
+        W.write('You have rejected the offer.', result1);
+        W.write('You have not been able to reach an ' +
+                'agreement against global warming.', result2);
+    }
 
     node.game.decision =  'Reject';
     node.game.agreement =  'No';
