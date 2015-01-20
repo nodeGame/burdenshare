@@ -26,9 +26,7 @@ function decision() {
 
             if (node.player.stage.round === 1) {
                 // Test Round
-                W.getElementById(
-                    chosenTreatment === 'ra' ? 'practice1' : 'practice2'
-                ).style.display = '';
+                W.getElementById('practice2').style.display = '';
             }
             W.getElementById("offer").selectedIndex = -1;
             node.game.timeMakingOffer = Date.now();
@@ -78,12 +76,10 @@ function decision() {
             };
 
             node.on.data("ACCEPT", function(msg) {
-                W.loadFrame('/burdenshare/html/' + gameName + '/resultProposer.html', function() {
+                W.loadFrame('/burdenshare/html/resultProposer.html', function() {
                     if (node.player.stage.round === 1) {
                         // Test Round
-                        W.getElementById(
-                            'practice3'
-                        ).style.display = '';
+                        W.getElementById('practice3').style.display = '';
                         W.getElementById("practiceAccept").style.display = "";
                     }
 
@@ -158,7 +154,7 @@ function decision() {
             });
 
             node.on.data("REJECT", function(msg) {
-                W.loadFrame('html/' + gameName + '/resultProposer.html', function () {
+                W.loadFrame('html/resultProposer.html', function () {
                     if (node.player.stage.round === 1) {
                         // Test Round
                         var practice3 = W.getElementById('practice3');
@@ -314,10 +310,8 @@ function decision() {
 
                     if (node.player.stage.round == 1) {
                         // Test Round
-                        W.getElementById(
-                            chosenTreatment === 'ra' ?
-                                'practice2' : 'practice3'
-                        ).style.display = '';
+                        W.getElementById('practice3').style.display = '';
+
                         W.getElementById('otherContribution').innerHTML =
                             msg.data.toString();
                         W.getElementById('yourContribution').innerHTML =

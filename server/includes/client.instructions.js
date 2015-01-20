@@ -16,7 +16,7 @@ function instructions() {
 
     console.log('instructions');
 
-    W.loadFrame('/burdenshare/html/' + gameName + '/instructions.html', function() {
+    W.loadFrame('/burdenshare/html/instructions.html', function() {
         node.game.timeInstruction = Date.now();
         var options = {
             milliseconds: node.game.globals.timer.instructions1,
@@ -144,7 +144,7 @@ function instructions() {
     }
 
     function instructions4() {
-        W.loadFrame('/burdenshare/html/' + gameName + '/instructions4.html', function() {
+        W.loadFrame('/burdenshare/html/instructions4.html', function() {
             node.game.timeInstruction4 = Date.now();
             var initEndow = {
                 playerID: {Player_ID: node.game.ownID},

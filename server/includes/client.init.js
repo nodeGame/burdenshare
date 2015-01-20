@@ -62,18 +62,18 @@ function init() {
 
     // condition for one of the two game versions
     if (node.game.costGE === 30) {
-        node.game.url_bidder = '/burdenshare/html/' + gameName + '/bidder_30.html';
-        node.game.url_resp = '/burdenshare/html/' + gameName + '/resp_30.html';
-        node.game.url_initprop = '/burdenshare/html/' + gameName + '/initialSituationProp_30.htm';
-        node.game.url_initresp = '/burdenshare/html/' + gameName + '/initialSituationResp_30.htm';
-        node.game.url_preGame = '/burdenshare/html/' + gameName + '/preGame_30.html';
+        node.game.url_bidder = '/burdenshare/html/bidder_30.html';
+        node.game.url_resp = '/burdenshare/html/resp_30.html';
+        node.game.url_initprop = '/burdenshare/html/initialSituationProp_30.htm';
+        node.game.url_initresp = '/burdenshare/html/initialSituationResp_30.htm';
+        node.game.url_preGame = '/burdenshare/html/preGame_30.html';
     }
     else if (node.game.costGE === 80) {
-        node.game.url_bidder = '/burdenshare/html/' + gameName + '/bidder_80.html';
-        node.game.url_resp = '/burdenshare/html/' + gameName + '/resp_80.html';
-        node.game.url_initprop = '/burdenshare/html/' + gameName + '/initialSituationProp_80.htm';
-        node.game.url_initresp = '/burdenshare/html/' + gameName + '/initialSituationResp_80.htm';
-        node.game.url_preGame = '/burdenshare/html/' + gameName + '/preGame_80.html';
+        node.game.url_bidder = '/burdenshare/html/bidder_80.html';
+        node.game.url_resp = '/burdenshare/html/resp_80.html';
+        node.game.url_initprop = '/burdenshare/html/initialSituationProp_80.htm';
+        node.game.url_initresp = '/burdenshare/html/initialSituationResp_80.htm';
+        node.game.url_preGame = '/burdenshare/html/preGame_80.html';
 
     }
 
@@ -130,7 +130,7 @@ function init() {
         };
 
         // short question at the end of each round
-        W.loadFrame('/burdenshare/html/' + gameName + '/questionRounds_prop.html', function() {
+        W.loadFrame('/burdenshare/html/questionRounds_prop.html', function() {
             var options, quest, string, next;
 
             node.game.timequestionsRounds = Date.now();
@@ -250,7 +250,7 @@ function init() {
 
         // Check if data for playerID
         // and current round already exists.
-        W.loadFrame('/burdenshare/html/' + gameName + '/questionRounds_resp.html', function() {
+        W.loadFrame('/burdenshare/html/questionRounds_resp.html', function() {
             var options;
 
             node.game.timequestionsRounds = Date.now();
@@ -359,7 +359,7 @@ function init() {
         node.game.timeResponse =
             Math.round(Math.abs(node.game.timeResponse - Date.now())/1000);
 
-        W.loadFrame('/burdenshare/html/' + gameName + '/resultResponder.html', function() {
+        W.loadFrame('/burdenshare/html/resultResponder.html', function() {
             var options, proceed;
             var catastrObj;
 

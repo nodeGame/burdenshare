@@ -337,7 +337,7 @@ function questionnaire() {
                 if (msg.data.Payout_Round !== "none") {
                     node.game.bonus = node.game.globals.round((msg.data.Profit/50),2);
                     console.log("Bonus: " + node.game.bonus);
-                    W.loadFrame('/burdenshare/html/' + gameName + '/questionnaire1.html', function() {
+                    W.loadFrame('/burdenshare/html/questionnaire1.html', function() {
                         var payoutText = W.getElementById("payout");
                         payoutText.innerHTML = "<strong>Payout so far: </strong>";
                         var round = W.getElementById("payoutRound");
@@ -383,7 +383,7 @@ function questionnaire() {
 
                 else {
                     node.game.bonus = 0.0;
-                    W.loadFrame('/burdenshare/html/' + gameName + '/questionnaire12.html', function() {
+                    W.loadFrame('/burdenshare/html/questionnaire12.html', function() {
                         var payoutText = W.getElementById("payout");
                         W.write("Unfortunately you did not complete any of the 3 rounds (excluding the test round) to be played. For your participation in the experiment you will be paid out a fixed amount of 1.00 $.", payoutText);
 
@@ -463,7 +463,7 @@ function questionnaire() {
         node.on.data("win", function(msg) {
             if (msg.text === "win") {
                 // W.clearFrame();
-                W.loadFrame('/burdenshare/html/' + gameName + '/ended.html', function() {
+                W.loadFrame('/burdenshare/html/ended.html', function() {
                     W.writeln("Exit code: " + msg.data);
                     node.game.timer.stop();
                     node.game.timer.setToZero();
