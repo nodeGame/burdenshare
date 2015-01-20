@@ -24,7 +24,7 @@ function decision() {
         W.loadFrame(node.game.url_bidder, function() {
             var options;
 
-            if (node.player.stage.round == 1) {
+            if (node.player.stage.round === 1) {
                 // Test Round
                 W.getElementById(
                     chosenTreatment === 'ra' ? 'practice1' : 'practice2'
@@ -79,7 +79,7 @@ function decision() {
 
             node.on.data("ACCEPT", function(msg) {
                 W.loadFrame('/burdenshare/html/' + gameName + '/resultProposer.html', function() {
-                    if (node.player.stage.round == 1) {
+                    if (node.player.stage.round === 1) {
                         // Test Round
                         W.getElementById(
                             'practice3'
@@ -106,11 +106,11 @@ function decision() {
                     node.game.offer = msg.data.offer.toString();
                     W.write(msg.data.offer.toString(),propOffer);
                     var resp = node.game.costGE - msg.data.offer;
-                    var respToPay = W.getElementById('respToPay');
                     node.game.respPay =  resp.toString();
-                    W.write(resp.toString(),respToPay);
-                    W.write('The other player has accepted your offer.',result1);
-                    W.write('You have successfully reached an agreement against global warming.',result2);
+                    if (node.player.stage.round !== 1) {
+                        W.write('The other player has accepted your offer.',result1);
+                        W.write('You have successfully reached an agreement against global warming.',result2);
+                    }
 
                     node.game.decision =  'Accept';
                     node.game.agreement =  'Yes';
@@ -118,10 +118,6 @@ function decision() {
 
                     var respDecision = W.getElementById('respDecision');
                     W.write('Accept',respDecision);
-                    var agreement = W.getElementById('agreement');
-                    W.write('Yes',agreement);
-                    var climateCatastrophe = W.getElementById('climateCatastrophe');
-                    W.write('No',climateCatastrophe);
                     var remain = node.game.endowment_proposer - msg.data.offer;
                     if (remain < 0) {
                         remain = 0;
@@ -193,16 +189,16 @@ function decision() {
                     node.game.offer =  msg.data.offer.toString();
                     W.write(msg.data.offer.toString(),propOffer);
                     var resp = node.game.costGE - msg.data.offer;
-                    var respToPay = W.getElementById('respToPay');
                     node.game.respPay =  resp.toString();
-                    W.write(resp.toString(),respToPay);
-                    W.write('The other player has rejected your offer.', result1);
-                    W.write('You have not been able to reach an agreement against global warming.', result2);
+                    if (node.player.stage.round !== 1) {
+                        W.write('The other player has rejected your offer.', result1);
+                        W.write('You have not been able to reach an agreement against global warming.', result2);
+                    }
                     if (msg.data.cc === 0) {
-                        W.write('However, no climate catastrophe has happened.', result3);
-                        var climateCatastrophe = W.getElementById('climateCatastrophe');
+                        if (node.player.stage.round !== 1) {
+                            W.write('However, no climate catastrophe has happened.', result3);
+                        }
                         node.game.catastrophe =  'No';
-                        W.write('No',climateCatastrophe);
                         var remainProp = W.getElementById('remainProp');
                         remaining = node.game.endowment_proposer;
                         node.game.remainProp = remaining.toString();
@@ -212,10 +208,10 @@ function decision() {
                         W.write(remResp.toString(),remainResp);
                     }
                     else {
-                        W.write('A climate catastrophe has happened and destroyed a part of your endowment.', result3);
-                        var climateCatastrophe = W.getElementById('climateCatastrophe');
+                        if (node.player.stage.round !== 1) {
+                            W.write('A climate catastrophe has happened and destroyed a part of your endowment.', result3);
+                        }
                         node.game.catastrophe =  'Yes';
-                        W.write('Yes',climateCatastrophe);
                         var remainProp = W.getElementById('remainProp');
                         remaining = node.game.endowment_proposer/2;
                         node.game.remainProp = remaining.toString();
@@ -229,8 +225,6 @@ function decision() {
                     node.game.agreement =  'No';
                     var respDecision = W.getElementById('respDecision');
                     W.write('Reject',respDecision);
-                    var agreement = W.getElementById('agreement');
-                    W.write('No',agreement);
 
                     node.game.results = {
                         Current_Round: node.player.stage.round,
