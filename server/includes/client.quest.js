@@ -65,7 +65,7 @@ function questionnaire() {
                             }
                            );
             };
-        }
+        };
 
         // Makes an array of page load callbacks
         makeBlockArray = function(block, pages,
@@ -81,7 +81,7 @@ function questionnaire() {
                     ));
             }
             return result;
-        }
+        };
 
         // Callback for the Social Value Orientation block.
         // Loads all of the SVO questions in an random order.
@@ -124,7 +124,7 @@ function questionnaire() {
             var numberOfQuestions = 15;
             var questionsPerPage = 5;
             var i;
-            var questionsDone = 0
+            var questionsDone = 0;
             var pageName = 'allNEP';
             var pageNameArray = [];
 
@@ -176,7 +176,7 @@ function questionnaire() {
                         }
                     };
                 });
-            }
+            };
             var finishNEP = function() {
                 node.set('bsc_data',{
                     player: node.game.ownID,
@@ -187,7 +187,7 @@ function questionnaire() {
                     clicks: questionnaire.numberOfClicks
                 });
                 randomBlockExecutor.next();
-            }
+            };
             node.game.questionnaire.pageExecutor = {
                 next: loadAllNEP
             };
@@ -276,8 +276,8 @@ function questionnaire() {
                                             node.game.bonus.oldAmountUCE,
                                         W.getElementById("ECUfromQuest")
                                     );
-                                    W.write((node.game.bonus.newAmountUSD
-                                            + 1.0).toFixed(2) +
+                                    W.write((node.game.bonus.newAmountUSD +
+                                            1.0).toFixed(2) +
                                             ' $',
                                         W.getElementById("amountUSD")
                                     );
@@ -419,29 +419,29 @@ function questionnaire() {
                 }
 
                 console.log('Postgame including Questionaire');
+            }
 
-                // Goto questionnaire.
-                function questionnaire(timeout) {
-                    console.log("Bonus: " + node.game.bonus);
+            // Goto questionnaire.
+            function questionnaire(timeout) {
+                console.log("Bonus: " + node.game.bonus);
 
-                    var options = {
-                        milliseconds: node.game.globals.timer.questionnaire,
-                        timeup: function() {
-                            node.game.timeQuest1 = Math.round(Math.abs(node.game.timeQuest1 - Date.now())/1000);
-                            var timeResultProp = {
-                                playerID : {Player_ID: node.game.ownID},
-                                add: {timeQuest1: node.game.timeQuest1}
-                            };
-                            node.say("QUEST_DONE", "SERVER", node.game.bonus);
-                        },
-                        stopOnDone: false
-                    };
-                    node.game.timer.init(options);
-                    node.game.timer.updateDisplay();
-                    node.game.timer.start(options);
+                var options = {
+                    milliseconds: node.game.globals.timer.questionnaire,
+                    timeup: function() {
+                        node.game.timeQuest1 = Math.round(Math.abs(node.game.timeQuest1 - Date.now())/1000);
+                        var timeResultProp = {
+                            playerID : {Player_ID: node.game.ownID},
+                            add: {timeQuest1: node.game.timeQuest1}
+                        };
+                        node.say("QUEST_DONE", "SERVER", node.game.bonus);
+                    },
+                    stopOnDone: false
+                };
+                node.game.timer.init(options);
+                node.game.timer.updateDisplay();
+                node.game.timer.start(options);
 
-                    randomBlockExecutor.execute();
-                }
+                randomBlockExecutor.execute();
             }
         });
 
