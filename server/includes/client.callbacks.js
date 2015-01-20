@@ -171,7 +171,7 @@ function buildTables() {
     var respDecision = W.getElementById('respDecision');
     var agreement = W.getElementById('agreement');
     var climateCatastrophe = W.getElementById('climateCatastrophe');
-    var remainProp = W.getElementById('remainProp')
+    var remainProp = W.getElementById('remainProp');
     var remainResp = W.getElementById('remainResp');
     if (!!propOffer) {
         W.write(node.game.offer,propOffer);
