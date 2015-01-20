@@ -24,6 +24,10 @@ function decision() {
         W.loadFrame(node.game.url_bidder, function() {
             var options;
 
+            W.getElementById("instructionsFrame").setAttribute(
+                "src",node.game.url_instructionsFrame
+            );
+
             if (node.player.stage.round === 1) {
                 // Test Round
                 W.getElementById('practice2').style.display = '';
@@ -61,13 +65,14 @@ function decision() {
             var submitoffer = W.getElementById('submitOffer');
             submitoffer.onclick = function() {
                 var offer = W.getElementById('offer');
-                node.game.proposal = Math.round(offer.value);
-                if (!that.isValidBid(node.game.proposal)) {
+                if (!that.isValidBid(offer.value)) {
                     var msg = 'Please choose a number between 0 and ' +
                         node.game.costGE;
                     node.game.globals.checkID(msg);
                     return;
                 }
+                node.game.proposal = parseInt(offer.value);
+
                 node.game.timer.stop();
                 node.game.timer.setToZero();
                 W.getElementById("fieldset").disabled = true;
@@ -253,6 +258,9 @@ function decision() {
     /////////////////////////////////// RESPONDENT ///////////////////////////////////
     else if (node.game.role == 'RESPONDENT') {
         W.loadFrame(node.game.url_resp, function() {
+            W.getElementById("instructionsFrame").setAttribute(
+                "src",node.game.url_instructionsFrame
+            );
             var span_dot = W.getElementById('span_dot');
             // Refreshing the dots...
             setInterval(function() {

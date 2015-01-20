@@ -67,6 +67,8 @@ function init() {
         node.game.url_initprop = '/burdenshare/html/initialSituationProp_30.htm';
         node.game.url_initresp = '/burdenshare/html/initialSituationResp_30.htm';
         node.game.url_preGame = '/burdenshare/html/preGame_30.html';
+        node.game.url_instructionsFrame = '/burdenshare/html/' + gameName +
+            '/instructions_full_30.html';
     }
     else if (node.game.costGE === 80) {
         node.game.url_bidder = '/burdenshare/html/bidder_80.html';
@@ -74,7 +76,8 @@ function init() {
         node.game.url_initprop = '/burdenshare/html/initialSituationProp_80.htm';
         node.game.url_initresp = '/burdenshare/html/initialSituationResp_80.htm';
         node.game.url_preGame = '/burdenshare/html/preGame_80.html';
-
+        node.game.url_instructionsFrame = '/burdenshare/html/' + gameName +
+            '/instructions_full_80.html';
     }
 
     console.log('INIT PLAYER!');
@@ -514,7 +517,9 @@ function init() {
      */
     this.isValidBid = function(n) {
         var r = parseFloat(n);
-        n = Math.round(r);
-        return !isNaN(n) && isFinite(n) && n >= 0 && n <= node.game.costGE;
+        n = parseInt(n);
+
+        return !isNaN(n) && isFinite(n) && (r === n) && n >= 0 &&
+            n <= node.game.costGE;
     };
 }

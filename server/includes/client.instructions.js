@@ -253,6 +253,9 @@ function instructions() {
      */
     function chooseEconGrowth() {
         W.loadFrame(node.game.url_preGame, function() {
+            W.getElementById("instructionsFrame").setAttribute(
+                "src",node.game.url_instructionsFrame
+            );
             if (node.game.pgCounter === 0) {
                 // Test Round
                 var practice0 = W.getElementById('practice0');

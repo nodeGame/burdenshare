@@ -31,6 +31,9 @@ function initialSituation() {
             node.game.endowment_responder = initialEndow;
             node.game.endowment_proposer = node.game.endowment_own;
             W.loadFrame(node.game.url_initprop, function() {
+                W.getElementById("instructionsFrame").setAttribute(
+                    "src",node.game.url_instructionsFrame
+                );
                 var initText1 = "Due to economic growth, you have received " + (node.game.endowment_own-25) + " ECU which will be added ";
                 initText1 = initText1 + "to your initial endowment.";
                 var initText2 = "This level of growth means that your economy ";
@@ -80,6 +83,9 @@ function initialSituation() {
             node.game.endowment_responder = node.game.endowment_own;
 
             W.loadFrame(node.game.url_initresp, function() {
+                W.getElementById("instructionsFrame").setAttribute(
+                    "src",node.game.url_instructionsFrame
+                );
                 var initText1 = "Due to economic growth, you have received " + (node.game.endowment_own-25) + " ECU which will be added ";
                 initText1 = initText1 + "to your initial endowment.";
                 var initText2 = "This level of growth means that your economy ";
