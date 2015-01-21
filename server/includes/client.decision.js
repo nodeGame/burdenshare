@@ -109,7 +109,10 @@ function decision() {
                     var resp = node.game.costGE - msg.data.offer;
                     node.game.respPay =  resp.toString();
                     if (node.player.stage.round !== 1) {
-                        W.write('The other player has accepted your offer.',result1);
+                        // W.write('The other player has accepted your offer.',result1);
+                        W.sprintf('The other player has %strongaccepted%strong your offer.', {
+                            '%strong': {}  
+                        } , result1);
                         W.write('You have successfully reached an agreement against global warming.',result2);
                     }
 
@@ -191,13 +194,21 @@ function decision() {
                     W.write(msg.data.offer.toString(),propOffer);
                     var resp = node.game.costGE - msg.data.offer;
                     node.game.respPay =  resp.toString();
+
                     if (node.player.stage.round !== 1) {
-                        W.write('The other player has rejected your offer.', result1);
+                        // W.write('The other player has rejected your offer.', result1);
+                        W.sprintf('The other player has %strongrejected%strong your offer.', {
+                            '%strong': {}
+                        }, result1);
                         W.write('You have not been able to reach an agreement against global warming.', result2);
                     }
+
                     if (msg.data.cc === 0) {
                         if (node.player.stage.round !== 1) {
-                            W.write('However, no climate catastrophe has happened.', result3);
+                            // W.write('However, no climate catastrophe has happened.', result3);
+                            W.sprintf('However, %strongno climate catastrophe%strong has happened.', {
+                                '%strong': {}
+                            }, result3);
                         }
                         node.game.catastrophe =  'No';
                         var remainProp = W.getElementById('remainProp');
@@ -210,7 +221,9 @@ function decision() {
                     }
                     else {
                         if (node.player.stage.round !== 1) {
-                            W.write('A climate catastrophe has happened and destroyed a part of your endowment.', result3);
+                            // W.write('A climate catastrophe has happened and destroyed a part of your endowment.', result3); 
+                            W.sprintf('A %strongclimate catastrophe has happened%strong and destroyed a part of your endowment.', 
+                                      { '%strong': {} }, result3);
                         }
                         node.game.catastrophe =  'Yes';
                         var remainProp = W.getElementById('remainProp');
