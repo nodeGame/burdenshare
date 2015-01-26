@@ -66,7 +66,7 @@ function decision() {
             submitoffer.onclick = function() {
                 var offer = W.getElementById('offer');
                 if (!that.isValidBid(offer.value)) {
-                    var msg = 'Please choose a number between 0 and ' +
+                    var msg = 'Please choose a whole number between 0 and ' +
                         node.game.costGE;
                     node.game.globals.checkID(msg);
                     return;
