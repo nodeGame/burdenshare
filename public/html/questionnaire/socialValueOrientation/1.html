@@ -1,26 +1,115 @@
-<!DOCTYPE html><title></title><head><script>var questionnaire = parent.node.game.questionnaire;
-questionnaire.currentAnswerMade = false;
-questionnaire.numberOfClicks = 0;
-function makeChoice(i) {
-    ++questionnaire.numberOfClicks;
-    questionnaire.currentAnswerMade = true;
-    questionnaire.currentAnswer = i;
-}
-</script><style>th.centeredHead, td {
-    border: solid 1px;
-    text-align: center;
-}
-table td {
-    word-wrap: break-word;
-}
-div.questionDiv {
-    width: 1000px;
-    font-size: 18px;
-}
-h1.questionExplanation {
-    word-wrap: break-word;
-    font-size: 25px;
-}</style><style>table td { width: 10%;}</style><link rel="stylesheet" href="/burdenshare/css/bootstrap.min.css">
-<link rel="stylesheet" href="/stylesheets/fullheight.css">
-<link rel="stylesheet" href="/stylesheets/noscript.css">
-<link rel="stylesheet" href="/stylesheets/nodegame.min.css"></head><body><div class="questionDiv"><h1 class="questionExplanation">Please select your preferred allocation of resources between you and another individual participating in the experiment.</h1><p><table><thead><tr><th class="centeredHead">You <br> Receive</th><th class="centeredHead">85</th><th class="centeredHead">85</th><th class="centeredHead">85</th><th class="centeredHead">85</th><th class="centeredHead">85</th><th class="centeredHead">85</th><th class="centeredHead">85</th><th class="centeredHead">85</th><th class="centeredHead">85</th></tr></thead><tbody><tr><th class="centeredHead">Choice</th><td><input type="radio" name="QButton" onclick="makeChoice(0)"></td><td><input type="radio" name="QButton" onclick="makeChoice(1)"></td><td><input type="radio" name="QButton" onclick="makeChoice(2)"></td><td><input type="radio" name="QButton" onclick="makeChoice(3)"></td><td><input type="radio" name="QButton" onclick="makeChoice(4)"></td><td><input type="radio" name="QButton" onclick="makeChoice(5)"></td><td><input type="radio" name="QButton" onclick="makeChoice(6)"></td><td><input type="radio" name="QButton" onclick="makeChoice(7)"></td><td><input type="radio" name="QButton" onclick="makeChoice(8)"></td></tr><tr><th class="centeredHead">Other Receives</th><th class="centeredHead">85</th><th class="centeredHead">76</th><th class="centeredHead">68</th><th class="centeredHead">59</th><th class="centeredHead">50</th><th class="centeredHead">41</th><th class="centeredHead">33</th><th class="centeredHead">24</th><th class="centeredHead">15</th></tr></tbody></table></p><p><input type="button" id="done" value="Submit Answer" class="btn btn-lg btn-primary"></p></div></body>
+<!DOCTYPE html>
+<title></title>
+
+<head>
+    <script>
+        var questionnaire = parent.node.game.questionnaire;
+        questionnaire.currentAnswerMade = false;
+        questionnaire.numberOfClicks = 0;
+
+        function makeChoice(i) {
+            ++questionnaire.numberOfClicks;
+            questionnaire.currentAnswerMade = true;
+            questionnaire.currentAnswer = i;
+        }
+    </script>
+    <style>
+        th.centeredHead,
+        td {
+            border: solid 1px;
+            text-align: center;
+        }
+        table td {
+            word-wrap: break-word;
+        }
+        div.questionDiv {
+            width: 1000px;
+            font-size: 18px;
+        }
+        h1.questionExplanation {
+            word-wrap: break-word;
+            font-size: 25px;
+        }
+    </style>
+    <style>
+        table td {
+            width: 10%;
+        }
+    </style>
+    <link rel="stylesheet" href="/burdenshare/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheets/fullheight.css">
+    <link rel="stylesheet" href="/stylesheets/noscript.css">
+    <link rel="stylesheet" href="/stylesheets/nodegame.min.css">
+</head>
+
+<body>
+    <div class="questionDiv">
+        <h1 class="questionExplanation">Please select your preferred allocation of resources between you and another individual participating in the experiment.</h1>
+        <p>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="centeredHead">You
+                            <br> Receive</th>
+                        <th class="centeredHead">85</th>
+                        <th class="centeredHead">85</th>
+                        <th class="centeredHead">85</th>
+                        <th class="centeredHead">85</th>
+                        <th class="centeredHead">85</th>
+                        <th class="centeredHead">85</th>
+                        <th class="centeredHead">85</th>
+                        <th class="centeredHead">85</th>
+                        <th class="centeredHead">85</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th class="centeredHead">Choice</th>
+                        <td>
+                            <input type="radio" name="QButton" onclick="makeChoice(0)">
+                        </td>
+                        <td>
+                            <input type="radio" name="QButton" onclick="makeChoice(1)">
+                        </td>
+                        <td>
+                            <input type="radio" name="QButton" onclick="makeChoice(2)">
+                        </td>
+                        <td>
+                            <input type="radio" name="QButton" onclick="makeChoice(3)">
+                        </td>
+                        <td>
+                            <input type="radio" name="QButton" onclick="makeChoice(4)">
+                        </td>
+                        <td>
+                            <input type="radio" name="QButton" onclick="makeChoice(5)">
+                        </td>
+                        <td>
+                            <input type="radio" name="QButton" onclick="makeChoice(6)">
+                        </td>
+                        <td>
+                            <input type="radio" name="QButton" onclick="makeChoice(7)">
+                        </td>
+                        <td>
+                            <input type="radio" name="QButton" onclick="makeChoice(8)">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="centeredHead">Other Receives</th>
+                        <th class="centeredHead">85</th>
+                        <th class="centeredHead">76</th>
+                        <th class="centeredHead">68</th>
+                        <th class="centeredHead">59</th>
+                        <th class="centeredHead">50</th>
+                        <th class="centeredHead">41</th>
+                        <th class="centeredHead">33</th>
+                        <th class="centeredHead">24</th>
+                        <th class="centeredHead">15</th>
+                    </tr>
+                </tbody>
+            </table>
+        </p>
+        <p>
+            <input type="button" id="done" value="Submit Answer" class="btn btn-lg btn-primary">
+        </p>
+    </div>
+</body>
