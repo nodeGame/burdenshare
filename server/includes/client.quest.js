@@ -44,22 +44,32 @@ function questionnaire() {
                                     var questionnaire =
                                         node.game.questionnaire;
                                     if (onDoneCallback) {
-                                        onDoneCallback(block,page);
+                                        if (onDoneCallback(block, page) ===
+                                                false) {
+                                            return;
+                                        }
                                     }
                                     if (questionnaire.currentAnswerMade) {
                                         node.set('bsc_data',{
-                                            player: node.game.ownID,
-                                            question: block + '/' + page,
-                                            answer: questionnaire.currentAnswer,
+                                            player:
+                                                node.game.ownID,
+                                            question:
+                                                block + '/' + page,
+                                            answer:
+                                                questionnaire.currentAnswer,
                                             timeElapsed:
-                                            node.timer.getTimeSince(block +
-                                                                    '/' + page),
-                                            clicks: questionnaire.numberOfClicks
+                                                node.timer.getTimeSince(block +
+                                                                        '/' +
+                                                                        page),
+                                            clicks:
+                                                questionnaire.numberOfClicks
                                         });
                                         node.emit("DONE");
                                     }
                                     else {
-                                        alert('Please select an option.');
+                                        node.game.globals.checkID(
+                                            'Please select an option.'
+                                        );
                                     }
                                 };
                             }
@@ -142,7 +152,7 @@ function questionnaire() {
                     NEPQuestions.sort(function(left,right) {
                         return left.rank < right.rank ? -1 : 1;
                     });
-                    // Unhides the 5 questions with lowest rank.
+                    // Unhides `questionsPerPage` questions with lowest rank.
                     for (i = 0; i < numberOfQuestions; ++i) {
                         if (i < questionsPerPage) {
                             NEPQuestions[i].rank = 2; // Push to back.
@@ -172,7 +182,9 @@ function questionnaire() {
                             }
                         }
                         else {
-                            alert('Please select an option.');
+                            node.game.globals.checkID(
+                                'Please select an option.'
+                            );
                         }
                     };
                 });
@@ -186,8 +198,10 @@ function questionnaire() {
                     node.timer.getTimeSince('newEcologicalParadigm'),
                     clicks: questionnaire.numberOfClicks
                 });
-                randomBlockExecutor.next();
+                node.game.questionnaire.pageExecutor = randomBlockExecutor;
+                node.emit("DONE");
             };
+
             node.game.questionnaire.pageExecutor = {
                 next: loadAllNEP
             };
@@ -221,8 +235,38 @@ function questionnaire() {
             randomPageExecutor.setCallbacks(
                 makeBlockArray('risk', [
                     'doubleOrNothing','gambles', 'patience', 'riskTaking',
-                    'trusting','charity'
+                    'trusting'
                 ])
+            );
+
+            // Add charity page.(Because of the textfield it requires
+            // special treatement)
+            randomPageExecutor.callbacks.push(
+                makePageLoad(
+                    'risk',
+                    'charity',
+                    function() {
+                        // Checks if the value in the textfield is an integer.
+                        var maxValue = 1000;
+                        var value = W.getElementById('offer').value;
+                        var r = parseFloat(value);
+                        var n = parseInt(value);
+
+                        ++node.game.questionnaire.numberOfClicks;
+                        if (isNaN(n) || !isFinite(n) || (r !== n) || n < 0 ||
+                            n > maxValue) {
+
+                            node.game.globals.checkID('Please choose a whole ' +
+                                'number between 0 and 1000');
+                            return false;
+                        }
+                        else {
+                            node.game.questionnaire.currentAnswerMade = true;
+                            node.game.questionnaire.currentAnswer = value;
+                            return true;
+                        }
+                    }
+                )
             );
 
             randomPageExecutor.setOnDone(function () {
@@ -292,7 +336,7 @@ function questionnaire() {
                 'gender', 'education', 'dateOfBirth', 'politics', 'income',
                 'occupation', 'participation']);
 
-            // Add politics page. (Because of the textfield it requires
+            // Change politics page. (Because of the textfield it requires
             // special treatement)
             linearPageExecutor.callbacks[3] = makePageLoad(
                 'demographics',
