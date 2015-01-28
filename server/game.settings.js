@@ -49,7 +49,7 @@ module.exports = {
         },
 
         endOfPractice: 10000, // 10 seconds
-        econGrowth: 60000, // 1 minutes
+        econGrowth: 60000, // 1 minute
         proposer: 120000, // 2 minutes
         reply2Prop: 120000, // 2 minutes
         respondent: 120000, // 2 minutes
