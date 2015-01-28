@@ -11,8 +11,6 @@ module.exports = initialSituation;
 
 function initialSituation() {
 
-    node.game.visualRound.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
-                                          'COUNT_UP_ROUNDS_TO_TOTAL']);
 
     var gameName = node.game.globals.gameName;
     var chosenTreatment = node.game.globals.chosenTreatment;
@@ -21,6 +19,10 @@ function initialSituation() {
         ownPlayerId: node.game.ownID,
         otherPlayerId: node.game.otherID
     };
+
+    node.game.visualRound.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
+                                          'COUNT_UP_ROUNDS_TO_TOTAL']);
+
     node.set('get_InitEndow', IDs);
     node.on.data("Endow", function(msg) {
         var initialEndow = msg.data.init_Endow;
@@ -34,10 +36,11 @@ function initialSituation() {
                 W.getElementById("instructionsFrame").setAttribute(
                     "src",node.game.url_instructionsFrame
                 );
-                var initText1 = "Due to economic growth, you have received " + (node.game.endowment_own-25) + " ECU which will be added ";
-                initText1 = initText1 + "to your initial endowment.";
+                var initText1 = "Due to economic growth, you have received " +
+                    (node.game.endowment_own) + " ECU.";
                 var initText2 = "This level of growth means that your economy ";
-                initText2 = initText2 + "has increased the climate risk by " + (node.game.risk-7.5) + " percent.";
+                initText2 = initText2 + "has increased the climate risk by " +
+                    (node.game.risk-7.5) + " percent.";
                 if (node.player.stage.round == 1) {
                     // Test Round
                     var practice1 = W.getElementById('practice1');
@@ -71,7 +74,9 @@ function initialSituation() {
 
                 proceed.onclick = function() {
                     node.game.timer.stop();
-                    node.game.timeInitialSituation = Math.round(Math.abs(node.game.timeInitialSituation - Date.now())/1000);
+                    node.game.timeInitialSituation = Math.round(Math.abs(
+                        node.game.timeInitialSituation - Date.now())/1000
+                    );
                     node.game.timer.setToZero();
                     node.emit('DONE');
                 };
@@ -86,10 +91,11 @@ function initialSituation() {
                 W.getElementById("instructionsFrame").setAttribute(
                     "src",node.game.url_instructionsFrame
                 );
-                var initText1 = "Due to economic growth, you have received " + (node.game.endowment_own-25) + " ECU which will be added ";
-                initText1 = initText1 + "to your initial endowment.";
+                var initText1 = "Due to economic growth, you have received " +
+                    (node.game.endowment_own) + " ECU.";
                 var initText2 = "This level of growth means that your economy ";
-                initText2 = initText2 + "has increased the climate risk by " + (node.game.risk-7.5) + " percent.";
+                initText2 = initText2 + "has increased the climate risk by " +
+                    (node.game.risk-7.5) + " percent.";
                 if (node.player.stage.round == 1) {
                     // Test Round
                     var practice1 = W.getElementById('practice1');
@@ -123,7 +129,9 @@ function initialSituation() {
                 var proceed = W.getElementById('continue');
                 proceed.onclick = function() {
                     node.game.timer.stop();
-                    node.game.timeInitialSituationResp = Math.round(Math.abs(node.game.timeInitialSituationResp - Date.now())/1000);
+                    node.game.timeInitialSituationResp = Math.round(Math.abs(
+                        node.game.timeInitialSituationResp - Date.now())/1000
+                    );
                     node.game.timer.setToZero();
                     node.emit('DONE');
                 };

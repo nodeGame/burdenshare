@@ -37,28 +37,29 @@ module.exports = {
 
         // Instructions.
 
-        instructions1: 2000, // 480000,
-        instructions2: 2000, //480000,
-        instructions3: 2000, //480000,
-        instructions4: 2000, //480000,
+        instructions1: 150000, // 2.5 minutes
+        instructions2: 150000, // 2.5 minutes
+        instructions3: 150000, // 2.5 minutes
+        instructions4: 150000, // 2.5 minutes
 
         // Game.
         initialSituation: function() {
-            return 3000; //10000;
-            if (node.game.globals.chosenTreatment === "sa") return 36000;
-            return 18000;
+            return 300000; // 5 minutes
+            //if (node.game.globals.chosenTreatment === "sa") return 36000;
+            //return 18000;
         },
-        econGrowth: 2000, //100000, //40000, // 40000 ms is equal to 40 seconds
-        proposer: 2000, //200000, //90000, // 120000 ms is equivalent to 2 minutes
-        reply2Prop: 2000, //20000, //120000, // 120000 ms is equivalent to 2 minutes
-        respondent: 2000, //20000, //60000, // 120000 ms is equivalent to 2 minutes
-        proposerDone: 2000, //20000, //240000, // 240000 ms is equivalent to 6 minutes
-        respondentDone: 2000, //20000, //240000, // 240000 ms is equivalent to 6 minutes
-        responseDone: 2000, //20000, //120000, // 120000 ms is equivalent to 2 minutes
+
+        econGrowth: 60000, // 1 minutes
+        proposer: 120000, // 2 minutes
+        reply2Prop: 120000, // 2 minutes
+        respondent: 120000, // 2 minutes
+        proposerDone: 120000, //2 minutes
+        respondentDone: 120000, // 2 minutes
+        responseDone: 300000, // 5 minutes
 
         // Questionnaire.
-        questionnaire: 3000000, // 1800000, // 30 minutes
-        questProfit: 3000000, // 60000, // 1 minute
+        questionnaire: 900000, // 15 minutes.
+        questProfit: 150000, // 2.5 minutes
 
         // Logic.
         notEnoughPlayers: 100000,

@@ -227,7 +227,18 @@ function init() {
                             console.log('Player already finished this round.');
                         }
                         node.set('bsc_data',node.game.results);
-                        node.emit('DONE');
+                        if (node.player.stage.round !== 1) {
+                            node.emit('DONE');
+                        }
+                        else {
+                            W.loadFrame(
+                                '/burdenshare/html/practiceDone.html',
+                                function() {
+                                    W.getElementById('continue').onclick =
+                                        function() {node.emit("DONE")};
+                                }
+                            );
+                        }
                     }
                 });
             };
@@ -342,14 +353,36 @@ function init() {
                         console.log('Current Round: ' + msg.data[0]);
                         if (msg.data[0] === undefined) {
                             node.set('bsc_data',node.game.results);
-                            node.emit('DONE');
+                            if (node.player.stage.round !== 1) {
+                                node.emit('DONE');
+                            }
+                            else {
+                                W.loadFrame(
+                                    '/burdenshare/html/practiceDone.html',
+                                    function() {
+                                        W.getElementById('continue').onclick =
+                                            function() {node.emit("DONE")};
+                                    }
+                                );
+                            }
                         }
                         else {
                             console.log('Data Exist: ' + dataExist.Player_ID);
                             node.set('delete_data', dataExist);
                             console.log('Player already finished this round.');
                             node.set('bsc_data',node.game.results);
-                            node.emit('DONE');
+                            if (node.player.stage.round !== 1) {
+                                node.emit('DONE');
+                            }
+                            else {
+                                W.loadFrame(
+                                    '/burdenshare/html/practiceDone.html',
+                                    function() {
+                                        W.getElementById('continue').onclick =
+                                            function() {node.emit("DONE")};
+                                    }
+                                );
+                            }
                         }
                     }
                 });
