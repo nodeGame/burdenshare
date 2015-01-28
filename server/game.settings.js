@@ -36,7 +36,6 @@ module.exports = {
     timer: {
 
         // Instructions.
-
         instructions1: 150000, // 2.5 minutes
         instructions2: 150000, // 2.5 minutes
         instructions3: 150000, // 2.5 minutes
@@ -49,6 +48,7 @@ module.exports = {
             //return 18000;
         },
 
+        endOfPractice: 10000, // 10 seconds
         econGrowth: 60000, // 1 minutes
         proposer: 120000, // 2 minutes
         reply2Prop: 120000, // 2 minutes

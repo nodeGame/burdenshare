@@ -12,12 +12,14 @@ function init() {
 
     // Clear the WaitPage, if still there.
     var waitingForPlayers =  W.getElementById('waitingForPlayers');
-    if (waitingForPlayers) {
-        waitingForPlayers.style.display = 'none';
-    }
+    var that = this;
 
     var gameName = node.game.globals.gameName;
     var chosenTreatment = node.game.globals.chosenTreatment;
+
+    if (waitingForPlayers) {
+        waitingForPlayers.style.display = 'none';
+    }
 
     // basic amount of own endowment (here 25).
     node.game.endowment_own = 25;
@@ -177,7 +179,7 @@ function init() {
                                 console.log('Player already finished this round.');
                             }
                             node.set('bsc_data',node.game.results);
-                            node.emit('DONE');
+                            that.endOfQuestionsround();
                         }
                     });
                 }
@@ -227,18 +229,7 @@ function init() {
                             console.log('Player already finished this round.');
                         }
                         node.set('bsc_data',node.game.results);
-                        if (node.player.stage.round !== 1) {
-                            node.emit('DONE');
-                        }
-                        else {
-                            W.loadFrame(
-                                '/burdenshare/html/practiceDone.html',
-                                function() {
-                                    W.getElementById('continue').onclick =
-                                        function() {node.emit("DONE")};
-                                }
-                            );
-                        }
+                        that.endOfQuestionsround();
                     }
                 });
             };
@@ -299,17 +290,13 @@ function init() {
                     node.on("in.say.DATA", function(msg) {
                         if (msg.text == "CheckData") {
                             console.log('Current Round: ' + msg.data[0]);
-                            if (msg.data[0] === undefined) {
-                                node.set('bsc_data',node.game.results);
-                                node.emit('DONE');
-                            }
-                            else {
+                            if ('undefined' !== typeof msg.data[0]) {
                                 console.log('Data Exist: ' + dataExist.Player_ID);
                                 node.set('delete_data', dataExist);
                                 console.log('Player already finished this round.');
-                                node.set('bsc_data',node.game.results);
-                                node.emit('DONE');
                             }
+                            node.set('bsc_data',node.game.results);
+                            that.endOfQuestionsround();
                         }
                     });
                 }
@@ -351,39 +338,13 @@ function init() {
                 node.on("in.say.DATA", function(msg) {
                     if (msg.text == "CheckData") {
                         console.log('Current Round: ' + msg.data[0]);
-                        if (msg.data[0] === undefined) {
-                            node.set('bsc_data',node.game.results);
-                            if (node.player.stage.round !== 1) {
-                                node.emit('DONE');
-                            }
-                            else {
-                                W.loadFrame(
-                                    '/burdenshare/html/practiceDone.html',
-                                    function() {
-                                        W.getElementById('continue').onclick =
-                                            function() {node.emit("DONE")};
-                                    }
-                                );
-                            }
-                        }
-                        else {
+                        if ('undefined' !== typeof msg.data[0]) {
                             console.log('Data Exist: ' + dataExist.Player_ID);
                             node.set('delete_data', dataExist);
                             console.log('Player already finished this round.');
-                            node.set('bsc_data',node.game.results);
-                            if (node.player.stage.round !== 1) {
-                                node.emit('DONE');
-                            }
-                            else {
-                                W.loadFrame(
-                                    '/burdenshare/html/practiceDone.html',
-                                    function() {
-                                        W.getElementById('continue').onclick =
-                                            function() {node.emit("DONE")};
-                                    }
-                                );
-                            }
                         }
+                        node.set('bsc_data',node.game.results);
+                        that.endOfQuestionsround();
                     }
                 });
             };
@@ -494,7 +455,6 @@ function init() {
         });
     });
 
-    var that = this;
     node.on.data('burdenSharingControl', function(msg) {
         var leftSrc, rightSrc, data, imgLeft, imgRight;
         data = msg.data;
@@ -510,6 +470,35 @@ function init() {
         W.getElementById('td_face_right').appendChild(imgRight);
         console.log('created and updated pictures');
     });
+
+
+    this.endOfQuestionsround = function() {
+        var options = {};
+
+        if (node.player.stage.round !== 1) {
+            node.emit('DONE');
+        }
+        else {
+            node.game.timer.stop();
+            node.game.timer.setToZero();
+
+            options.milliseconds = node.game.globals.timer.endOfPractice;
+            options.timeup = function() {
+                node.game.timer.stop();
+                node.emit('DONE');
+            };
+
+            node.game.timer.init(options);
+            node.game.timer.updateDisplay();
+            node.game.timer.start(options);
+
+            W.loadFrame('/burdenshare/html/practiceDone.html', function() {
+                W.getElementById('continue').onclick = function() {
+                    node.emit('DONE');
+                };
+            });
+        }
+    };
 
     /**
      * ## randomAccept
