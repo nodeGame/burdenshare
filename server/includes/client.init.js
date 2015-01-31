@@ -10,6 +10,14 @@ module.exports = init;
 
 function init() {
 
+    // Polyfill
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now
+    if (!Date.now) {
+        Date.now = function now() {
+            return new Date().getTime();
+        };
+    }
+
     // Clear the WaitPage, if still there.
     var waitingForPlayers =  W.getElementById('waitingForPlayers');
     var that = this;
