@@ -39,6 +39,7 @@ function decision() {
                 milliseconds: node.game.globals.timer.proposer,
                 timeup: function() {
                     W.getElementById("fieldset").disabled = true;
+                    W.getElementById("submitOffer").disabled = true;
                     node.game.timer.stop();
                     var randnum = Math.floor(1+Math.random()*node.game.costGE);
                     var offer = W.getElementById('offer');
@@ -76,6 +77,7 @@ function decision() {
                 node.game.timer.stop();
                 node.game.timer.setToZero();
                 W.getElementById("fieldset").disabled = true;
+                submitoffer.disabled = true;
                 node.game.decisionOffer = 1;
                 node.emit('BID_DONE', node.game.proposal, node.game.otherID);
             };

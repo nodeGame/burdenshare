@@ -369,7 +369,7 @@ function questionnaire() {
             demographics
         );
 
-        // Listeners for PROFIT DATA in the on the very first round.
+        // Listeners for PROFIT DATA in the very first round.
         node.on("in.say.DATA", function(msg) {
             var bonus;
 
