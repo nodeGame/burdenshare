@@ -35,11 +35,14 @@ function decision() {
             W.getElementById("offer").selectedIndex = -1;
             node.game.timeMakingOffer = Date.now();
 
+
+            var submitoffer = W.getElementById('submitOffer');
+
             options = {
                 milliseconds: node.game.globals.timer.proposer,
                 timeup: function() {
                     W.getElementById("fieldset").disabled = true;
-                    W.getElementById("submitOffer").disabled = true;
+                    submitoffer.onclick = null;
                     node.game.timer.stop();
                     var randnum = Math.floor(1+Math.random()*node.game.costGE);
                     var offer = W.getElementById('offer');
@@ -63,7 +66,6 @@ function decision() {
             W.write(node.game.riskOther.toString(),clRiskOther);
             W.write(node.game.ClimateRisk.toString(),clRisk);
 
-            var submitoffer = W.getElementById('submitOffer');
             submitoffer.onclick = function() {
                 var offer = W.getElementById('offer');
                 if (!that.isValidBid(offer.value)) {
@@ -77,7 +79,7 @@ function decision() {
                 node.game.timer.stop();
                 node.game.timer.setToZero();
                 W.getElementById("fieldset").disabled = true;
-                submitoffer.disabled = true;
+                submitoffer.onclick = null;
                 node.game.decisionOffer = 1;
                 node.emit('BID_DONE', node.game.proposal, node.game.otherID);
             };
