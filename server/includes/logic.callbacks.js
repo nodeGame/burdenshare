@@ -62,8 +62,8 @@ function playerReconnects(p) {
     // Send currently connected players to reconnecting one.
     node.socket.send(node.msg.create({
         target: 'PLIST',
-        data: node.game.pl.fetchSubObj('id'),
-        // data: node.game.pl.db,
+        // data: node.game.pl.fetchSubObj('id'),
+        data: node.game.pl.db,
         to: p.id
     }));
 
