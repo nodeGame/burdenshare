@@ -571,6 +571,10 @@ function init() {
      *
      */
     this.isValidBid = function(n) {
+        // Only numbers, no decimals.
+        var regex = /^[0-9\b]+$/;
+        if (!regex.test(n)) return false;
+
         var r = parseFloat(n);
         n = parseInt(n);
 
