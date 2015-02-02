@@ -17,6 +17,7 @@ var gameRoom = module.parent.exports.gameRoom;
 var settings = module.parent.exports.settings;
 var dk = module.parent.exports.dk;
 var timeOuts = module.parent.exports.timeOuts;
+var J = require('JSUS').JSUS;
 
 // Game Rooms counter.
 var counter = 1;
@@ -60,12 +61,25 @@ function makeTimeOut(playerID, nbrPlayers) {
     }, settings.WAIT_ROOM_TIMEOUT);
 }
 
+var treatments = ['ra80','sa30','ra30','sa80'];
+
+function decideTreatment(t) {
+    if (t === "rotate") {
+        return treatmentName = treatments[(counter-1) % 4]; 
+    }
+    if (t === "random") {
+        return treatmentName = treatments[J.randomInt(0,3)];
+    }
+    return t;
+}
+
 function connectingPlayer(p) {
     var room, wRoom;
     var NPLAYERS;
     var code;
     var i;
     var timeOutData;
+    var treatmentName;
 
     NPLAYERS = settings.N_PLAYERS;
 
@@ -110,12 +124,16 @@ function connectingPlayer(p) {
 
     tmpPlayerList = wRoom.shuffle().limit(NPLAYERS);
 
+    // Decide treatment.
+    treatmentName = decideTreatment(settings.CHOSEN_TREATMENT);   
+
+    console.log('Chosen treatment: ' + treatmentName);
 
     room = channel.createGameRoom({
         group: 'burdenshare',
         clients: tmpPlayerList,
         gameName: 'burdenshare',
-        treatmentName: settings.CHOSEN_TREATMENT
+        treatmentName: treatmentName
 
     });
 
