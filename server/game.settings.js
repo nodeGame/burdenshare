@@ -58,11 +58,11 @@ module.exports = {
         responseDone: 300000, // 5 minutes
 
         // Questionnaire.
-        questionnaire: 900000, // 15 minutes.
+        questionnaire: 9000, // 15 minutes.
         questProfit: 150000, // 2.5 minutes
 
         // Logic.
-        notEnoughPlayers: 100000,
+        notEnoughPlayers: 60000,
     },
 
     // If TRUE, throws errors. For testing.

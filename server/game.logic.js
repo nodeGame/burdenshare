@@ -421,9 +421,11 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     // Adds an 'other'-bonus to all players and calls dk.checkOut iff all
     // players have had their codes checked-out.
     function adjustPayoffAndCheckout() {
-        var i, checkoutFlag = true;
+        var i, checkoutFlag;
         var currentCode, profit;
         var idList = [];
+
+        checkoutFlag = true;
         // Check whether all players codes have been checked-out.
         for (i = 0; i < node.game.pl.size(); ++i) {
             idList[i] = node.game.pl.db[i].id;
@@ -441,7 +443,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         if (checkoutFlag) {
             if (!node.game.pl.checkout) {
                 node.game.pl.checkout = true;
-                // Gets profit for all players
+
+                // Gets profit for all players.
                 dbs.mdbCheckProfit.checkProfit({ $in : idList},
                     function(rows, items) {
 
