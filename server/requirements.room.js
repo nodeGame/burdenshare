@@ -32,6 +32,7 @@ module.exports = function(node, channel, room) {
             // Load code database.        
             if (settings.AUTH === 'remote') {
                 dk.getCodes(function() {
+                    debugger
                     if (!dk.codes.size()) {
                         throw new Error('requirement.room: no codes found.');
                     }

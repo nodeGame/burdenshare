@@ -23,6 +23,7 @@ module.exports = function(auth) {
                 if (!dk.codes.size()) {
                     throw new Error('requirements.room: no codes found.');
                 }
+                console.log(dk.codes.db);
             });
         }
         else {

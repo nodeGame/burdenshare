@@ -23,7 +23,7 @@ module.exports = {
 
     // AUTH: 'local',
     // AUTH: 'remote',
-    AUTH: 'none',
+    AUTH: 'remote',
 
     WAIT_ROOM_TIMEOUT: 600000, // 10 min
 
