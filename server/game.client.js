@@ -109,7 +109,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
     stager.setDefaultGlobals({
         round: cbs.round,
         gameName: settings.GAME_NAME,
-        chosenTreatment: treatmentName,
+        chosenTreatment: treatmentName.substring(0,2),
         costGE: settings.COSTGE,
         timer: settings.timer,
         buildTables: cbs.buildTables,

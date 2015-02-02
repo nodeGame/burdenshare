@@ -99,6 +99,11 @@ function writeCatastrophe() {
     remProp = node.game.endowment_proposer / 2;
     var remainProp = W.getElementById('remainProp');
     W.write(remProp.toString(),remainProp);
+    if (node.player.stage.round !== 1) {
+        W.sprintf('A %strongclimate catastrophe has happened%strong and ' +
+                  ' destroyed a part of your endowment.', null,
+                  W.getElementById('result3'));
+    }
 }
 
 function writeNoCatastrophe() {
@@ -139,6 +144,8 @@ function writeOfferRejected() {
 
     if (node.game.catastrophe ===  'Yes') {
         node.game.remainNum = node.game.endowment_responder / 2;
+
+        
     }
     else {
         node.game.remainNum = node.game.endowment_responder;
@@ -150,8 +157,6 @@ function writeOfferRejected() {
 //     W.write(catastrYes.remainEndowResp.toString(),remainResp);
     node.game.remainResp = node.game.remainNum.toString();
     W.write(node.game.remainResp, remainResp);
-
-
 }
 
 function buildTables() {

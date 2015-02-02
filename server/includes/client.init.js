@@ -455,7 +455,7 @@ function init() {
                     W.getElementById('practice' + (cc === 0 ? 'No':'') +
                         'Catastrophe').style.display = '';
                 }
-                node.say('REJECT',node.game.otherID, catastrObj);
+                node.say('REJECT', node.game.otherID, catastrObj);
                 node.game.globals.writeOfferRejected();
             }
 
@@ -477,7 +477,6 @@ function init() {
                 RiskContrib_R: node.game.riskOwn,
                 GroupRisk: (node.game.riskOwn + node.game.riskOther + 15)
             };
-
 
             proceed = W.getElementById('continue');
             proceed.onclick = function() {

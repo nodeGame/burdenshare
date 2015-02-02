@@ -197,7 +197,7 @@ function decision() {
                     node.game.offer =  msg.data.offer.toString();
                     W.write(msg.data.offer.toString(),propOffer);
                     var resp = node.game.costGE - msg.data.offer;
-                    node.game.respPay =  resp.toString();
+                    node.game.respPay = resp.toString();
 
                     if (node.player.stage.round !== 1) {
                         // W.write('The other player has rejected your offer.', result1);
