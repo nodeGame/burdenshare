@@ -26,28 +26,6 @@ module.exports = function(node, channel, room) {
 
         console.log('********Requirements Room Created*****************');
 
-        
-        if (settings.AUTH !== 'none') {
-            dk.readConfiguration(confPath);
-            // Load code database.        
-            if (settings.AUTH === 'remote') {
-                dk.getCodes(function() {
-                    debugger
-                    if (!dk.codes.size()) {
-                        throw new Error('requirement.room: no codes found.');
-                    }
-                });
-            }
-            else {
-                dk.readCodes(function() {
-                    if (!dk.codes.size()) {
-                        throw new Error('requirement.room: no codes found.');
-                    }
-                });
-            }
-        }
-
-
         node.on.preconnect(function(player) {
             console.log('Player connected to Requirements room.');
             node.game.pl.add(player);
