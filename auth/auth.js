@@ -15,9 +15,10 @@ module.exports = function(auth) {
     var dk = require('descil-mturk')();
     var settings = require(path.resolve(__dirname, '../server/game.settings.js'));
 
+    dk.readConfiguration(confPath);
+
     // Load code database
     if (settings.AUTH !== 'none') {
-        dk.readConfiguration(confPath);
         if (settings.AUTH === 'remote') {
             dk.getCodes(function() {
                 if (!dk.codes.size()) {

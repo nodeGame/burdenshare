@@ -142,7 +142,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                     choicesMade[selectedRound]
                 ];
 
-                if('undefined' === typeof node.game.pl.otherBonus) {
+                if ('undefined' === typeof node.game.pl.otherBonus) {
                     node.game.pl.otherBonus = [];
                 }
 
@@ -418,11 +418,12 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
     // Adds an 'other'-bonus to all players and calls dk.checkOut iff all
     // players have had their codes checked-out.
-    function adjustPayoffAndCheckout() {
+    function _OLD_adjustPayoffAndCheckout() {
         var i, checkoutFlag;
         var currentCode, profit;
         var idList = [];
         checkoutFlag = true;
+
         // Check whether all players codes have been checked-out.
         for (i = 0; i < node.game.pl.size(); ++i) {
             idList[i] = node.game.pl.db[i].id;
@@ -519,6 +520,107 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         }
     }
 
+    // Adds an 'other'-bonus to all players, and upload payoff.
+    function adjustPayoffAndCheckout() {
+        var i, checkoutFlag;
+        var currentCode, profit;
+        var idList = [];
+        checkoutFlag = true;
+
+        idList = J.shuffle(node.game.playerIDs);
+
+        // Gets profit for all players.
+        dbs.mdbCheckProfit.checkProfit(
+            { $in : idList},
+            function(rows, items) {
+                var j;
+                var bonus;
+                var code;
+                var idResolve = node.game.pl.id.resolve;
+                var otherBonus = node.game.pl.otherBonus || [];
+                var otherPlayer = [];
+                var postPayoffs = [];
+                var bonusFromOther;
+                var bonusFromSelf;
+                var writeProfitUpdate;
+
+                for (i = 0; i < idList.length; ++i) {
+                    code = dk.codes.id.get(idList[i]);
+                    
+                    // Player disconnected before finishing the questionnaire.
+                    if (!code.checkout) {                                        
+                        writeProfitUpdate = {
+                            OtherBonus_UCE: "NA",
+                            SelfBonus_UCE: "NA",
+                            randomBonus: 0
+                        };
+                        dbs.mdbWriteProfit.update({
+                            playerID: {
+                                "Player_ID": idList[i]
+                            },
+                            add: writeProfitUpdate
+                        });
+                        continue;
+                    }
+                    debugger
+                    // Bonus from the game.
+                    bonus = items[i].Amount_UCE;
+
+                    // In case something was not 
+                    // filled in correctly in the game.
+                    if ('number' !== typeof bonus) bonus = 0;
+                    
+                    // Self bonus from SVO.
+                    bonusFromSelf = items[i].SelfBonus_UCE;
+
+                    // In case the SVO was not filled in.
+                    if ('number' !== typeof bonusFromSelf) bonusFromSelf = 0;
+
+                    otherPlayer = (i + 1) % idList.length;
+                    bonusFromOther = otherBonus[otherPlayer];
+                    
+                    writeProfitUpdate = { randomBonus: 0 };
+                    
+                    if ('undefined' === typeof bonusFromOther) {
+                        // Random value 0-100 if other person did not give
+                        // a bonus to other. 0.75 discounts the fact that 
+                        // is unlikely that bonus to other is very high.
+                        bonusFromOther = J.randomInt(0, 100) * 0.75;
+                        writeProfitUpdate.randomBonus = 1;                
+                    }
+
+                    bonus += bonusFromSelf + bonusFromOther;
+                                            
+                    writeProfitUpdate.OtherBonus_UCE = bonusFromOther;
+
+                    profit = cbs.round((bonus / 50), 2);
+
+                    console.log(idList[i], ' bonus: ', profit);
+
+                    dbs.mdbWriteProfit.update({
+                        playerID: {
+                            "Player_ID": idList[i]
+                        },
+                        add: writeProfitUpdate
+                    });
+
+                    postPayoffs[i] = {
+                        "AccessCode": code.AccessCode,
+                        "Bonus": profit,
+                        "BonusReason": "Full Bonus"
+                    };
+                }
+
+                // Post payoffs.
+                dk.postPayoffs(postPayoffs, function(err, response, body) {
+                    if (err) {
+                        console.log("adjustPayoffAndCheckout: " +
+                                    "dk.postPayoff: " + err);
+                    };
+                });
+            });
+    }
+
     // Set default step rule.
     stager.setDefaultStepRule(stepRules.OTHERS_SYNC_STEP);
 
@@ -529,8 +631,10 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
             var players, groups, proposer, respondent;
             node.game.groups = [[],[]];
-            var playerIDs = node.game.pl.id.getAllKeys();
-            node.game.playerID = J.shuffle(playerIDs);
+
+            // Players initially connected.
+            node.game.playerIDs = node.game.pl.id.getAllKeys();
+            node.game.playerID = J.shuffle(node.game.playerIDs);
 
             node.game.groups[0][0] = node.game.playerID[0];
             node.game.groups[0][1] = node.game.playerID[1];
@@ -719,26 +823,41 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         stepRule: node.stepRules.SYNC_STAGE
     });
 
+    var questTimer;
     stager.extendStep('questionnaire', {
         cb: function() {
-            node.on("in.say.DATA", function(msg) {
-                if (msg.text === "QUEST_DONE") {
-                    // Checkout the player code.
-                    var code = dk.codes.id.get(msg.from);
-                    console.log("Checkout code of splayer" + msg.from);
-                    code.checkout = true;
+            
+            // Upon reconnection the stage is repeated, not sure why.
+            if (!questTimer) {
+                questTimer = node.timer.createTimer({
+                    milliseconds: settings.timer.questionnaire + 
+                        settings.timer.questProfit + 10000,
+                    timeup: adjustPayoffAndCheckout,
+                });
 
-                    // If a player has disconnected, delay payoff and
-                    // checkout by 10s to give time for reconnect.
-                    if (node.game.pl.size() < MIN_PLAYERS) {
-                        setTimeout(adjustPayoffAndCheckout, 10000);
-                    }
-                    else {
-                        adjustPayoffAndCheckout();
-                    }
-                    node.say("win", msg.from, code.ExitCode);
+                questTimer.start();
+            }
 
+            node.on.data('QUEST_DONE', function(msg) {
+                var i, len, id, code;
+                // Checkout the player code.
+                code = dk.codes.id.get(msg.from);
+                console.log('Checkout code of player: ' + msg.from);
+                code.checkout = true;
+                
+                node.say("win", msg.from, code.ExitCode);
+
+                // Check if all players have finished the quest.
+                // If one or more players are missing, we wait until
+                // the timer expires.
+                i = -1, len = node.game.playerIDs.length;
+                for ( ; ++i < len ; ) {
+                    id = node.game.playerIDs[i];
+                    if (id === msg.from) continue;
+                    if (!dk.codes.id.get(id).checkout) return;
                 }
+                questTimer.stop();
+                adjustPayoffAndCheckout();                
             });
             console.log('********************** Questionaire - SessionID: ' +
                             gameRoom.name);
