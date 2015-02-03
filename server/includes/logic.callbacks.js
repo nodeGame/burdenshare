@@ -153,19 +153,6 @@ function playerReconnects(p) {
     }, 3000);
 }
 
-
-// function writePlayerData() {
-//     var IDPlayer = node.game.pl.id.getAllKeys();
-//     for (var i = 0; i < IDPlayer.length; i++) {
-//         var idData = {
-//             Player_ID: IDPlayer[i],
-//             Session_ID: gameRoom.name
-//         };
-//         mdbWrite_idData.store(idData);
-//     }
-// }
-
-
 /**
  * ## round
  *

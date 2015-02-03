@@ -20,8 +20,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
     var REPEAT, MIN_PLAYERS;
 
-
-
     // Client game to send to reconnecting players.
     var client = require(gameRoom.gamePaths.player)(gameRoom,
                                                     treatmentName,
@@ -424,7 +422,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         var i, checkoutFlag;
         var currentCode, profit;
         var idList = [];
-
         checkoutFlag = true;
         // Check whether all players codes have been checked-out.
         for (i = 0; i < node.game.pl.size(); ++i) {
@@ -555,11 +552,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         cb: function() {
         console.log('********************** Syncing all Players - SessionID: ' +
             gameRoom.name);
-
-            // See if it works.
-//             node.game.groups = [[],[]];
-//             var playerIDs = node.game.pl.id.getAllKeys();
-//             node.game.playerID = J.shuffle(playerIDs);
 
             node.on('in.say.DATA', function(msg) {
                 if (msg.text === 'Round_Over') {
@@ -764,7 +756,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             syncStepping: false
         },
         plot: stager.getState(),
-        debug: true,
         verbosity: 0
     };
 };

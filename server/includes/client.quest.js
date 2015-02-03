@@ -16,6 +16,24 @@ function questionnaire() {
     var socialValueOrientation, newEcologicalParadigm, risk;
     var makePageLoad, makeBlockArray;
 
+    // Maybe once.
+    node.on("in.say.DATA", function(msg) {
+        if (msg.text == 'ADDED_QUESTIONNAIRE_BONUS') {
+            console.log("Profit Adjustment" + msg.data.oldAmountUCE +
+                        "+" + msg.data.newAmountUCE);
+            node.game.bonus = msg.data;
+        }
+    });
+
+    node.on.data("win", function(msg) {
+        W.loadFrame('/burdenshare/html/ended.html', function() {
+            W.writeln("Exit code: " + msg.data);
+            node.game.timer.stop();
+            node.game.timer.setToZero();
+        });
+    });
+
+
     // The first time this stage is executed, we set all listeners and callbacks
     // We also initialize node.game.questionnaire, which is why we use it for
     // this check.
@@ -429,7 +447,7 @@ function questionnaire() {
                     node.game.bonus = 0.0;
                     W.loadFrame('/burdenshare/html/questionnaire12.html', function() {
                         var payoutText = W.getElementById("payout");
-                        W.write("Unfortunately, you did not complete all the 3 rounds (excluding the test round) to be played. For your participation in the experiment you will be paid out the show-up fee plus the bonus from the questionnaire.", payoutText);
+                        W.write("Unfortunately, you did not complete all the rounds to be played (3 + practice). For your participation in the experiment you will be paid out the show-up fee plus the bonus from the questionnaire.", payoutText);
 
                         node.game.timeResult = Date.now();
                         var options = {
@@ -496,25 +514,6 @@ function questionnaire() {
     // If questionnaire is defined, we are repeating the stage.
     // We do not do the initialization.
     else {
-        node.on("in.say.DATA", function(msg) {
-            if (msg.text == 'ADDED_QUESTIONNAIRE_BONUS') {
-                console.log("Profit Adjustment" + msg.data.oldAmountUCE +
-                            "+" + msg.data.newAmountUCE);
-                node.game.bonus = msg.data;
-            }
-        });
-
-        node.on.data("win", function(msg) {
-            if (msg.text === "win") {
-                // W.clearFrame();
-                W.loadFrame('/burdenshare/html/ended.html', function() {
-                    W.writeln("Exit code: " + msg.data);
-                    node.game.timer.stop();
-                    node.game.timer.setToZero();
-                });
-            }
-        });
-
         node.game.questionnaire.pageExecutor.next();
     }
 }
