@@ -163,8 +163,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                     },
                 });
 
-                dbs.mdbWriteProfit
-
                 node.socket.send(node.msg.create({
                     text: 'ADDED_QUESTIONNAIRE_BONUS',
                     to: msg.data.player,
@@ -546,9 +544,9 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
                 for (i = 0; i < idList.length; ++i) {
                     code = dk.codes.id.get(idList[i]);
-                    
+
                     // Player disconnected before finishing the questionnaire.
-                    if (!code.checkout) {                                        
+                    if (!code.checkout) {
                         writeProfitUpdate = {
                             OtherBonus_UCE: "NA",
                             SelfBonus_UCE: "NA",
@@ -566,10 +564,10 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                     // Bonus from the game.
                     bonus = items[i].Amount_UCE;
 
-                    // In case something was not 
+                    // In case something was not
                     // filled in correctly in the game.
                     if ('number' !== typeof bonus) bonus = 0;
-                    
+
                     // Self bonus from SVO.
                     bonusFromSelf = items[i].SelfBonus_UCE;
 
@@ -578,19 +576,19 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
                     otherPlayer = (i + 1) % idList.length;
                     bonusFromOther = otherBonus[otherPlayer];
-                    
+
                     writeProfitUpdate = { randomBonus: 0 };
-                    
+
                     if ('undefined' === typeof bonusFromOther) {
                         // Random value 0-100 if other person did not give
-                        // a bonus to other. 0.75 discounts the fact that 
+                        // a bonus to other. 0.75 discounts the fact that
                         // is unlikely that bonus to other is very high.
                         bonusFromOther = J.randomInt(0, 100) * 0.75;
-                        writeProfitUpdate.randomBonus = 1;                
+                        writeProfitUpdate.randomBonus = 1;
                     }
 
                     bonus += bonusFromSelf + bonusFromOther;
-                                            
+
                     writeProfitUpdate.OtherBonus_UCE = bonusFromOther;
 
                     profit = cbs.round((bonus / 50), 2);
@@ -826,11 +824,11 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     var questTimer;
     stager.extendStep('questionnaire', {
         cb: function() {
-            
+
             // Upon reconnection the stage is repeated, not sure why.
             if (!questTimer) {
                 questTimer = node.timer.createTimer({
-                    milliseconds: settings.timer.questionnaire + 
+                    milliseconds: settings.timer.questionnaire +
                         settings.timer.questProfit + 10000,
                     timeup: adjustPayoffAndCheckout,
                 });
@@ -844,7 +842,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                 code = dk.codes.id.get(msg.from);
                 console.log('Checkout code of player: ' + msg.from);
                 code.checkout = true;
-                
+
                 node.say("win", msg.from, code.ExitCode);
 
                 // Check if all players have finished the quest.
@@ -857,7 +855,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                     if (!dk.codes.id.get(id).checkout) return;
                 }
                 questTimer.stop();
-                adjustPayoffAndCheckout();                
+                adjustPayoffAndCheckout();
             });
             console.log('********************** Questionaire - SessionID: ' +
                             gameRoom.name);
