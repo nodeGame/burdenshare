@@ -23,12 +23,12 @@ module.exports = {
 
     // AUTH: 'local',
     // AUTH: 'remote',
-    AUTH: 'remote',
+    AUTH: 'none',
 
     WAIT_ROOM_TIMEOUT: 600000, // 10 min
 
     // "ra80", "sa80", "ra30", "ra80", "rotate", "random"
-    CHOSEN_TREATMENT: "ra80", // "rotate",
+    CHOSEN_TREATMENT: "rotate",
 
     // How much does an agreement cost? (30 or 80).
     COSTGE: 80,
