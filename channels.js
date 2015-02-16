@@ -59,7 +59,14 @@ module.exports = [
         waitingRoom: {
             logicPath: 'requirements.room.js',
             name: 'requirementsBurden'
-        }
-    }
+        },
 
+        notify: {
+            onConnect: false,
+            onStageUpdate: false,
+            onStageLevelUpdate: false,
+            onStageLoadedUpdate: false
+        }
+
+    }
 ];
