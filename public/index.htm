@@ -42,48 +42,8 @@
 
   <script type="text/javascript">
 
-    function Countdown(minutes, seconds) {
-        var PrevMin = (minutes < 10) ? "0" : ":";
-        var PrevSec = (seconds < 10) ? ":0" : ":";
-        var TimeNow = PrevMin + minutes + PrevSec + seconds;
-        // var Now = new Date();
-        // HoursWaitRoom = Now.getUTCHours();
-        // MinutesWaitRoom = Now.getUTCMinutes();
-
-        if (DHTML) {
-            if (NS4) {
-                setContent("id", "Uhr", null, '<span class="Uhr">' + TimeNow + "<\/span>");
-            }
-            else {
-                setContent("id", "Uhr", null, TimeNow);
-            }
-            if (minutes > 0 && seconds == 0) {
-                minutes--;
-                seconds = 59;
-            }
-            else seconds--;
-
-            if (minutes == 0 && seconds < 0) {
-                clearTimeout(count);
-            }
-            else {
-                count = setTimeout(function() {
-                    Countdown(minutes, seconds)
-                }, 1000);
-            }
-        }
-    }
-
-
-    min = 10;
-    sec = 0;
-
-    Countdown(min,sec);
-
-    var timeout = "NotEnoughPlayers";
-    var secCount = 0;
-    var nbrPlayerConnected = 0;
-    exitCode = 0;
+    // The interval for countdown. Global variable.
+    var timeCheck;
 
     node.on.data('TIME', function(msg) {
         console.log(msg.data);
@@ -96,88 +56,116 @@
         nbrPlayerConnected = msg.data;
     });
 
-    // TODO: NOT WORKING.
-    node.on.data('CLEAR_COUNTDOW', function(msg) {
-        console.log("Clear CountDown");
-        clearInterval(timeCheck);
-        clearTimeout(count);
-    });
-
-    window.onload = function () {
-        // HourLimitWaitRoom = 25;
-        // MinutesLimitWaitRoom = 61;
-        var instWait = "<br> Please be patient and <b>do not leave this page</b> while waiting for the other participants to connect. ";
-        instWait += "As soon as a group of 4 is complete the experiment starts automatically and you will be forwarded to the next page.<br><br>";
-        // document.getElementById("join").innerHTML =instWait + "Participants can join until " + HourLimitWaitRoom + ":" + MinutesLimitWaitRoom + " (UTC - Coordinated Universal Time).";
-        document.getElementById("join").innerHTML = instWait;
-        // check wether the participant is too late
-        // if (HoursWaitRoom <= HourLimitWaitRoom && MinutesWaitRoom < MinutesLimitWaitRoom) {
-        if (true) {
-
-            // Configuring nodegame
-            node.setup('nodegame', {
-                verbosity: 100,
-                debug : true,
-                window : {
-                    promptOnleave : false
-                },
-                env : {
-                    auto : false,
-                    debug : false
-                },
-                events : {
-                    dumpEvents : true
-                },
-                socket : {
-                    type : 'SocketIo',
-                    reconnect : false
+    window.onload = function() {
+        
+        function Countdown(minutes, seconds) {
+            var PrevMin = (minutes < 10) ? "0" : ":";
+            var PrevSec = (seconds < 10) ? ":0" : ":";
+            var TimeNow = PrevMin + minutes + PrevSec + seconds;
+            
+            if (DHTML) {
+                if (NS4) {
+                    setContent("id", "Uhr", null, '<span class="Uhr">' + TimeNow + "<\/span>");
                 }
-            });
-
-            // Connecting to waiting room.
-            if (location.search) {
-                // Pass query arguments on.
-                node.connect("/burdenshare", { query: location.search.substr(1) });
-            }
-            else {
-                node.connect("/burdenshare");
-            }
-
-            timeCheck = setInterval(function() {
-                var timeOut;
-
-                // TODO INTERVAL MUST BE STOPPED!
-                // console.log(timeout);
-
-                // if (HoursWaitRoom <= HourLimitWaitRoom && MinutesWaitRoom < MinutesLimitWaitRoom) {
-                if (timeout == "NotEnoughPlayers") {
-                    document.getElementById("nbrPlayers").innerHTML = "Number of participants already in the group:  " + nbrPlayerConnected + " of 4";
-                    secCount++;
+                else {
+                    setContent("id", "Uhr", null, TimeNow);
                 }
-                else if (timeout == "Time elapsed!!!") {
-                    timeOut = "<h3 align='center'>Thank you for your patience.<br>";
-                    timeOut += "Unfortunately there are not enough participants in your group to start the experiment.<br>";
-                    timeOut += "You will be payed out a fix amount for your participation up to this point.<br><br>";
-                    timeOut += "Please go back to Amazon Mechanical Turk web site and submit the hit.<br>";
-                    timeOut += "We usually pay within 24 hours. <br>For any problems, please look for a HIT called <strong>ETH Descil Trouble Ticket</strong> and file a new trouble ticket reporting the exit code as written below.<br><br>";
-                    timeOut += "Notice: you do not need to enter the exit code to submit the HIT, but only for the trouble ticket.<br><br>";
-                    timeOut += "Exit Code: " + exitCode + "<br> </h3>";
-                    clearInterval(timeCheck);
-                    document.getElementById("startPage").innerHTML = timeOut;
+                if (minutes > 0 && seconds == 0) {
+                    minutes--;
+                    seconds = 59;
                 }
-                if (secCount >= ((min*60) + sec) && timeout == "NotEnoughPlayers") {
-                    timeOut = "<h3 align='center'>Thank you for your patience.<br><br>";
-                    timeOut += "Unfortunately a server error occured.<br>";
-                    timeOut += "Please go back to Amazon Mechanical Turk web site and file a trouble ticket.<br><br>";
-                    clearInterval(timeCheck);
-                    document.getElementById("startPage").innerHTML = timeOut;
+                else seconds--;
+                
+                if (minutes == 0 && seconds < 0) {
                     clearTimeout(count);
                 }
-            }, 1000);
+                else {
+                    count = setTimeout(function() {
+                        Countdown(minutes, seconds)
+                    }, 1000);
+                }
+            }
         }
-        else {
-            document.getElementById("join").innerHTML = "<h3>The timeslot for connecting to the experiment was closed at " + HourLimitWaitRoom + ":" + MinutesLimitWaitRoom + " (UTC - Coordinated Universal Time).<br><br>You can not participate anymore.</h3>";
-        }
+        
+
+        var timeout = "NotEnoughPlayers";
+        var secCount = 0;
+        var nbrPlayerConnected = 0;
+        var exitCode = 0;
+
+        var min = 10;
+        var sec = 0;
+        
+        Countdown(min,sec);
+        
+        var instWait = "<br> Please be patient and <b>do not leave this page</b> while waiting for the other participants to connect. ";
+        instWait += "As soon as a group of 4 is complete the experiment starts automatically and you will be forwarded to the next page.<br><br>";
+        document.getElementById("join").innerHTML = instWait;
+
+        // Configuring nodegame
+        node.setup('nodegame', {
+            verbosity: 100,
+            debug : true,
+            window : {
+                promptOnleave : false
+            },
+            env : {
+                auto : false,
+                debug : false
+            },
+            events : {
+                dumpEvents : true
+            },
+            socket : {
+                type : 'SocketIo',
+                reconnect : false
+            }
+        });
+        
+        // Connecting to waiting room.
+        //            if (location.search) {
+        //                // Pass query arguments on.
+        //                node.connect("/burdenshare", { query: location.search.substr(1) });
+        //            }
+        //            else {
+        //                node.connect("/burdenshare");
+        //            }
+        
+        // Connect.
+        node.connect("/burdenshare");
+        
+        timeCheck = setInterval(function() {
+            var timeOut;
+            
+            // TODO INTERVAL MUST BE STOPPED!
+            console.log(timeout);
+            
+            if (timeout == "NotEnoughPlayers") {
+                document.getElementById("nbrPlayers").innerHTML = "Number of participants already in the group:  " + nbrPlayerConnected + " of 4";
+                secCount++;
+            }
+            else if (timeout == "Time elapsed!!!") {
+                timeOut = "<h3 align='center'>Thank you for your patience.<br>";
+                timeOut += "Unfortunately, there are not enough participants in your group to start the experiment.<br>";
+                timeOut += "You will be payed out a fix amount for your participation up to this point.<br><br>";
+                timeOut += "Please go back to Amazon Mechanical Turk web site and submit the hit.<br>";
+                timeOut += "We usually pay within 24 hours. <br>For any problems, please look for a HIT called <strong>ETH Descil Trouble Ticket</strong> and file a new trouble ticket reporting the exit code as written below.<br><br>";
+                timeOut += "Notice: you do not need to enter the exit code to submit the HIT, but only for the trouble ticket.<br><br>";
+                timeOut += "Exit Code: " + exitCode + "<br> </h3>";
+                clearInterval(timeCheck);
+                document.getElementById("startPage").innerHTML = timeOut;
+            }
+            
+            if (secCount >= ((min*60) + sec) && timeout == "NotEnoughPlayers") {
+                timeOut = "<h3 align='center'>Thank you for your patience.<br><br>";
+                timeOut += "Unfortunately, a server error occured.<br>";
+                timeOut += "Please go back to Amazon Mechanical Turk web site and file a trouble ticket.<br><br>";
+                clearInterval(timeCheck);
+                document.getElementById("startPage").innerHTML = timeOut;
+                clearTimeout(count);
+            }
+            
+        }, 1000);
     }
   </script>
 </body>

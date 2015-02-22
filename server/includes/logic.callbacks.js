@@ -146,11 +146,6 @@ function playerReconnects(p) {
             });
         }, 1000);
     }
-
-    //Clear the Count Down in the index.htm
-    setTimeout(function() {
-        node.say("CLEAR_COUNTDOWN", p.id, 'clearCountDown');
-    }, 3000);
 }
 
 /**
