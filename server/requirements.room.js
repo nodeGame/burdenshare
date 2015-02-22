@@ -42,6 +42,14 @@ module.exports = function(node, channel, room) {
 
             console.log('MTID');
 
+            // TODO: remove then.
+            return {
+                success: true,
+                msg: 'Code validated.',
+                gameLink: '/burdenshare/html/informedConsent.html'
+                // gameLink: '/burdenHR/index.htm'
+            };
+
             // M-Turk id
             mtid = msg.data;
 

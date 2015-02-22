@@ -61,12 +61,12 @@ module.exports = [
             name: 'requirementsBurden'
         },
 
-        notify: {
-            onConnect: false,
-            onStageUpdate: false,
-            onStageLevelUpdate: false,
-            onStageLoadedUpdate: false
-        }
+//        notify: {
+//            onConnect: false,
+//            onStageUpdate: false,
+//            onStageLevelUpdate: false,
+//            onStageLoadedUpdate: false
+//        }
 
     }
 ];

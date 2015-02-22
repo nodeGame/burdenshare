@@ -127,4 +127,10 @@ module.exports = function(auth) {
     auth.authorization('burdenshare', 'player', authPlayers);
     auth.clientIdGenerator('burdenshare', 'player', idGen);
 
+
+    var a = 0;
+    auth.clientIdGenerator('requirements', 'player', function() {
+        return "" + ++a; 
+    });
+
 };

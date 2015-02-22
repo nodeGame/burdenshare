@@ -75,6 +75,12 @@ function Requirements() {
         button.className = 'btn btn-lg btn-primary';
         link.appendChild(button);
         div.appendChild(link);
+
+        // TODO: remove then.
+        setTimeout(function() {
+            // button.click();
+        }, 0);
+
     };
 
     // Synchronous callback function for the Requirements widget.
