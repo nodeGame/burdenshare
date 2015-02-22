@@ -137,9 +137,6 @@
         timeCheck = setInterval(function() {
             var timeOut;
             
-            // TODO INTERVAL MUST BE STOPPED!
-            console.log(timeout);
-            
             if (timeout == "NotEnoughPlayers") {
                 document.getElementById("nbrPlayers").innerHTML = "Number of participants already in the group:  " + nbrPlayerConnected + " of 4";
                 secCount++;
