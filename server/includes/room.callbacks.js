@@ -91,6 +91,9 @@ function connectingPlayer(p) {
     dk.markInvalid(p.id);
 
     wRoom = channel.waitingRoom.clients.player;
+    
+    // Send the number of minutes to wait.
+    node.say('WAITTIME', p.id, settings.WAIT_ROOM_TIMEOUT);
 
     for (i = 0; i < wRoom.size(); i++) {
         node.say("PLAYERSCONNECTED", wRoom.db[i].id, wRoom.size());
