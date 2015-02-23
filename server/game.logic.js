@@ -636,146 +636,64 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     stager.addStep({
         id: 'syncGroups',
         cb: function() {
-        console.log('********************** Syncing all Players - SessionID: ' +
-            gameRoom.name);
+            console.log('********************** Syncing all Players - ' +
+                        'SessionID: ' + gameRoom.name);
 
-            node.on('in.say.DATA', function(msg) {
-                if (msg.text === 'Round_Over') {
-                    console.log("Round: " + msg.data);
+            var group, proposer, respondent;
+            var props, resps;
+            var round, i;
 
-                    // Round 1 is a testround for the player
-                    // (The same matching of players and groups in
-                    // round 1 will be repeated in round 4)
-                    // Round 1 will be evaluated
+            round = node.player.stage.round;
 
-                    if (msg.data == 1) {
-                        node.game.groups[0][0] = node.game.playerID[0];
-                        node.game.groups[0][1] = node.game.playerID[1];
-                        node.game.groups[1][0] = node.game.playerID[2];
-                        node.game.groups[1][1] = node.game.playerID[3];
+            // Round 1 is a testround for the player
+            // (The same matching of players and groups in
+            // round 1 will be repeated in round 4)
+            // Round 1 will be evaluated
 
-                        for (var i = 0; i < node.game.groups.length; i++) {
-                            group = node.game.groups[i];
-                            var Props = {
-                                groupP: i+1,
-                                proposer: node.game.groups[i][0]
-                            };
-                            var Resps = {
-                                groupR: i+1,
-                                respondent: node.game.groups[i][1]
-                            };
-                            proposer = node.game.groups[i][0];
-                            respondent = node.game.groups[i][1];
+            if (round === 1 || round === 4) {
+                node.game.groups[0][0] = node.game.playerID[0];
+                node.game.groups[0][1] = node.game.playerID[1];
+                node.game.groups[1][0] = node.game.playerID[2];
+                node.game.groups[1][1] = node.game.playerID[3];
 
-                            node.socket.send(node.msg.create({
-                                text: 'RESPONDENT',
-                                to: respondent,
-                                data: Props
-                            }));
-                            node.socket.send(node.msg.create({
-                                text: 'PROPOSER',
-                                to: proposer,
-                                data: Resps
-                            }));
-                        }
-                    }
+            }
 
-                    else if (msg.data == 2) {
-                        node.game.groups[0][0] = node.game.playerID[0];
-                        node.game.groups[0][1] = node.game.playerID[2];
-                        node.game.groups[1][0] = node.game.playerID[1];
-                        node.game.groups[1][1] = node.game.playerID[3];
+            else if (round === 2) {
+                node.game.groups[0][0] = node.game.playerID[0];
+                node.game.groups[0][1] = node.game.playerID[2];
+                node.game.groups[1][0] = node.game.playerID[1];
+                node.game.groups[1][1] = node.game.playerID[3];
 
-                        for (var i = 0; i < node.game.groups.length; i++) {
-                            group = node.game.groups[i];
-                            var Props = {
-                                groupP: i+1,
-                                proposer: node.game.groups[i][0]
-                            };
-                            var Resps = {
-                                groupR: i+1,
-                                respondent: node.game.groups[i][1]
-                            };
-                            proposer = node.game.groups[i][0];
-                            respondent = node.game.groups[i][1];
+            }
 
-                            node.socket.send(node.msg.create({
-                                text:'RESPONDENT',
-                                to: respondent,
-                                data: Props
-                            }));
-                            node.socket.send(node.msg.create({
-                                text:'PROPOSER',
-                                to: proposer,
-                                data: Resps
-                            }));
-                        }
-                    }
+            // Round 3.
+            else {
 
-                    else if (msg.data == 3) {
-                        node.game.groups[0][0] = node.game.playerID[3];
-                        node.game.groups[0][1] = node.game.playerID[0];
-                        node.game.groups[1][0] = node.game.playerID[1];
-                        node.game.groups[1][1] = node.game.playerID[2];
+                if (round !== 3) console.log('Weird round: ', round);
 
-                        for (var i = 0; i < node.game.groups.length; i++) {
-                            group = node.game.groups[i];
-                            var Props = {
-                                groupP: i+1,
-                                proposer: node.game.groups[i][0]
-                            };
-                            var Resps = {
-                                groupR: i+1,
-                                respondent: node.game.groups[i][1]
-                            };
-                            proposer = node.game.groups[i][0];
-                            respondent = node.game.groups[i][1];
+                node.game.groups[0][0] = node.game.playerID[3];
+                node.game.groups[0][1] = node.game.playerID[0];
+                node.game.groups[1][0] = node.game.playerID[1];
+                node.game.groups[1][1] = node.game.playerID[2];
 
-                            node.socket.send(node.msg.create({
-                                text:'RESPONDENT',
-                                to: respondent,
-                                data: Props
-                            }));
-                            node.socket.send(node.msg.create({
-                                text:'PROPOSER',
-                                to: proposer,
-                                data: Resps
-                            }));
-                        }
-                    }
-                    else if (msg.data == 4) {
-                        node.game.groups[0][0] = node.game.playerID[0];
-                        node.game.groups[0][1] = node.game.playerID[1];
-                        node.game.groups[1][0] = node.game.playerID[2];
-                        node.game.groups[1][1] = node.game.playerID[3];
+            }
+            
+            for (i = 0; i < node.game.groups.length; i++) {
+                group = node.game.groups[i];
+                props = {
+                    groupP: i+1,
+                    proposer: node.game.groups[i][0]
+                };
+                resps = {
+                    groupR: i+1,
+                    respondent: node.game.groups[i][1]
+                };
+                proposer = node.game.groups[i][0];
+                respondent = node.game.groups[i][1];
 
-                        for (var i = 0; i < node.game.groups.length; i++) {
-                            group = node.game.groups[i];
-                            var Props = {
-                                groupP: i+1,
-                                proposer: node.game.groups[i][0]
-                            };
-                            var Resps = {
-                                groupR: i+1,
-                                respondent: node.game.groups[i][1]
-                            };
-                            proposer = node.game.groups[i][0];
-                            respondent = node.game.groups[i][1];
-
-                            node.socket.send(node.msg.create({
-                                text:'RESPONDENT',
-                                to: respondent,
-                                data: Props
-                            }));
-                            node.socket.send(node.msg.create({
-                                text:'PROPOSER',
-                                to: proposer,
-                                data: Resps
-                            }));
-                        }
-                    }
-                }
-            });
+                node.say('RESPONDENT', respondent, props);
+                node.say('PROPOSER', proposer, resps);
+            }
         },
     });
 

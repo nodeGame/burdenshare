@@ -85,12 +85,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 node.game.nbrGroup = msg.data.groupP;
                 node.done();
             });
-
-            node.socket.send(node.msg.create({
-                to: 'ALL',
-                text: 'Round_Over',
-                data: node.player.stage.round
-            }));
         },
         // stepRule: cbs.syncGroup
     });

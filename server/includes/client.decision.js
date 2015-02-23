@@ -157,6 +157,7 @@ function decision() {
                         RiskContrib_P: node.game.riskOwn,
                         GroupRisk: (node.game.riskOwn + node.game.riskOther + 15)
                     };
+
                     proceed.onclick = function() {
                         node.game.timer.stop();
                         this.disabled = "disabled";
