@@ -14,7 +14,7 @@ var nbrPlayerConnected;
 var waitTime = 10000;
 
 // Human readable time variables;
-var minutes = 10, seconds = 59;
+var minutes = 10, seconds = 0;
 
 // Number of seconds passed already.
 var secCount = 0;
@@ -118,8 +118,6 @@ window.onload = function() {
 
         minutes = Math.floor(waitTime / ( 60 * 1000));
         seconds = 0;
-
-        console.log(msg.data);
 
         Countdown();
         timeCheck = setInterval(function() {
