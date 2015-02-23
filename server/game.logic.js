@@ -215,7 +215,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             });
         });
 
-        // Delet data from the database
+        // Delete data from the database
         node.on.data('delete_data',function(msg) {
             dbs.mdbDelet.deleting(msg.data.Player_ID, msg.data.Current_Round);
         });
@@ -371,16 +371,15 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             }
         })();
 
-        /////////////////////////// mongoDB ///////////////////////////
+//         var IDPlayer = node.game.pl.id.getAllKeys();
+//         for (var i = 0; i < IDPlayer.length; i++) {
+//             var idData = {
+//                 Player_ID: IDPlayer[i],
+//                 Session_ID: gameRoom.name
+//             };
+//             node.set('bsc_idData', idData);
+//         }
 
-        var IDPlayer = node.game.pl.id.getAllKeys();
-        for(var i = 0; i < IDPlayer.length; i++) {
-            var idData = {
-                Player_ID: IDPlayer[i],
-                Session_ID: gameRoom.name
-            };
-            node.set('bsc_idData',idData);
-        }
         node.on.data('bsc_surveyID', function(msg) {
             dbs.mdbWrite_idData.update(msg.data);
         });

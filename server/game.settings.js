@@ -28,7 +28,7 @@ module.exports = {
     WAIT_ROOM_TIMEOUT: 60000, // 10 min
 
     // "ra80", "sa80", "ra30", "ra80", "rotate", "random"
-    CHOSEN_TREATMENT: "rotate",
+    CHOSEN_TREATMENT: "sa30",
 
     // How much does an agreement cost? (30 or 80).
     COSTGE: 80,
@@ -39,7 +39,7 @@ module.exports = {
         instructions1: 150000, // 2.5 minutes
         instructions2: 150000, // 2.5 minutes
         instructions3: 150000, // 2.5 minutes
-        instructions4: 150000, // 2.5 minutes
+        instructions4: 30000, // 2.5 minutes
 
         // Game.
         initialSituation: function() {

@@ -4,97 +4,88 @@
 <link href="/burdenshare/css/bootstrap.min.css" rel="stylesheet">
 
 <body>
-    <script src="/burdenshare/js/jquery.min.js"></script>
-    <script src="/burdenshare/js/bootstrap.js"></script>
-    <script>
-        $(document).ready(function(){
-          $("#instruct").click(function(){
-            $("#frame").slideToggle("slow");
-          });
-        });
-    </script>
-
-    <center>
-<div id="practice0", style="display: none;">
-  Welcome to first stage. In the next five rounds, you must decide whether you want low, medium, or high
-        economic growth. You can see your potential increase in
-        wealth as well as your contribution to climate risk next to
-        each growth option. These decisions will affect your wealth
-        and climate risk in the second stage. Your total wealth and contribution to
-        climate risk will be automatically updated in table below.
-        </div>
-        <br>
-        <div id="instructions">
-            <table class="table" style="max-width:600px;">
-              <tr class="active">
-                <td align="left">Your endowment (ECU):</td>
-                <td align="center" id="propEndow"></td>
-              </tr>
-              <tr>
-                <td align="left">Your contribution to increase the climate risk (%):</td>
-                <td align="center" id="clRiskOwn"></td>
-              </tr>
-            </table>
-            <br> <br>
-            <h4>Please decide whether you want to have high, medium or low growth in your economy.</h4>
-        </div>
-        </br>
-        <!-- <fieldset id="fieldset">
-            <select class="form-control" name="growth" id="growth"
-                style="max-width: 70px;">
-                <option>Low Growth</option>
-                <option>Medium Growth</option>
-                <option>High Growth</option>
-            </select> <br /> -->
-            <!-- <input type="number" min="0" max="10" name="offer" id="offer" /> -->
-            <!-- <a class="btn btn-primary" id="submitGrowth" style="width: 70px;">Submit</a>
-        </fieldset> -->
-    </center>
-
-    <table align="center">
-        <tr>
-        <td>
-            <div class="radio">
-              <label>
-                <input type="radio" name="pg" id="pg1" value="1">
-                Low Growth - (Wealth increase between 1 and 10, Risk increase 0 %)
-              </label>
-            </div>
-        </td>
+  <script src="/burdenshare/js/jquery.min.js"></script>
+  <script src="/burdenshare/js/bootstrap.js"></script>
+  <script>
+    $(document).ready(function(){
+    $("#instruct").click(function(){
+    $("#frame").slideToggle("slow");
+    });
+    });
+  </script>
+  
+  <center>
+    <h2>Decide Your Economic Growth</h2>
+    <div id="practice0", style="display: none;">
+      Welcome to the first stage. In the next five rounds, you must decide whether you want low, medium, or high
+      economic growth. You can see your potential increase in
+      wealth as well as your contribution to climate risk next to
+      each growth option. These decisions will affect your wealth
+      and climate risk in the second stage. Your total wealth and contribution to
+      climate risk will be automatically updated in table below.
+    </div>
+    <br>
+    <div id="instructions">
+      <table class="table" style="max-width:600px;">
+        <tr class="active">
+          <td align="left">Your endowment (ECU):</td>
+          <td align="center" id="propEndow"></td>
         </tr>
         <tr>
-        <td>
-            <div class="radio">
-              <label>
-                <input type="radio" name="pg" id="pg2" value="2">
-                Medium Growth - (Wealth increase between 5 and 15, Risk increase 2.5 %)
-              </label>
-            </div>
-        </td>
+          <td align="left">Your contribution to increase the climate risk (%):</td>
+          <td align="center" id="clRiskOwn"></td>
         </tr>
-        <tr>
-        <td>
-            <div class="radio">
-              <label>
-                <input type="radio" name="pg" id="pg3" value="3">
-                High Growth - (Wealth increase between 10 and 20, Risk increase 5 %)
-              </label>
-            </div>
-        </td>
-        </tr>
-    </table>   </br></br>
-
-    <center>
-        <a class="btn btn-primary" id="submitGrowth" style="width: 70px;">Submit</a>
-        <br><br><br><br>
-        <div> To see the instructions again, please click the button
-        below. </div><br>
-        <a class="btn btn-custom" id="instruct">Click here to show or hide the instructions</a>
-        <br> <br>
-        <div id="frame"  style="display: none;">
-            <iframe id="instructionsFrame" src="" width = "85%" height = "600px">
-                <p>Your browser does not support iframes.</p>
-            </iframe>
+      </table>
+      <br> <br>
+      <h4>Please decide whether you want to have high, medium or low growth in your economy.</h4>
+    </div>
+    <br/>
+  </center>
+  
+  <table align="center">
+    <tr>
+      <td>
+        <div class="radio">
+          <label>
+            <input type="radio" name="pg" id="pg1" value="1">
+            Low Growth - (Wealth increase between 1 and 10, Risk increase 0 %)
+          </label>
         </div>
-    </center>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="radio">
+          <label>
+            <input type="radio" name="pg" id="pg2" value="2">
+            Medium Growth - (Wealth increase between 5 and 15, Risk increase 2.5 %)
+          </label>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="radio">
+          <label>
+            <input type="radio" name="pg" id="pg3" value="3">
+            High Growth - (Wealth increase between 10 and 20, Risk increase 5 %)
+          </label>
+        </div>
+      </td>
+    </tr>
+  </table>   </br></br>
+  
+  <center>
+    <a class="btn btn-primary" id="submitGrowth" style="width: 70px;">Submit</a>
+    <br><br><br><br>
+    <div> To see the instructions again, please click the button
+      below. </div><br>
+    <a class="btn btn-custom" id="instruct">Click here to show or hide the instructions</a>
+    <br> <br>
+    <div id="frame"  style="display: none;">
+      <iframe id="instructionsFrame" src="" width = "85%" height = "600px">
+        <p>Your browser does not support iframes.</p>
+      </iframe>
+    </div>
+  </center>
 </body>

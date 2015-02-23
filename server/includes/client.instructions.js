@@ -144,68 +144,60 @@ function instructions() {
     }
 
     function instructions4() {
+
+        var initEndow = {
+            playerID: { Player_ID: node.game.ownID },
+            addEndow: { 
+                Initial_Endowment: node.game.endowment_own,
+                Climate_Risk: node.game.risk
+            }
+        };
+
+        function initEndowFunc() {
+            var timeInstr;
+            var setDBEconGrowth, j;
+            var next;
+            
+            next = W.getElementById("continue");
+            if (next) next.disabled = "disabled";
+            
+            node.game.timer.stop();
+            
+            node.game.timeInstruction4 = Math.round(Math.abs(node.game.timeInstruction4 - Date.now())/1000);
+            timeInstr = {
+                playerID: {Player_ID: node.game.ownID},
+                add: {TimeInstruction_4: node.game.timeInstruction4}
+            };
+
+            // Set back values in database in case of a disconnection - reconnection.
+
+            node.game.pgCounter = 0;
+            node.game.endowment_own = 25;
+            node.game.risk = 7.5;
+            initEndow.addEndow.Initial_Endowment = 0;
+            initEndow.addEndow.Climate_Risk = 0;
+
+            node.set('initEndow', initEndow);
+
+            setDBEconGrowth = {
+                playerID : { Player_ID: node.game.ownID },
+                add: {}
+            };
+            for (j = 1; j <= 5; j++) {
+                node.game.EGRnd[j] = 0;
+                setDBEconGrowth.add['EGRnd' + j] = node.game.EGRnd[j];
+            }
+            node.set("econGrowth", setDBEconGrowth);
+            chooseEconGrowth();
+        }
+
         W.loadFrame('/burdenshare/html/instructions4.html', function() {
             node.game.timeInstruction4 = Date.now();
-            var initEndow = {
-                playerID: {Player_ID: node.game.ownID},
-                addEndow: {Initial_Endowment: node.game.endowment_own, Climate_Risk: node.game.risk}
-            };
             var options = {
                 milliseconds: node.game.globals.timer.instructions4,
-                timeup: function() {
-                    node.game.timeInstruction4 = Math.round(Math.abs(node.game.timeInstruction4 - Date.now())/1000);
-                    var timeInstr = {
-                        playerID: {Player_ID: node.game.ownID},
-                        add: {TimeInstruction_4: node.game.timeInstruction4}
-                    };
-                    node.game.timer.stop();
-                    this.disabled = "disabled";
-                    node.game.pgCounter = 0;
-                    node.game.endowment_own = 25;
-                    node.game.risk = 7.5;
-                    initEndow.addEndow.Initial_Endowment = 0;
-                    initEndow.addEndow.Climate_Risk = 0;
-
-                    node.set('initEndow', initEndow);
-
-                    for (var j = 1; j <= 5; j++) {
-                        node.game.EGRnd[j] = 0;
-                        switch(j) {
-                        case 1:
-                            var setDBEconGrowth = {
-                                playerID : {Player_ID: node.game.ownID},
-                                add: {EGRnd1: node.game.EGRnd[j]}
-                            };
-                            break;
-                        case 2:
-                            var setDBEconGrowth = {
-                                playerID : {Player_ID: node.game.ownID},
-                                add: {EGRnd2: node.game.EGRnd[j]}
-                            };
-                            break;
-                        case 3:
-                            var setDBEconGrowth = {
-                                playerID : {Player_ID: node.game.ownID},
-                                add: {EGRnd3: node.game.EGRnd[j]}
-                            };
-                            break;
-                        case 4:
-                            var setDBEconGrowth = {
-                                playerID: {Player_ID: node.game.ownID},
-                                add: {EGRnd4: node.game.EGRnd[j]}
-                            };
-                            break;
-                        case 5:
-                            var setDBEconGrowth = {
-                                playerID : {Player_ID: node.game.ownID},
-                                add: {EGRnd5: node.game.EGRnd[j]}};
-                            break;
-                        }
-                        node.set("econGrowth", setDBEconGrowth);
-                    }
-                    chooseEconGrowth();
-                }
+                timeup: initEndowFunc
             };
+
             node.game.timer.init(options);
             node.game.timer.updateDisplay();
             node.game.timer.start(options);
@@ -213,35 +205,7 @@ function instructions() {
 
             var next;
             next = W.getElementById("continue");
-            next.onclick = function() {
-                node.game.timeInstruction4 = Math.round(Math.abs(node.game.timeInstruction4 - Date.now())/1000);
-                var timeInstr = {
-                    playerID: {Player_ID: node.game.ownID},
-                    add: {TimeInstruction_4: node.game.timeInstruction4}
-                };
-                node.game.timer.stop();
-                this.disabled = "disabled";
-
-                // set back values in database in case of a disconnection - reconnection
-                node.game.pgCounter = 0;
-                node.game.endowment_own = 25;
-                node.game.risk = 7.5;
-                initEndow.addEndow.Initial_Endowment = 0;
-                initEndow.addEndow.Climate_Risk = 0;
-                node.set('initEndow',initEndow);
-                for (var j = 1; j <= 5; j++) {
-                    node.game.EGRnd[j] = 0;
-                    switch(j) {
-                    case 1: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd1: node.game.EGRnd[j]}}; break;
-                    case 2: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd2: node.game.EGRnd[j]}}; break;
-                    case 3: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd3: node.game.EGRnd[j]}}; break;
-                    case 4: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd4: node.game.EGRnd[j]}}; break;
-                    case 5: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd5: node.game.EGRnd[j]}}; break;
-                    }
-                    node.set("econGrowth",setDBEconGrowth);
-                }
-                chooseEconGrowth();
-            };
+            next.onclick = initEndowFunc;
         });
     }
 
@@ -398,6 +362,7 @@ function instructions() {
      *
      * the economic growth and corresponding climate risk is chosen randomly by the computer
      *
+     * TODO: should be moved on the server.
      */
     function EconGrowthAndRisk() {
         var initEndow = {
@@ -422,7 +387,7 @@ function instructions() {
         initEndow.addEndow.Initial_Endowment = node.game.endowment_own + endowment_assigned;
         node.game.endowment_own += endowment_assigned;
         initEndow.addEndow.Climate_Risk = node.game.risk;
-        node.set('initEndow',initEndow);
+        node.set('initEndow', initEndow);
         node.emit('DONE');
     }
 
