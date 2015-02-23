@@ -43,7 +43,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     var gameSequence = require(__dirname + '/game.stages.js')(settings);
     var stager = ngc.getStager(gameSequence);
 
-
     // DBS functions.
     // Objects were created and cached in previous call in game.room.
     var dbs = require(__dirname + '/game.db.js');
@@ -86,11 +85,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         node.on('in.set.DATA', function(msg) {
             msg.data.treatment = treatmentName;
             msg.data.costGE = settings.COSTGE;
-        });
-
-        // Clearing timeout on the client's browser window.
-        node.on.pconnect(function(p) {
-            node.say("CLEAR_COUNTDOWN", p.id, 'clearCountDown');
         });
 
         function addQuestionnaireBonus(msg) {
@@ -210,21 +204,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             mdnWrite.store(msg.data);
         });
 
-        function writePlayerData() {
-            var IDPlayer = node.game.pl.id.getAllKeys();
-            for (var i = 0; i < IDPlayer.length; i++) {
-                var idData = {
-                    Player_ID: IDPlayer[i],
-                    Session_ID: gameRoom.name,
-                    treatment: treatmentName,
-                    costGE: settings.COSTGE
-                };
-                dbs.mdbWrite_idData.store(idData);
-            }
-        }
-
-        writePlayerData();
-
         node.on.data('check_Data',function(msg) {
             bsc_check_data = dbs.mdbCheckData.checkData(msg.data, function(rows, items) {
                 var currentRound = items;
@@ -331,7 +310,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             });
         });
 
-        node.on.data('bsc_gameTime',function(msg) {
+        node.on.data('bsc_gameTime', function(msg) {
             //checking if game time has been saved already
             bsc_check_data = dbs.mdbCheckData.checkData(msg.data, function(rows, items) {
                 var currentRound = items;
@@ -364,28 +343,33 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         });
 
         node.on.data('get_InitEndow',function(msg) {
-            bsc_get_initEndow = dbs.mdbgetInitEndow.getInitEndow(msg.data.otherPlayerId, function(rows, items) {
-                var endow = items;
-                if (!J.isEmpty(endow[0])) {
-                    var init_vals = {
-                        init_Endow: endow[0].Initial_Endowment,
-                        cl_Risk: endow[0].Climate_Risk
+            bsc_get_initEndow = dbs.mdbgetInitEndow.getInitEndow(msg.from, function(rows, items) {
+                var data;
+                data = -1;
+                if (!J.isEmpty(items[0])) {
+                    data = {
+                        init_Endow: items[0].Initial_Endowment,
+                        cl_Risk: items[0].Climate_Risk
                     };
-                    node.socket.send(node.msg.create({
-                        text:'Endow',
-                        to: msg.data.ownPlayerId,
-                        data: init_vals
-                    }));
                 }
-                else {
-                    node.socket.send(node.msg.create({
-                        text:'Endow',
-                        to: msg.data.ownPlayerId,
-                        data:'We are sorry. The endowment can not be shown.'
-                    }));
-                }
+                node.say('Endow', msg.from, data);
             });
         });
+        
+        // Write players data.
+        (function writePlayerData() {
+            var i, idData, IDPlauyer;
+            IDPlayer = node.game.pl.id.getAllKeys();
+            for (i = 0; i < IDPlayer.length; i++) {
+                idData = {
+                    Player_ID: IDPlayer[i],
+                    Session_ID: gameRoom.name,
+                    treatment: treatmentName,
+                    costGE: settings.COSTGE
+                };
+                dbs.mdbWrite_idData.store(idData);
+            }
+        })();
 
         /////////////////////////// mongoDB ///////////////////////////
 
@@ -561,7 +545,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                         });
                         continue;
                     }
-                    debugger
+
                     // Bonus from the game.
                     bonus = items[i].Amount_UCE;
 
@@ -661,8 +645,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                     console.log("Round: " + msg.data);
 
                     // Round 1 is a testround for the player
-                            // (The same matching of players and groups in
-                            // round 1 will be repeated in round 4)
+                    // (The same matching of players and groups in
+                    // round 1 will be repeated in round 4)
                     // Round 1 will be evaluated
 
                     if (msg.data == 1) {

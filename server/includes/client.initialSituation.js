@@ -21,15 +21,21 @@ function initialSituation() {
     node.game.visualRound.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
                                           'COUNT_UP_ROUNDS_TO_TOTAL']);
 
+    // This triggers the server to send a data msg with label "Endow".
     node.set('get_InitEndow', IDs);
 
-    node.on.data("Endow", function(msg) {
+    node.on.data("Endow", function(msg) {        
+        var url, varTime;
+
+        if (msg.data === -1) {
+            alert('An error occurred.');
+            return;
+        }
+
         var initialEndow = msg.data.init_Endow;
         node.game.ClimateRisk = msg.data.cl_Risk + node.game.risk;
         node.game.riskOwn = node.game.risk - 7.5;
-        node.game.riskOther = msg.data.cl_Risk - 7.5;
-        
-        var url, varTime;
+        node.game.riskOther = msg.data.cl_Risk - 7.5;        
 
         if (node.game.role == 'PROPOSER') {
             node.game.endowment_responder = initialEndow;

@@ -207,6 +207,7 @@ function init() {
 
                     // Call data base and check existence of data.
                     node.set('check_Data', dataExist);
+                    
                     node.on("in.say.DATA", function(msg) {
                         if (msg.text == "CheckData") {
                             console.log('Current Round: ' + msg.data[0]);
@@ -216,7 +217,7 @@ function init() {
                                 node.set('delete_data', dataExist);
                                 console.log('Player already finished this round.');
                             }
-                            node.set('bsc_data',node.game.results);
+                            node.set('bsc_data', node.game.results);
                             that.endOfQuestionsround();
                         }
                     });
