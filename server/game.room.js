@@ -82,11 +82,18 @@ module.exports = function(node, channel, gameRoom) {
 
         // This callback is executed when a player connects to the channel.
         node.on.pdisconnect(function(p) {
+            var wRoom, i;
+
             // Client really disconnected (not moved into another game room).
             if (channel.registry.clients.disconnected.get(p.id)) {
                 // Free up the code.
                 dk.markValid(p.id);
             }            
+            wRoom = channel.waitingRoom.clients.player;
+            for (i = 0; i < wRoom.size(); i++) {
+                node.say("PLAYERSCONNECTED", wRoom.db[i].id, wRoom.size());
+            }
+
         });
 
     });

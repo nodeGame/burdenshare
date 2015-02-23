@@ -26,7 +26,11 @@ window.onload = function() {
         var pConn;
         nbrPlayerConnected = msg.data;
         pConn = document.getElementById("nbrPlayers");
-        pConn.innerHTML = "Number of participants already in the group:  " + msg.data + " of 4";
+        
+        // Might not exists, when switching across pages.
+        if (pConn) {
+            pConn.innerHTML = "Number of participants already in the group:  " + msg.data + " of 4";
+        }
     });
     node.on.data('TIME', function(msg) {
         console.log(msg.data);
@@ -121,10 +125,11 @@ window.onload = function() {
 
         Countdown();
         timeCheck = setInterval(function() {
-            secCount++;
+            secCount += 1000;
 
             // If server is unresponsive.
-            if (secCount >= waitTime) {
+            if (secCount >= waitTime) {                
+                clearInterval(timeCheck);
                 setTimeout(function() {
                     // Should receive TIME msg from server in the meantime.
                     timeIsUp();

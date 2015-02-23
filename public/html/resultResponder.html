@@ -4,47 +4,62 @@
 <link href="/burdenshare/css/bootstrap.min.css" rel="stylesheet">
 
 <body>
-    <script src="/burdenshare/js/jquery.min.js"></script>
-    <script src="/burdenshare/js/bootstrap.js"></script>
-    <div id="instructions">
-        <center>
-            <div id="practice3" style="display: none;">
-            This page shows the result of this round. In the table, you can see
-            how much the other player offered to pay, and whether or
-          not you accepted this offer.
-          <br>
-                <span id=practiceAccept style="display: none;"> In this example, you <strong>accepted</strong> and thus <strong>no climate catastrophe happened</strong>. Both of you had to pay their share of the total cost. </span>
-                <span id=practiceReject style="display: none;">In this example, you <strong>rejected</strong> the proposal</span>
-                <span id=practiceCatastrophe style="display: none;"> and the computer randomly determined that <strong>a climate catastrophe happened</strong>. Because of this, both of you lost half of their wealth. </span>
-                <span id=practiceNoCatastrophe style="display: none;"> and the computer randomly determined that <strong>no climate catastrophe happened</strong>. Because of this, both of you keep all of your wealth from the beginning of this round.</span>
+  <script src="/burdenshare/js/jquery.min.js"></script>
+  <script src="/burdenshare/js/bootstrap.js"></script>
+  <div id="instructions">
+    <center>
+      <h2>Round Results</h2>
+      <div id="practice3" style="display: none;">
+        In the table, you can see
+        how much the other player offered to pay, and whether or
+        not you accepted this offer.
+        <br>
+        <span id=practiceAccept style="display: none;">
+          In this example, you <strong>accepted</strong> and thus <strong>no climate catastrophe happened</strong>. Both of you had to pay their share of the total cost.
+        </span>
 
-                <br>
-            The table below shows how much each of you have left at the end of this round.
-            </div><br>
-            <div id="result1"></div>
-            <div id="result2"></div>
-            <div id="result3"></div>
-            <br> <br> <br>
-            <table class="table" style="max-width:600px;">
-                <tr class="active">
-                    <td align="left"></td>
-                    <td align="center">Decision</td>
-                    <td align="center">Remaining wealth (ECU)</td>
-                </tr>
-                <tr>
-                    <td align="left">You</td>
-                    <td align="center" id="respDecision"></td>
-                    <td align="center" id="remainResp"></td>
-                </tr>
-                <tr class="active">
-                    <td align="left">The other player</td>
-                    <td align="center" id="propOffer"></td>
-                    <td align="center" id="remainProp"></td>
-                </tr>
-            </table>
-            <br> <br> <a class="btn btn-primary" id="continue">Continue</a>
-            <br/>
-            <br/>
-        </center>
-    </div>
+        <span id=practiceReject style="display: none;">
+          In this example, you <strong>rejected</strong> the proposal, and the computer randomly determined that 
+        </span>
+        
+        <span id=practiceCatastrophe style="display: none;">
+          <strong>a climate catastrophe happened</strong>.
+          Because of this, both of you lost half of their wealth.
+        </span>
+
+        <span id=practiceNoCatastrophe style="display: none;">
+          <strong>no climate catastrophe happened</strong>.
+          Because of this, both of you keep all of your wealth from the beginning of this round.
+        </span>
+
+        <br/><br/> 
+        The "remaining wealth" is what is payed out to you, if this round is randomly selected for payment.
+
+      </div>
+      <div id="result1"></div>
+      <div id="result2"></div>
+      <div id="result3"></div>
+      <br> <br> <br>
+      <table class="table" style="max-width:600px;">
+        <tr class="active">
+          <td align="left"></td>
+          <td align="center">Decision</td>
+          <td align="center">Remaining wealth (ECU)</td>
+        </tr>
+        <tr>
+          <td align="left">You</td>
+          <td align="center" id="respDecision"></td>
+          <td align="center" id="remainResp"></td>
+        </tr>
+        <tr class="active">
+          <td align="left">The other player</td>
+          <td align="center" id="propOffer"></td>
+          <td align="center" id="remainProp"></td>
+        </tr>
+      </table>
+      <br> <br> <a class="btn btn-primary" id="continue">Continue</a>
+      <br/>
+      <br/>
+    </center>
+  </div>
 </body>

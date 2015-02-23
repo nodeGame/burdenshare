@@ -25,7 +25,7 @@ module.exports = {
     // AUTH: 'remote',
     AUTH: 'none',
 
-    WAIT_ROOM_TIMEOUT: 600000, // 10 min
+    WAIT_ROOM_TIMEOUT: 60000, // 10 min
 
     // "ra80", "sa80", "ra30", "ra80", "rotate", "random"
     CHOSEN_TREATMENT: "rotate",
