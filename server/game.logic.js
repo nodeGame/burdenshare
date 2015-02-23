@@ -371,15 +371,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             }
         })();
 
-//         var IDPlayer = node.game.pl.id.getAllKeys();
-//         for (var i = 0; i < IDPlayer.length; i++) {
-//             var idData = {
-//                 Player_ID: IDPlayer[i],
-//                 Session_ID: gameRoom.name
-//             };
-//             node.set('bsc_idData', idData);
-//         }
-
         node.on.data('bsc_surveyID', function(msg) {
             dbs.mdbWrite_idData.update(msg.data);
         });
