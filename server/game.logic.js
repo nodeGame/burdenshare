@@ -134,13 +134,14 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                 var selectedRound = Math.floor(Math.random() *
                     choicesMade.length) + 1;
 
+                // Exchange rate: 4 Points = 1 ECU.
                 var bonusFromSelf = SVOChoices[selectedRound].topRow[
                     choicesMade[selectedRound]
-                ];
+                ]/4;
 
                 var bonusToOther = SVOChoices[selectedRound].bottomRow[
                     choicesMade[selectedRound]
-                ];
+                ]/4;
 
                 if ('undefined' === typeof node.game.pl.otherBonus) {
                     node.game.pl.otherBonus = [];
