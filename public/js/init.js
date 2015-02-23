@@ -117,7 +117,7 @@ window.onload = function() {
         waitTime = msg.data;
 
         minutes = Math.floor(waitTime / ( 60 * 1000));
-        seconds = Math.floor(waitTime / 1000);
+        seconds = 0;
 
         console.log(msg.data);
 
