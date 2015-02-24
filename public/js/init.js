@@ -46,9 +46,10 @@ window.onload = function() {
         clearInterval(timeCheck);
 
         // All players have connected. Game starts.
-        if (data && data.over) return;
+        if (data && data.over === 'AllPlayersConnected') return;
 
-        if (data && data.exit) {
+        // Enough Time passed, not enough players connected.
+        if (data && data.over === 'Time elapsed!!!') {
 
             timeOut = "<h3 align='center'>Thank you for your patience.<br>";
             timeOut += "Unfortunately, there are not enough participants in your group to start the experiment.<br>";
@@ -57,6 +58,8 @@ window.onload = function() {
             timeOut += "We usually pay within 24 hours. <br>For any problems, please look for a HIT called <strong>ETH Descil Trouble Ticket</strong> and file a new trouble ticket reporting the exit code as written below.<br><br>";
             timeOut += "Exit Code: " + data.exit + "<br> </h3>";
         }
+
+        // Too much time passed, but no message from server received.
         else {
             timeOut = "An error has occurred. You seem to be waiting for too long. ";
             timeOut += "Please look for a HIT called <strong>ETH Descil Trouble Ticket</strong> and file a new trouble ticket reporting your experience."

@@ -400,8 +400,7 @@ function questionnaire() {
                     node.game.bonus = node.game.globals.round((msg.data.Profit/50),2);
                     console.log("Bonus: " + node.game.bonus);
                     W.loadFrame('/burdenshare/html/questionnaire1.html', function() {
-                        var payoutText = W.getElementById("payout");
-                        payoutText.innerHTML = "<strong>Payout so far: </strong>";
+                 
                         var round = W.getElementById("payoutRound");
                         W.write(msg.data.Payout_Round , round);
                         var amountUCE = W.getElementById("amountECU");

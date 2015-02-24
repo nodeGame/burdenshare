@@ -143,53 +143,7 @@ function instructions() {
         });
     }
 
-    function instructions4() {
-
-        var initEndow = {
-            playerID: { Player_ID: node.game.ownID },
-            addEndow: { 
-                Initial_Endowment: node.game.endowment_own,
-                Climate_Risk: node.game.risk
-            }
-        };
-
-        function initEndowFunc() {
-            var timeInstr;
-            var setDBEconGrowth, j;
-            var next;
-            
-            next = W.getElementById("continue");
-            if (next) next.disabled = "disabled";
-            
-            node.game.timer.stop();
-            
-            node.game.timeInstruction4 = Math.round(Math.abs(node.game.timeInstruction4 - Date.now())/1000);
-            timeInstr = {
-                playerID: {Player_ID: node.game.ownID},
-                add: {TimeInstruction_4: node.game.timeInstruction4}
-            };
-
-            // Set back values in database in case of a disconnection - reconnection.
-
-            node.game.pgCounter = 0;
-            node.game.endowment_own = 25;
-            node.game.risk = 7.5;
-            initEndow.addEndow.Initial_Endowment = 0;
-            initEndow.addEndow.Climate_Risk = 0;
-
-            node.set('initEndow', initEndow);
-
-            setDBEconGrowth = {
-                playerID : { Player_ID: node.game.ownID },
-                add: {}
-            };
-            for (j = 1; j <= 5; j++) {
-                node.game.EGRnd[j] = 0;
-                setDBEconGrowth.add['EGRnd' + j] = node.game.EGRnd[j];
-            }
-            node.set("econGrowth", setDBEconGrowth);
-            chooseEconGrowth();
-        }
+    function instructions4() { 
 
         W.loadFrame('/burdenshare/html/instructions4.html', function() {
             node.game.timeInstruction4 = Date.now();
@@ -209,7 +163,60 @@ function instructions() {
         });
     }
 
+    function initEndowFunc() {
+        var timeInstr;
+        var setDBEconGrowth, j;
+        var next;
+
+        var initEndow = {
+            playerID: { Player_ID: node.game.ownID },
+            addEndow: { 
+                Initial_Endowment: node.game.endowment_own,
+                Climate_Risk: node.game.risk
+            }
+        };
+        
+        next = W.getElementById("continue");
+        if (next) next.disabled = "disabled";
+        
+        node.game.timer.stop();
+        
+        node.game.timeInstruction4 = Math.round(Math.abs(node.game.timeInstruction4 - Date.now())/1000);
+        timeInstr = {
+            playerID: {Player_ID: node.game.ownID},
+            add: {TimeInstruction_4: node.game.timeInstruction4}
+        };
+
+        // Set back values in database in case of a disconnection - reconnection.
+        node.game.pgCounter = 0;
+        node.game.endowment_own = 25;
+        node.game.risk = 7.5;
+        initEndow.addEndow.Initial_Endowment = 0;
+        initEndow.addEndow.Climate_Risk = 0;
+
+        node.set('initEndow', initEndow);
+
+        setDBEconGrowth = {
+            playerID : { Player_ID: node.game.ownID },
+            add: {}
+        };
+        for (j = 1; j <= 5; j++) {
+            node.game.EGRnd[j] = 0;
+            setDBEconGrowth.add['EGRnd' + j] = node.game.EGRnd[j];
+        }
+        node.set("econGrowth", setDBEconGrowth);
+        chooseEconGrowth();
+    }
+
     function setGrowthAndDecide() {
+        var initEndow = {
+            playerID: { Player_ID: node.game.ownID },
+            addEndow: {
+                Initial_Endowment: node.game.endowment_own,
+                Climate_Risk: node.game.risk
+            }
+        };
+
         // Randomly chooses on of the values
         // within the chosen economy growth level.
         var ind = node.game.EGRnd[node.game.pgCounter] - 1;
@@ -281,25 +288,12 @@ function instructions() {
 
             var options = {
                 milliseconds: node.game.globals.timer.econGrowth,
-                timeup: function() {
-                    var initEndow = {
-                        playerID: {Player_ID: node.game.ownID},
-                        addEndow: {Initial_Endowment: node.game.endowment_own, Climate_Risk: node.game.risk}
-                    };
-                    if (W.getElementById("pg1").checked) {
-                        node.game.EGRnd[node.game.pgCounter] = 1;
-                        node.game.risk = node.game.risk + 0;
-                    }
-                    else if (W.getElementById("pg2").checked) {
-                        node.game.EGRnd[node.game.pgCounter] = 2;
-                        node.game.risk = node.game.risk + 2.5;
-                    }
-                    else if (W.getElementById("pg3").checked) {
-                        node.game.EGRnd[node.game.pgCounter] = 3;
-                        node.game.risk = node.game.risk + 5;
-                    }
-                    else {
-                        // if count down elapsed the computer will randomly choose one of 3 options
+                timeup: function() {           
+                    var found = checkSelfGrowth();
+                    
+                    if (!found) {
+                        // If count down elapsed the computer will randomly
+                        // choose one of 3 options.
                         var randnum = Math.floor(1+(Math.random()*3));
                         node.game.EGRnd[node.game.pgCounter] = randnum;
                         switch(randnum) {
@@ -322,43 +316,42 @@ function instructions() {
             var next;
             next = W.getElementById("submitGrowth");
             next.onclick = function() {
+                var found;
                 console.log("Page Counter: ---------- " + node.game.pgCounter);
+                found = checkSelfGrowth();
 
-                var initEndow = {
-                    playerID: {Player_ID: node.game.ownID},
-                    addEndow: {
-                        Initial_Endowment: node.game.endowment_own, 
-                        Climate_Risk: node.game.risk
-                    }
-                };
-
-                if (W.getElementById("pg1").checked) {
-                    node.game.EGRnd[node.game.pgCounter] = 1;
-                    node.game.risk = node.game.risk + 0;
-                }
-                else if (W.getElementById("pg2").checked) {
-                    node.game.EGRnd[node.game.pgCounter] = 2;
-                    node.game.risk = node.game.risk + 2.5;
-                }
-                else if (W.getElementById("pg3").checked) {
-                    node.game.EGRnd[node.game.pgCounter] = 3;
-                    node.game.risk = node.game.risk + 5;
-                }
-
-                if (W.getElementById("pg1").checked ||
-                    W.getElementById("pg2").checked || 
-                    W.getElementById("pg3").checked) {
-
+                if (found) {
                     setGrowthAndDecide();
-   
                 }
                 else {
-                    node.game.globals.checkEntry("Please choose one of the three options of economic growth and then continue.");
+                    node.game.globals.checkEntry('Please choose one of the ' +
+                                                 'three options of economic ' +
+                                                 'growth and then continue.');
                 }
 
             };
 
         });
+    }
+
+    function checkSelfGrowth() {
+        var found;
+        if (W.getElementById("pg1").checked) {
+            node.game.EGRnd[node.game.pgCounter] = 1;
+            node.game.risk = node.game.risk + 0;
+            found = true;
+        }
+        else if (W.getElementById("pg2").checked) {
+            node.game.EGRnd[node.game.pgCounter] = 2;
+            node.game.risk = node.game.risk + 2.5;
+            found = true;
+        }
+        else if (W.getElementById("pg3").checked) {
+            node.game.EGRnd[node.game.pgCounter] = 3;
+            node.game.risk = node.game.risk + 5;
+            found = true;
+        }
+        return found;
     }
 
     /**

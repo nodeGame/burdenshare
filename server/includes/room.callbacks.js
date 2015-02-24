@@ -34,7 +34,8 @@ function makeTimeOut(playerID, nbrPlayers) {
     timeOuts[nbrPlayers] = setTimeout(function() {
         // console.log("Timeout has not been cleared!!!");
         dk.checkOut(code.AccessCode, code.ExitCode, 0.0, function(err, response,
-           
+                                                                  body) {
+
             if (err) {
                 // Retry the Checkout
                 setTimeout(function() {
@@ -141,18 +142,6 @@ function connectingPlayer(p) {
 
     room.setupGame();
     room.startGame(true, tmpPlayerList.id.getAllKeys());
-
-
-    // Send room number to admin
-    channel.admin.socket.send2roomAdmins(node.msg.create({
-        target: node.constants.target.TXT,
-        text: 'ROOMNO',
-        data: {
-            roomNo: counter,
-            pids: room.clients.player.id.getAllKeys(),
-            aids: room.clients.admin.id.getAllKeys()
-        }
-    }), room);
 
     counter++;
 }
