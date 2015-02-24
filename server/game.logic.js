@@ -52,6 +52,9 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     REPEAT = settings.REPEAT;
     MIN_PLAYERS = settings.N_PLAYERS;
 
+    // If PostPayoffs has been already called.
+    var checkoutFlag;
+
     //The stages / steps of the logic are defined here
     // but could be loaded from the database
     stager.setOnInit(function() {
@@ -79,6 +82,12 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         var disconnected;
         disconnected = {};
 
+        // Contains the bonuses that players assign to other players
+        // in the questionnaire.
+        node.game.otherBonus = [];
+
+        // LISTENERS
+        ////////////
 
         // Adds treatment name to incoming SET messages.
         // Must be registered before other listeners.
@@ -88,6 +97,9 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             msg.data.Session_ID = gameRoom.name;
         });
 
+
+        // Stores the SELF BONUS to DB, and keeps a copy of the BONUS TO OTHER
+        // in node.game.otherBonus. Sends a message to client.
         function addQuestionnaireBonus(msg) {
             dbs.mdbCheckProfit.checkProfit(msg.data.player, function(rows, items) {
                 // Adds to the profit a bonus depending on the
@@ -123,11 +135,10 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                     }
                 };
 
-                var profit =  items[0];
+                var profit = items[0];
 
                 // Selecting one of the own choices at random.
-                var selectedRound = Math.floor(Math.random() *
-                    choicesMade.length) + 1;
+                var selectedRound = J.randomInt(0,6);
 
                 // Exchange rate: 4 Points = 1 ECU.
                 var bonusFromSelf = SVOChoices[selectedRound].topRow[
@@ -138,14 +149,9 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                     choicesMade[selectedRound]
                 ]/4;
 
-                if ('undefined' === typeof node.game.pl.otherBonus) {
-                    node.game.pl.otherBonus = [];
-                }
-
-                node.game.pl.otherBonus[
+                node.game.otherBonus[
                     node.game.pl.id.resolve[msg.data.player]
                 ] = bonusToOther;
-
 
                 var newAmountUCE = profit.Amount_UCE + bonusFromSelf;
                 var newAmountUSD = cbs.round((newAmountUCE/50),2);
@@ -235,12 +241,20 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                         rows, items) {
 
                         var profit, nbrRounds, write_profit, profit_data;
-                        var payoutRound;
+                        var payoutRound, profitRound;
 
                         profit = items;
-
                         console.log(profit);
 
+                        // Base values. More info will be added.
+                        write_profit = {
+                            treatment: treatmentName,
+                            costGE: settings.COSTGE,
+                            Player_ID: msg.data,
+                            Session_ID: gameRoom.name
+                        };
+
+                        // Determine how many rounds the player played.
                         if (profit.length > 1 && profit.length <= 4) {
                             nbrRounds = profit.length - 1;
                         }
@@ -252,34 +266,30 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                         }
                         console.log("Number Rounds: " + nbrRounds);
 
-                        // Base values. More info will be added.
-                        write_profit = {
-                            treatment: treatmentName,
-                            costGE: settings.COSTGE,
-                            Player_ID: msg.data,
-                            Session_ID: gameRoom.name
-                        };
-
+                        // Choose a random round to extract payoff.
                         if (nbrRounds >= 1) {
-                            payoutRound = Math.floor((Math.random()*nbrRounds) + 2);
+                            // Possible payout rounds: 2,3,4.
+                            payoutRound = J.randomInt(1, nbrRounds);
+                            profitRound = profit[payoutRound-1].Profit;
 
                             J.mixin(write_profit, {
                                 Payout_Round: payoutRound,
-                                Amount_UCE: profit[payoutRound-1].Profit,
-                                Amount_USD: cbs.round((profit[payoutRound-1].Profit/50),2),
+                                Amount_UCE: profitRound,
+                                Amount_USD: cbs.round((profitRound / 50), 2),
                                 Nbr_Completed_Rounds: nbrRounds,
                             });
 
                             profit_data = {
                                 Payout_Round: payoutRound,
-                                Profit: profit[payoutRound-1].Profit
+                                Profit: profitRound
                             };
                         }
                         else {
+
                             J.mixin(write_profit, {
-                                Payout_Round: "none",
-                                Amount_UCE: "none",
-                                Amount_USD: "show up fee: 1.00 $",
+                                Payout_Round: "NA",
+                                Amount_UCE: "NA",
+                                Amount_USD: "NA",
                                 Nbr_Completed_Rounds: 0
                             });
 
@@ -290,8 +300,9 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                         }
 
                         console.log('Writing Profit Data!!!');
-                        dbs.mdbWriteProfit.store(write_profit);
+                        console.log(write_profit);
 
+                        dbs.mdbWriteProfit.store(write_profit);
 
                         // Sending to client.
                         node.say('PROFIT', msg.data, profit_data);
@@ -380,166 +391,79 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         }, settings.timer.notEnoughPlayers);
     }
 
-    // Adds an 'other'-bonus to all players and calls dk.checkOut iff all
-    // players have had their codes checked-out.
-    function _OLD_adjustPayoffAndCheckout() {
-        var i, checkoutFlag;
-        var currentCode, profit;
-        var idList = [];
-        checkoutFlag = true;
-
-        // Check whether all players codes have been checked-out.
-        for (i = 0; i < node.game.pl.size(); ++i) {
-            idList[i] = node.game.pl.db[i].id;
-            try {
-                currentCode =
-                    dk.codes.id.get(idList[i]);
-            }
-            catch(e) {
-                console.log("Questionnaire: QUEST_DONE: \n" +
-                    "Player: " + idList[i] + "\n" +
-                    "dk.code does not exist!");
-            }
-            checkoutFlag = checkoutFlag && !!currentCode.checkout;
-        }
-        if (checkoutFlag) {
-            if (!node.game.pl.checkout) {
-                node.game.pl.checkout = true;
-
-                // Gets profit for all players.
-                dbs.mdbCheckProfit.checkProfit({ $in : idList},
-                    function(rows, items) {
-
-                    var j;
-                    var bonus;
-                    var code;
-                    var idResolve = node.game.pl.id.resolve;
-                    var otherBonus = node.game.pl.otherBonus || [];
-                    var otherPlayer = [];
-                    var postPayoffs = [];
-                    var bonusFromOther;
-                    var bonusFromSelf;
-                    var writeProfitUpdate;
-
-                    for (i = 0; i < idList.length; ++i) {
-                        code = dk.codes.id.get(idList[i]);
-                        bonus = items[i].Amount_UCE;
-
-                        // Adding the bonusToOther from the next player in the
-                        // list.
-                        // If player has finished SVO questionnaire:
-                        if ('undefined' !==
-                                typeof otherBonus[idResolve[idList[i]]]) {
-
-                            bonusFromSelf = items[i].SelfBonus_UCE;
-                            bonus += bonusFromSelf;
-
-                            for (j = 1; j <= idList.length; ++j) {
-                                otherPlayer = idResolve[
-                                    idList[(i+j)%idList.length]];
-
-                                if ('undefined' !==
-                                        typeof otherBonus[otherPlayer]) {
-
-                                    bonusFromOther = otherBonus[otherPlayer];
-                                    bonus += bonusFromOther;
-                                    break;
-                                }
-                            }
-                            writeProfitUpdate = {
-                                OtherBonus_UCE: bonusFromOther
-                            };
-                        }
-                        else {
-                            writeProfitUpdate = {
-                                OtherBonus_UCE: "NA",
-                                SelfBonus_UCE: "NA"
-                            };
-                        }
-
-                        profit = cbs.round((bonus/50),2);
-
-                        dbs.mdbWriteProfit.update({
-                            playerID: {
-                                "Player_ID": idList[i]
-                            },
-                            add: writeProfitUpdate
-                        });
-
-                        postPayoffs[i] = {
-                            "AccessCode": code.AccessCode,
-                            "Bonus": profit,
-                            "BonusReason": "Full Bonus"
-                        };
-                    }
-                    dk.postPayoffs(postPayoffs, function(err, response, body) {
-                        if (err) {
-                            console.log("adjustPayoffAndCheckout: " +
-                                "dk.postPayoff: " + err);
-                        };
-                    });
-                });
-
-            }
-        }
-    }
-
     // Adds an 'other'-bonus to all players, and upload payoff.
     function adjustPayoffAndCheckout() {
-        var i, checkoutFlag;
-        var currentCode, profit;
-        var idList = [];
+        var i, profit, idList;
+
         checkoutFlag = true;
 
         idList = J.shuffle(node.game.playerIDs);
 
         // Gets profit for all players.
-        dbs.mdbCheckProfit.checkProfit(
-            { $in : idList},
-            function(rows, items) {
-                var j;
-                var bonus;
-                var code;
-                var idResolve = node.game.pl.id.resolve;
-                var otherBonus = node.game.pl.otherBonus || [];
-                var otherPlayer = [];
-                var postPayoffs = [];
-                var bonusFromOther;
-                var bonusFromSelf;
-                var writeProfitUpdate;
+        dbs.mdbCheckProfit.checkProfit({ $in : idList}, function(rows, items) {
+            var j;
+            var item;
+            var bonus;
+            var bonusSVO;
+            var code;
+            var otherBonus = node.game.otherBonus || [];
+            var otherPlayer;
+            var postPayoffs = [];
+            var bonusFromOther;
+            var bonusFromSelf;
+            var writeProfitUpdate;
 
-                for (i = 0; i < idList.length; ++i) {
-                    code = dk.codes.id.get(idList[i]);
+            debugger;
 
-                    // Player disconnected before finishing the questionnaire.
-                    if (!code.checkout) {
-                        writeProfitUpdate = {
-                            OtherBonus_UCE: "NA",
-                            SelfBonus_UCE: "NA",
-                            randomBonus: 0
-                        };
-                        dbs.mdbWriteProfit.update({
-                            playerID: {
-                                "Player_ID": idList[i]
-                            },
-                            add: writeProfitUpdate
-                        });
-                        continue;
-                    }
+            for (i = 0; i < idList.length; ++i) {
+                code = dk.codes.id.get(idList[i]);
 
-                    // Bonus from the game.
-                    bonus = items[i].Amount_UCE;
+                // Player disconnected before finishing the questionnaire.
+                if (!code.checkout) {
+                    writeProfitUpdate = {
+                        OtherBonus_UCE: "NA",
+                        SelfBonus_UCE: "NA",
+                        randomBonus: 0
+                    };
+                    dbs.mdbWriteProfit.update({
+                        playerID: {
+                            "Player_ID": idList[i]
+                        },
+                        add: writeProfitUpdate
+                    });
+                    continue;
+                }
 
-                    // In case something was not
-                    // filled in correctly in the game.
-                    if ('number' !== typeof bonus) bonus = 0;
+                // Find the right item, without using a loop.
+                if (items[0].Player_ID === idList[i]) {
+                    item = items[0];
+                }
+                else if (items[1].Player_ID === idList[i]) {
+                    item = items[1];
+                }
+                else if (items[2].Player_ID === idList[i]) {
+                    item = items[2];
+                }
+                else {
+                    item = items[3];
+                }
 
-                    // Self bonus from SVO.
-                    bonusFromSelf = items[i].SelfBonus_UCE;
+                // Bonus from the game.
+                bonus = item.Amount_USD;
 
-                    // In case the SVO was not filled in.
-                    if ('number' !== typeof bonusFromSelf) bonusFromSelf = 0;
+                // In case something was not
+                // filled in correctly in the game.
+                if ('number' !== typeof bonus) bonus = 0;
 
+                // Self bonus from SVO.
+                bonusFromSelf = item.SelfBonus_UCE;
+
+                // In case the SVO was not filled in.
+                if ('number' !== typeof bonusFromSelf) {
+                    profit = bonus;
+                }
+                // SVO filled in.
+                else {
                     otherPlayer = (i + 1) % idList.length;
                     bonusFromOther = otherBonus[otherPlayer];
 
@@ -549,40 +473,41 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                         // Random value 0-100 if other person did not give
                         // a bonus to other. 0.75 discounts the fact that
                         // is unlikely that bonus to other is very high.
-                        bonusFromOther = J.randomInt(0, 100) * 0.75;
+                        bonusFromOther = J.randomInt(-1, 100) * 0.75;
                         writeProfitUpdate.randomBonus = 1;
                     }
 
-                    bonus += bonusFromSelf + bonusFromOther;
-
                     writeProfitUpdate.OtherBonus_UCE = bonusFromOther;
 
-                    profit = cbs.round((bonus / 50), 2);
+                    bonusSVO = bonusFromSelf + bonusFromOther;
 
-                    console.log(idList[i], ' bonus: ', profit);
-
+                    profit = bonus + cbs.round((bonusSVO / 50), 2);
+                    
                     dbs.mdbWriteProfit.update({
                         playerID: {
                             "Player_ID": idList[i]
                         },
                         add: writeProfitUpdate
                     });
-
-                    postPayoffs[i] = {
-                        "AccessCode": code.AccessCode,
-                        "Bonus": profit,
-                        "BonusReason": "Full Bonus"
-                    };
                 }
 
-                // Post payoffs.
-                dk.postPayoffs(postPayoffs, function(err, response, body) {
-                    if (err) {
-                        console.log("adjustPayoffAndCheckout: " +
-                                    "dk.postPayoff: " + err);
-                    };
-                });
+                console.log(idList[i], ' bonus: ', profit);
+
+                postPayoffs[i] = {
+                    "AccessCode": code.AccessCode,
+                    "Bonus": profit,
+                    "BonusReason": "Full Bonus"
+                };
+            }
+
+            // Post payoffs.
+            dk.postPayoffs(postPayoffs, function(err, response, body) {
+                if (err) {
+                    console.log("adjustPayoffAndCheckout: " +
+                                "dk.postPayoff: " + err);
+                };
             });
+        });
     }
 
     // Set default step rule.
@@ -722,12 +647,20 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
             node.on.data('QUEST_DONE', function(msg) {
                 var i, len, id, code;
+
+                debugger;
+
                 // Checkout the player code.
                 code = dk.codes.id.get(msg.from);
                 console.log('Checkout code of player: ' + msg.from);
                 code.checkout = true;
 
                 node.say("win", msg.from, code.ExitCode);
+
+                if (checkoutFlag) {
+                    console.log('Already checked-out, returning.');
+                    return;
+                }
 
                 // Check if all players have finished the quest.
                 // If one or more players are missing, we wait until

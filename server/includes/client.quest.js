@@ -16,13 +16,10 @@ function questionnaire() {
     var socialValueOrientation, newEcologicalParadigm, risk;
     var makePageLoad, makeBlockArray;
 
-    // Maybe once.
-    node.on("in.say.DATA", function(msg) {
-        if (msg.text == 'ADDED_QUESTIONNAIRE_BONUS') {
-            console.log("Profit Adjustment" + msg.data.oldAmountUCE +
-                        "+" + msg.data.newAmountUCE);
-            node.game.bonus = msg.data;
-        }
+    node.on.data('ADDED_QUESTIONNAIRE_BONUS', function(msg) {
+        console.log("Profit Adjustment" + msg.data.oldAmountUCE +
+                    "+" + msg.data.newAmountUCE);
+        node.game.bonus = msg.data;
     });
 
     node.on.data("win", function(msg) {
@@ -387,127 +384,100 @@ function questionnaire() {
             demographics
         );
 
+
+        function displayWin() {
+            node.game.timeResult = Date.now();
+
+            var options = {
+                milliseconds:  node.game.globals.timer.questProfit,
+                timeup: function() {
+                    node.game.timeResult =
+                        Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
+                    var timeResultProp = {
+                        Player_ID : node.game.ownID,
+                        timeResult: node.game.timeResult
+                    };
+                    questionnaire(1);
+                }
+            };
+
+            node.game.timer.init(options);
+            node.game.timer.updateDisplay();
+            node.game.timer.start(options);
+
+            var quest2 = W.getElementById('continue');
+            quest2.onclick = function () {
+                node.game.timeResult = Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
+                var timeResultProp = {
+                    Player_ID : node.game.ownID,
+                    timeResult: node.game.timeResult
+                };
+                node.game.timer.stop();
+                questionnaire(0);
+            };
+        }
+    
+        // Goto questionnaire.
+        function questionnaire(timeout) {
+            console.log("Bonus: " + node.game.bonus);
+
+            var options = {
+                milliseconds: node.game.globals.timer.questionnaire,
+                timeup: function() {
+                    node.game.timeQuest1 = Math.round(Math.abs(node.game.timeQuest1 - Date.now())/1000);
+                    var timeResultProp = {
+                        playerID : {Player_ID: node.game.ownID},
+                        add: {timeQuest1: node.game.timeQuest1}
+                    };
+                    node.say("QUEST_DONE", "SERVER", node.game.bonus);
+                },
+                stopOnDone: false
+            };
+            node.game.timer.init(options);
+            node.game.timer.updateDisplay();
+            node.game.timer.start(options);
+
+            randomBlockExecutor.execute();
+        }
+
         // Listeners for PROFIT DATA in the very first round.
-        node.on("in.say.DATA", function(msg) {
+        node.on.data('PROFIT', function(msg) {
             var bonus;
 
             console.log(msg.text);
-            if (msg.text == "PROFIT") {
-                console.log("Payout round: " + msg.data.Payout_Round);
-                console.log("Profit: " + msg.data.Profit);
+            console.log("Payout round: " + msg.data.Payout_Round);
+            console.log("Profit: " + msg.data.Profit);
 
-                if (msg.data.Payout_Round !== "none") {
-                    node.game.bonus = node.game.globals.round((msg.data.Profit/50),2);
-                    console.log("Bonus: " + node.game.bonus);
-                    W.loadFrame('/burdenshare/html/questionnaire1.html', function() {
-                 
-                        var round = W.getElementById("payoutRound");
-                        W.write(msg.data.Payout_Round , round);
-                        var amountUCE = W.getElementById("amountECU");
-                        W.write(msg.data.Profit + " ECU" , amountUCE);
-                        var amountUSD = W.getElementById("amountUSD");
-                        var profitUSD = (node.game.bonus + 1.0).toFixed(2);
-                        console.log("Profit" + profitUSD);
-                        W.write(profitUSD + " $" , amountUSD);
+            if (msg.data.Payout_Round !== "none") {
+                node.game.bonus = node.game.globals.round((msg.data.Profit/50),2);
+                console.log("Bonus: " + node.game.bonus);
+                W.loadFrame('/burdenshare/html/questionnaire1.html', function() {
 
-                        node.game.timeResult = Date.now();
+                    var round = W.getElementById("payoutRound");
+                    W.write(msg.data.Payout_Round , round);
+                    var amountUCE = W.getElementById("amountECU");
+                    W.write(msg.data.Profit + " ECU" , amountUCE);
+                    var amountUSD = W.getElementById("amountUSD");
+                    var profitUSD = (node.game.bonus + 1.0).toFixed(2);
+                    console.log("Profit" + profitUSD);
+                    W.write(profitUSD + " $" , amountUSD);
 
-                        var options = {
-                            milliseconds:  node.game.globals.timer.questProfit,
-                            timeup: function() {
-                                node.game.timeResult =
-                                    Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
-                                var timeResultProp = {
-                                    Player_ID : node.game.ownID,
-                                    timeResult: node.game.timeResult
-                                };
-                                questionnaire(1);
-                            }
-                        };
-
-                        node.game.timer.init(options);
-                        node.game.timer.updateDisplay();
-                        node.game.timer.start(options);
-
-                        var quest2 = W.getElementById('continue');
-                        quest2.onclick = function () {
-                            node.game.timeResult = Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
-                            var timeResultProp = {
-                                Player_ID : node.game.ownID,
-                                timeResult: node.game.timeResult
-                            };
-                            node.game.timer.stop();
-                            questionnaire(0);
-                        };
-                    });
-                }
-
-                else {
-                    node.game.bonus = 0.0;
-                    W.loadFrame('/burdenshare/html/questionnaire12.html', function() {
-                        var payoutText = W.getElementById("payout");
-                        W.write("Unfortunately, you did not complete all the rounds to be played (3 + practice). For your participation in the experiment you will be paid out the show-up fee plus the bonus from the questionnaire.", payoutText);
-
-                        node.game.timeResult = Date.now();
-                        var options = {
-                            milliseconds: node.game.globals.timer.questProfit,
-                            timeup: function() {
-                                node.game.timeResult =
-                                    Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
-                                var timeResultProp = {
-                                    Player_ID : node.game.ownID,
-                                    timeResult: node.game.timeResult
-                                };
-                                questionnaire(1);
-                            }
-                        };
-                        node.game.timer.init(options);
-                        node.game.timer.updateDisplay();
-                        node.game.timer.start(options);
-
-                        var quest2 = W.getElementById('continue');
-                        quest2.onclick = function () {
-                            node.game.timeResult =
-                                Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
-                            var timeResultProp = {
-                                Player_ID : node.game.ownID,
-                                timeResult: node.game.timeResult
-                            };
-                            node.game.timer.stop();
-                            questionnaire(0);
-                        };
-                    });
-                }
-
-                console.log('Postgame including Questionaire');
+                    displayWin();
+                });
             }
 
-            // Goto questionnaire.
-            function questionnaire(timeout) {
-                console.log("Bonus: " + node.game.bonus);
+            else {
+                node.game.bonus = 0.0;
+                W.loadFrame('/burdenshare/html/questionnaire12.html', function() {
+                    displayWin();
+                });
 
-                var options = {
-                    milliseconds: node.game.globals.timer.questionnaire,
-                    timeup: function() {
-                        node.game.timeQuest1 = Math.round(Math.abs(node.game.timeQuest1 - Date.now())/1000);
-                        var timeResultProp = {
-                            playerID : {Player_ID: node.game.ownID},
-                            add: {timeQuest1: node.game.timeQuest1}
-                        };
-                        node.say("QUEST_DONE", "SERVER", node.game.bonus);
-                    },
-                    stopOnDone: false
-                };
-                node.game.timer.init(options);
-                node.game.timer.updateDisplay();
-                node.game.timer.start(options);
-
-                randomBlockExecutor.execute();
+                console.log('Postgame including Questionaire');
             }
         });
 
 
-        // Request profit.
+        // Request profit. Triggers a PROFIT message.
         node.set('get_Profit', node.player.id);
     }
     // If questionnaire is defined, we are repeating the stage.
