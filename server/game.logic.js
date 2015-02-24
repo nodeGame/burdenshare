@@ -226,8 +226,9 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                         Payout_Round: items[0].Payout_Round,
                         Profit: items[0].Amount_UCE
                     };
+                    // Sending to client.
+                    node.say('PROFIT', msg.data, profit_data);
                 }
-                
                 // Payoff must be computed.
                 else {
                     dbs.mdbGetProfit.getCollectionObj(msg.data, function(
@@ -290,14 +291,14 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
                         console.log('Writing Profit Data!!!');
                         dbs.mdbWriteProfit.store(write_profit);
-                        
+
+
+                        // Sending to client.
+                        node.say('PROFIT', msg.data, profit_data);
                     });
                 }
-                
-                // Sending to client.
-                node.say('PROFIT', msg.data, profit_data);
 
-            });            
+            });
         });
 
         node.on.data('bsc_gameTime', function(msg) {
