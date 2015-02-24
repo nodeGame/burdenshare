@@ -49,11 +49,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 node.game.timeInitialSituationResp =
                     Math.round(Math.abs(node.game.timeInitialSituationResp - Date.now())/1000);
 
-                // TODO what is this for????
-                var timeInitialSituation = {
-                    timeInitialSituation: node.game.timeInitialSituation
-                };
-
                 node.emit('DONE');
             },
         }

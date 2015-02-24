@@ -269,7 +269,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                         // Choose a random round to extract payoff.
                         if (nbrRounds >= 1) {
                             // Possible payout rounds: 2,3,4.
-                            payoutRound = J.randomInt(1, nbrRounds);
+                            payoutRound = J.randomInt(1, (nbrRounds+1));
                             profitRound = profit[payoutRound-1].Profit;
 
                             J.mixin(write_profit, {
@@ -412,8 +412,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             var bonusFromOther;
             var bonusFromSelf;
             var writeProfitUpdate;
-
-            debugger;
 
             for (i = 0; i < idList.length; ++i) {
                 code = dk.codes.id.get(idList[i]);
@@ -647,8 +645,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
             node.on.data('QUEST_DONE', function(msg) {
                 var i, len, id, code;
-
-                debugger;
 
                 // Checkout the player code.
                 code = dk.codes.id.get(msg.from);
