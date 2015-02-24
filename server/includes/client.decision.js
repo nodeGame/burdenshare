@@ -46,7 +46,7 @@ function decision() {
         proceed.onclick = function() {
             node.game.timer.stop();
             this.disabled = "disabled";
-            node.emit('PROPOSER_DONE', node.game.results, node.game.ownID);
+            node.emit('PROPOSER_DONE');
         };
     }
 
@@ -131,7 +131,7 @@ function decision() {
                         timeup: function() {
                             node.game.timer.stop();
                             this.disabled = "disabled";
-                            node.emit('PROPOSER_DONE', node.game.results, node.game.ownID);
+                            node.emit('PROPOSER_DONE');
                         }
                     };
 

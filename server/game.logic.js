@@ -85,6 +85,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         node.on('in.set.DATA', function(msg) {
             msg.data.treatment = treatmentName;
             msg.data.costGE = settings.COSTGE;
+            msg.data.Session_ID = gameRoom.name;
         });
 
         function addQuestionnaireBonus(msg) {
@@ -158,15 +159,11 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                     },
                 });
 
-                node.socket.send(node.msg.create({
-                    text: 'ADDED_QUESTIONNAIRE_BONUS',
-                    to: msg.data.player,
-                    data: {
-                        oldAmountUCE: profit.Amount_UCE,
-                        newAmountUCE: newAmountUCE,
-                        newAmountUSD: newAmountUSD
-                    }
-                }));
+                node.say('ADDED_QUESTIONNAIRE_BONUS', msg.data.player, {
+                    oldAmountUCE: profit.Amount_UCE,
+                    newAmountUCE: newAmountUCE,
+                    newAmountUSD: newAmountUSD
+                });
             });
         }
 
@@ -194,7 +191,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             console.log('adding questionnaire bonus');
             addQuestionnaireBonus(msg);
         });
-        node.on.data('bsc_data',function(msg) {
+
+        node.on.data('bsc_data', function(msg) {
             console.log('Writing Result Data!!!');
             dbs.mdbWrite.store(msg.data);
         });
@@ -205,109 +203,101 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         });
 
         node.on.data('check_Data',function(msg) {
-            bsc_check_data = dbs.mdbCheckData.checkData(msg.data, function(rows, items) {
-                var currentRound = items;
-                node.socket.send(node.msg.create({
-                    text:'CheckData',
-                    to: msg.data.Player_ID,
-                    data: currentRound
-                }));
+            dbs.mdbCheckData.checkData(msg.data, function(rows, items) {
+                node.say('CheckData', msg.data.Player_ID, items);
             });
         });
 
         // Delete data from the database
         node.on.data('delete_data',function(msg) {
-            dbs.mdbDelet.deleting(msg.data.Player_ID, msg.data.Current_Round);
+            dbs.mdbDelet.deleting(msg.from, msg.data.Current_Round);
+            //dbs.mdbDelet.deleting(msg.data.Player_ID, msg.data.Current_Round);
         });
 
         // Check whether profit data has been saved already.
         // If not, save it, otherwise ignore it
         node.on.data('get_Profit',function(msg) {
             dbs.mdbCheckProfit.checkProfit(msg.data, function(rows, items) {
-                var prof = items;
+                var profit_data;
 
-                if (typeof prof[0] !== 'undefined') {
-                    var profit_dat = {
-                        Payout_Round: prof[0].Payout_Round,
-                        Profit: prof[0].Amount_UCE
+                // Client has already a payoff assigned.
+                if (typeof items[0] !== 'undefined') {
+                    profit_data = {
+                        Payout_Round: items[0].Payout_Round,
+                        Profit: items[0].Amount_UCE
                     };
-                    node.socket.send(node.msg.create({
-                        text:'PROFIT',
-                        to: msg.data,
-                        data: profit_dat
-                    }));
                 }
-
+                
+                // Payoff must be computed.
                 else {
-                    dbs.mdbGetProfit.getCollectionObj(msg.data,
-                                                      function(rows, items) {
+                    dbs.mdbGetProfit.getCollectionObj(msg.data, function(
+                        rows, items) {
 
-                            var profit, nbrRounds, write_profit, profit_data;
-                            var payoutRound;
+                        var profit, nbrRounds, write_profit, profit_data;
+                        var payoutRound;
 
-                            profit = items;
-                            console.log(profit);
+                        profit = items;
 
-                            if (profit.length > 1 && profit.length <= 4) {
-                                nbrRounds = profit.length - 1;
-                            }
-                            else if (profit.length > 4) {
-                                nbrRounds = 4 - 1;
-                            }
-                            else {
-                                nbrRounds = 0;
-                            }
-                            console.log("Number Rounds: " + nbrRounds);
+                        console.log(profit);
 
-                            write_profit = {
-                                treatment: treatmentName,
-                                costGE: settings.COSTGE,
-                                Player_ID: msg.data
-                            };
-
-                            if (nbrRounds >= 1) {
-                                payoutRound = Math.floor((Math.random()*nbrRounds) + 2);
-
-                                J.mixin(write_profit, {
-                                    Payout_Round: payoutRound,
-                                    Amount_UCE: profit[payoutRound-1].Profit,
-                                    Amount_USD: cbs.round((profit[payoutRound-1].Profit/50),2),
-                                    Nbr_Completed_Rounds: nbrRounds,
-                                });
-
-                                profit_data = {
-                                    Payout_Round: payoutRound,
-                                    Profit: profit[payoutRound-1].Profit
-                                };
-                            }
-                            else {
-                                J.mixin(write_profit, {
-                                    Payout_Round: "none",
-                                    Amount_UCE: "none",
-                                    Amount_USD: "show up fee: 1.00 $",
-                                    Nbr_Completed_Rounds: 0
-                                });
-
-                                profit_data = {
-                                    Payout_Round: "none",
-                                    Profit: "show up fee"
-                                };
-                            }
-
-                            console.log('Writing Profit Data!!!');
-                            dbs.mdbWriteProfit.store(write_profit);
-
-                            // Sending to client.
-                            node.socket.send(node.msg.create({
-                                text:'PROFIT',
-                                to: msg.data,
-                                data: profit_data
-                            }));
-
+                        if (profit.length > 1 && profit.length <= 4) {
+                            nbrRounds = profit.length - 1;
                         }
-                    );
+                        else if (profit.length > 4) {
+                            nbrRounds = 4 - 1;
+                        }
+                        else {
+                            nbrRounds = 0;
+                        }
+                        console.log("Number Rounds: " + nbrRounds);
+
+                        // Base values. More info will be added.
+                        write_profit = {
+                            treatment: treatmentName,
+                            costGE: settings.COSTGE,
+                            Player_ID: msg.data,
+                            Session_ID: gameRoom.name
+                        };
+
+                        if (nbrRounds >= 1) {
+                            payoutRound = Math.floor((Math.random()*nbrRounds) + 2);
+
+                            J.mixin(write_profit, {
+                                Payout_Round: payoutRound,
+                                Amount_UCE: profit[payoutRound-1].Profit,
+                                Amount_USD: cbs.round((profit[payoutRound-1].Profit/50),2),
+                                Nbr_Completed_Rounds: nbrRounds,
+                            });
+
+                            profit_data = {
+                                Payout_Round: payoutRound,
+                                Profit: profit[payoutRound-1].Profit
+                            };
+                        }
+                        else {
+                            J.mixin(write_profit, {
+                                Payout_Round: "none",
+                                Amount_UCE: "none",
+                                Amount_USD: "show up fee: 1.00 $",
+                                Nbr_Completed_Rounds: 0
+                            });
+
+                            profit_data = {
+                                Payout_Round: "none",
+                                Profit: "show up fee"
+                            };
+                        }
+
+                        console.log('Writing Profit Data!!!');
+                        dbs.mdbWriteProfit.store(write_profit);
+                        
+                    });
                 }
-            });
+                
+                // Sending to client.
+                node.say('PROFIT', msg.data, profit_data);
+
+            });            
         });
 
         node.on.data('bsc_gameTime', function(msg) {
@@ -342,8 +332,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             dbs.mdbWrite_idData.updateEndow(msg.data);
         });
 
-        node.on.data('get_InitEndow',function(msg) {
-            bsc_get_initEndow = dbs.mdbgetInitEndow.getInitEndow(msg.from, function(rows, items) {
+        node.on.data('get_InitEndow', function(msg) {
+            dbs.mdbgetInitEndow.getInitEndow(msg.data.otherPlayerId, function(rows, items) {
                 var data;
                 data = -1;
                 if (!J.isEmpty(items[0])) {
@@ -355,7 +345,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                 node.say('Endow', msg.from, data);
             });
         });
-        
+
         // Write players data.
         (function writePlayerData() {
             var i, idData, IDPlauyer;
@@ -668,7 +658,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                 node.game.groups[1][1] = node.game.playerID[2];
 
             }
-            
+
             for (i = 0; i < node.game.groups.length; i++) {
                 group = node.game.groups[i];
                 props = {

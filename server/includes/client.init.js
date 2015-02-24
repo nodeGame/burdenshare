@@ -10,6 +10,8 @@ module.exports = init;
 
 function init() {
 
+    console.log('INIT PLAYER!');
+
     // Polyfills
 
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now
@@ -58,6 +60,37 @@ function init() {
     if ('undefined' !== typeof timeCheck) {
         clearInterval(timeCheck);
     }
+
+    function sendDataToServer() {
+        var dataExist, answerQR;
+
+        answerQR = W.getElementById('questRounds').value;
+        node.game.results.P_QuestRound = answerQR;
+
+        // Check if data for playerID
+        // and current round already exists.
+        dataExist = {
+            Player_ID: node.player.id,
+            Current_Round: node.player.stage.round
+        };
+
+        // Call data base and check existence of data.
+        // Triggers a msg CheckData.
+        node.set('check_Data', dataExist);
+        
+        node.on.data('CheckData', function(msg) {
+            console.log('Current Round: ' + msg.data[0]);
+            if ('undefined' !== typeof msg.data[0]) {
+                // If data already exists, delete and save the new data
+                console.log('Data Exist: ' + dataExist.Player_ID);
+                node.set('delete_data', dataExist);
+                console.log('Player already finished this round.');
+            }
+            node.set('bsc_data', node.game.results);
+            that.endOfQuestionsround();
+        });
+    }
+    
 
     // basic amount of own endowment (here 25).
     node.game.endowment_own = 25;
@@ -120,8 +153,6 @@ function init() {
             '/instructions_full_80.html';
     }
 
-    console.log('INIT PLAYER!');
-
     // Generate header and frame.
     W.generateHeader();
     W.generateFrame();
@@ -158,17 +189,17 @@ function init() {
     });
 
     // Function called as soon as proposer has finished the current round.
-    node.on('PROPOSER_DONE', function(data) {
+    node.on('PROPOSER_DONE', function() {
         var gameTimeResp;
 
         node.game.timeResultProp =
             Math.round(Math.abs(node.game.timeResultProp - Date.now())/1000);
 
         gameTimeResp = {
-            Player_ID: data.Player_ID,
-            Current_Round: data.Current_Round,
-            timeInitSituaProp: data.timeInitSituaProp,
-            timeOffer: data.timeOffer,
+            Player_ID: node.player.id,
+            Current_Round: node.game.results.Current_Round,
+            timeInitSituaProp: node.game.results.timeInitSituaProp,
+            timeOffer: node.game.results.timeOffer,
             timeResultProp: node.game.timeResultProp
         };
 
@@ -183,44 +214,14 @@ function init() {
                 milliseconds: node.game.globals.timer.propDone,
                 // if count down elapsed and no action has been taken by participant function is called
                 timeup: function() {
-                    var timeInstr, answerQR, dataExist;
 
                     node.game.timequestionsRounds =
                         Math.round(Math.abs(node.game.timequestionsRounds - Date.now())/1000);
 
-                    timeInstr = {
-                        playerID: {Player_ID: node.game.ownID},
-                        add: {TimeQuestionRounds: node.game.timequestionsRounds}
-                    };
-
                     node.game.timer.stop();
                     this.disabled = "disabled";
-                    answerQR = W.getElementById('questRounds').value;
-                    node.game.results.P_QuestRound = answerQR;
 
-                    // Check if data for playerID
-                    // and current round already exists.
-                    dataExist = {
-                        Player_ID: data.Player_ID,
-                        Current_Round: node.player.stage.round
-                    };
-
-                    // Call data base and check existence of data.
-                    node.set('check_Data', dataExist);
-                    
-                    node.on("in.say.DATA", function(msg) {
-                        if (msg.text == "CheckData") {
-                            console.log('Current Round: ' + msg.data[0]);
-                            if ('undefined' !== typeof msg.data[0]) {
-                                // if data already exists, delete and save the new data
-                                console.log('Data Exist: ' + dataExist.Player_ID);
-                                node.set('delete_data', dataExist);
-                                console.log('Player already finished this round.');
-                            }
-                            node.set('bsc_data', node.game.results);
-                            that.endOfQuestionsround();
-                        }
-                    });
+                    sendDataToServer();
                 }
             };
 
@@ -244,33 +245,7 @@ function init() {
 
             next = W.getElementById("continue");
             next.onclick = function() {
-                var answerQR, dataExist;
-
-                answerQR = W.getElementById('questRounds').value;
-                node.game.results.P_QuestRound = answerQR;
-
-                // Check if data for playerID
-                // and current round already exists.
-                dataExist = {
-                    Player_ID: data.Player_ID,
-                    Current_Round: node.player.stage.round
-                };
-
-                // Call data base and check existence of data.
-                node.set('check_Data', dataExist);
-
-                node.on("in.say.DATA", function(msg) {
-                    if (msg.text == "CheckData") {
-                        console.log('Current Round: ' + msg.data[0]);
-                        if ('undefined' !== typeof msg.data[0]) {
-                            console.log('Data Exist: ' + dataExist.Player_ID);
-                            node.set('delete_data', dataExist);
-                            console.log('Player already finished this round.');
-                        }
-                        node.set('bsc_data',node.game.results);
-                        that.endOfQuestionsround();
-                    }
-                });
+                sendDataToServer();
             };
         });
     });
@@ -302,14 +277,9 @@ function init() {
             options = {
                 milliseconds: node.game.globals.timer.respondentDone,
                 timeup: function() {
-                    var timeInstr, answerQR, dataExist;
+                    var answerQR, dataExist;
                     node.game.timequestionsRounds =
                         Math.round(Math.abs(node.game.timequestionsRounds - Date.now())/1000);
-
-                    timeInstr = {
-                        playerID: {Player_ID: node.game.ownID},
-                        add: {TimeQuestionRounds: node.game.timequestionsRounds}
-                    };
 
                     node.game.timer.stop();
                     this.disabled = "disabled";

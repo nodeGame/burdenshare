@@ -508,7 +508,7 @@ function questionnaire() {
 
 
         // Request profit.
-        node.set('get_Profit',node.game.ownID);
+        node.set('get_Profit', node.player.id);
     }
     // If questionnaire is defined, we are repeating the stage.
     // We do not do the initialization.

@@ -186,7 +186,13 @@ function decorateMongoObj(mongo) {
 
     mongo.checkData = function(msg, callback) {
         if (this.activeCollection) {
-            this.activeCollection.find({"Player_ID": msg.Player_ID, "Current_Round": msg.Current_Round }, {"Current_Round": 1, "_id": 0}).toArray(function(err, items) {
+            this.activeCollection.find({
+                "Player_ID": msg.Player_ID,
+                "Current_Round": msg.Current_Round
+            }, {
+                "Current_Round": 1, 
+                "_id": 0
+            }).toArray(function(err, items) {
                 if (err) callback(err);
                 else {
                     callback(null, items);
