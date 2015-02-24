@@ -45,6 +45,9 @@ window.onload = function() {
 
         clearInterval(timeCheck);
 
+        // All players have connected. Game starts.
+        if (data && data.over) return;
+
         if (data && data.exit) {
 
             timeOut = "<h3 align='center'>Thank you for your patience.<br>";
