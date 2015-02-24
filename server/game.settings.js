@@ -28,7 +28,7 @@ module.exports = {
     WAIT_ROOM_TIMEOUT: 60000, // 10 min
 
     // "ra80", "sa80", "ra30", "ra80", "rotate", "random"
-    CHOSEN_TREATMENT: "ra30",
+    CHOSEN_TREATMENT: "sa30",
 
     // How much does an agreement cost? (30 or 80).
     COSTGE: 80,

@@ -209,6 +209,46 @@ function instructions() {
         });
     }
 
+    function setGrowthAndDecide() {
+        // Randomly chooses on of the values
+        // within the chosen economy growth level.
+        var ind = node.game.EGRnd[node.game.pgCounter] - 1;
+        var rnd = Math.floor((Math.random()*node.game.growth[ind].length)+1) - 1;
+
+        node.game.endowment_own = node.game.endowment_own + node.game.growth[ind][rnd];
+
+        console.log("Growth Endowment = " + node.game.growth[ind][rnd]);
+
+        var setDBEconGrowth = {
+            playerID : { Player_ID: node.game.ownID }, 
+            add: {}
+        };
+
+        setDBEconGrowth.add['EGRnd' + node.game.pgCounter] = 
+            node.game.EGRnd[node.game.pgCounter];
+
+        node.set("econGrowth", setDBEconGrowth);
+
+        node.game.timer.stop();
+
+        var next;
+        next = W.getElementById("submitGrowth");
+        next.disabled = "disabled";
+
+        if (node.game.pgCounter < 5) {
+            chooseEconGrowth();
+        }
+        else {
+            W.getElementById("propEndow").innerHTML = node.game.endowment_own;
+            W.getElementById("clRiskOwn").innerHTML = node.game.risk - 7.5;
+            initEndow.addEndow.Initial_Endowment = node.game.endowment_own;
+            initEndow.addEndow.Climate_Risk = node.game.risk;
+            node.set('initEndow', initEndow);
+            node.game.pgCounter = 0;
+            node.emit('DONE');
+        }
+    }
+
     /**
      * ## chooseEconGrowth
      *
@@ -218,23 +258,27 @@ function instructions() {
     function chooseEconGrowth() {
         W.loadFrame(node.game.url_preGame, function() {
             W.getElementById("instructionsFrame").setAttribute(
-                "src",node.game.url_instructionsFrame
-            );
+                "src",node.game.url_instructionsFrame);
+
             if (node.game.pgCounter === 0) {
                 // Test Round
                 var practice0 = W.getElementById('practice0');
                 practice0.style.display = '';
             }
+
             var cumEndow = W.getElementById("propEndow");
             var cumRisk =  W.getElementById("clRiskOwn");
-            W.write(node.game.endowment_own,cumEndow);
+            W.write(node.game.endowment_own, cumEndow);
+
             if (node.game.risk - 7.5 <= 0) {
-                W.write("0",cumRisk);
+                W.write("0", cumRisk);
             }
             else {
-                W.write(node.game.risk - 7.5,cumRisk);
+                W.write(node.game.risk - 7.5, cumRisk);
             }
+
             node.game.pgCounter++;
+
             var options = {
                 milliseconds: node.game.globals.timer.econGrowth,
                 timeup: function() {
@@ -265,33 +309,11 @@ function instructions() {
                         }
                     }
 
-                    // Randomly chooses on of the values within the chosen economy growth level
-                    var ind = node.game.EGRnd[node.game.pgCounter] - 1;
-                    var rnd = Math.floor(1+(Math.random()*node.game.growth[ind].length)) - 1;
-                    node.game.endowment_own = node.game.endowment_own + node.game.growth[ind][rnd];
-
-                    switch(node.game.pgCounter) {
-                        case 1: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd1: node.game.EGRnd[node.game.pgCounter]}}; break;
-                        case 2: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd2: node.game.EGRnd[node.game.pgCounter]}}; break;
-                        case 3: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd3: node.game.EGRnd[node.game.pgCounter]}}; break;
-                        case 4: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd4: node.game.EGRnd[node.game.pgCounter]}}; break;
-                        case 5: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd5: node.game.EGRnd[node.game.pgCounter]}}; break;
-                    }
-                    node.set("econGrowth",setDBEconGrowth);
-                    node.game.timer.stop();
-                    this.disabled = "disabled";
-                    if (node.game.pgCounter < 5) {
-                        chooseEconGrowth();
-                    }
-                    else {
-                        initEndow.addEndow.Initial_Endowment = node.game.endowment_own;
-                        initEndow.addEndow.Climate_Risk = node.game.risk;
-                        node.set('initEndow',initEndow);
-                        node.game.pgCounter = 0;
-                        node.emit('DONE');
-                    }
+                    setGrowthAndDecide();
                 }
             };
+
+
             node.game.timer.init(options);
             node.game.timer.updateDisplay();
             node.game.timer.start(options);
@@ -300,10 +322,14 @@ function instructions() {
             var next;
             next = W.getElementById("submitGrowth");
             next.onclick = function() {
-                console.log("Page Counter: ---------- "+ node.game.pgCounter);
+                console.log("Page Counter: ---------- " + node.game.pgCounter);
+
                 var initEndow = {
                     playerID: {Player_ID: node.game.ownID},
-                    addEndow: {Initial_Endowment: node.game.endowment_own, Climate_Risk: node.game.risk}
+                    addEndow: {
+                        Initial_Endowment: node.game.endowment_own, 
+                        Climate_Risk: node.game.risk
+                    }
                 };
 
                 if (W.getElementById("pg1").checked) {
@@ -319,34 +345,12 @@ function instructions() {
                     node.game.risk = node.game.risk + 5;
                 }
 
-                if (W.getElementById("pg1").checked || W.getElementById("pg2").checked || W.getElementById("pg3").checked) {
-                    // Randomly chooses on of the values within the chosen economy growth level
-                    var ind = node.game.EGRnd[node.game.pgCounter] - 1;
-                    var rnd = Math.floor((Math.random()*node.game.growth[ind].length)+1) - 1;
-                    node.game.endowment_own = node.game.endowment_own + node.game.growth[ind][rnd];
-                    console.log("Growth Endowment = " + node.game.growth[ind][rnd]);
-                    switch(node.game.pgCounter) {
-                        case 1: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd1: node.game.EGRnd[node.game.pgCounter]}}; break;
-                        case 2: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd2: node.game.EGRnd[node.game.pgCounter]}}; break;
-                        case 3: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd3: node.game.EGRnd[node.game.pgCounter]}}; break;
-                        case 4: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd4: node.game.EGRnd[node.game.pgCounter]}}; break;
-                        case 5: var setDBEconGrowth = {playerID : {Player_ID: node.game.ownID}, add: {EGRnd5: node.game.EGRnd[node.game.pgCounter]}}; break;
-                    }
-                    node.set("econGrowth",setDBEconGrowth);
-                    node.game.timer.stop();
-                    this.disabled = "disabled";
-                    if (node.game.pgCounter < 5) {
-                        chooseEconGrowth();
-                    }
-                    else {
-                        W.getElementById("propEndow").innerHTML = node.game.endowment_own;
-                        W.getElementById("clRiskOwn").innerHTML = node.game.risk - 7.5;
-                        initEndow.addEndow.Initial_Endowment = node.game.endowment_own;
-                        initEndow.addEndow.Climate_Risk = node.game.risk;
-                        node.set('initEndow',initEndow);
-                        node.game.pgCounter = 0;
-                        node.emit('DONE');
-                    }
+                if (W.getElementById("pg1").checked ||
+                    W.getElementById("pg2").checked || 
+                    W.getElementById("pg3").checked) {
+
+                    setGrowthAndDecide();
+   
                 }
                 else {
                     node.game.globals.checkEntry("Please choose one of the three options of economic growth and then continue.");

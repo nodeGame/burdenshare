@@ -42,8 +42,7 @@ function initialSituation() {
             node.game.endowment_proposer = node.game.endowment_own;
             url = node.game.url_initprop;
             varTime = 'timeInitialSituation';
-        }
-        
+        }        
         // RESPONDER
         else {
             node.game.endowment_proposer = initialEndow;
