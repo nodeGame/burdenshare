@@ -34,8 +34,7 @@ function makeTimeOut(playerID, nbrPlayers) {
     timeOuts[nbrPlayers] = setTimeout(function() {
         // console.log("Timeout has not been cleared!!!");
         dk.checkOut(code.AccessCode, code.ExitCode, 0.0, function(err, response,
-                                                                  body) {
-
+           
             if (err) {
                 // Retry the Checkout
                 setTimeout(function() {
@@ -99,7 +98,7 @@ function connectingPlayer(p) {
         node.say("PLAYERSCONNECTED", wRoom.db[i].id, wRoom.size());
     }
 
-    makeTimeOut(p.id, wRoom.size());
+    makeTimeOut(p.id, (wRoom.size()-1));
 
     // Wait for all players to connect.
     if (wRoom.size() < NPLAYERS) {
