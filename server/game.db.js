@@ -40,28 +40,12 @@ mdbWrite = ngdb.getLayer('MongoDB', {
 decorateMongoObj(mdbWrite);
 
 
-mdbWrite_gameTime = ngdb.getLayer('MongoDB', {
+mdbWrite_quest = ngdb.getLayer('MongoDB', {
     dbName: 'burden_sharing',
-    collectionName: 'bsc_gameTime'
+    collectionName: 'bsc_quest'
 });
 
-decorateMongoObj(mdbWrite_gameTime);
-
-
-mdbWrite_questTime = ngdb.getLayer('MongoDB', {
-    dbName: 'burden_sharing',
-    collectionName: 'bsc_questTime'
-});
-
-decorateMongoObj(mdbWrite_questTime);
-
-
-mdbInstrTime = ngdb.getLayer('MongoDB', {
-    dbName: 'burden_sharing',
-    collectionName: 'bsc_instrTime'
-});
-
-decorateMongoObj(mdbInstrTime);
+decorateMongoObj(mdbWrite_quest);
 
 
 mdbWriteProfit = ngdb.getLayer('MongoDB', {
@@ -74,52 +58,43 @@ decorateMongoObj(mdbWriteProfit);
 
 // Connections.
 
-// Opening the database for writing the resultdata.
+// Opening the database for writing to collections.
 mdbWrite.connect(function() {});
-
 mdbWrite_idData.connect(function() {});
-
-// Opening the database for writing the profit data.
 mdbWriteProfit.connect(function() {});
+mdbWrite_quest.connect(function() {});
 
 function decorateMongoObj(mongo) {
 
     mongo.update = function(msg) {
-
-        if (msg.playerID == null || msg.add == null) {
-            console.log("ERROR: playerID is not available !!!")
+        if (!this.activeCollection) {
+            this.node.err('MongoLayer.update: no active connection!');
+            return false;
         }
-        else if (this.activeCollection) {
-            var playerID = msg.playerID;
-            var add = msg.add;
-            //        this.activeCollection.update(msg);
-            this.activeCollection.update(playerID, {$set: add,});
+        if (!msg.playerID || !msg.add) {
+            this.node.err("MongoLayer.update: playerID or add is available !!!")
+            return false;
         }
-        else {
-            this.node.err('MongoLayer: no active connection!');
-        }
+        this.activeCollection.update(msg.playerID, {$set: msg.add,});    
         return true;
     };
 
     mongo.updateEndow = function(msg) {
-        var playerID = msg.playerID;
-        var addEndow = msg.addEndow;
-        if (this.activeCollection) {
-            this.activeCollection.update(playerID, {$set: addEndow,});
+        if (!this.activeCollection) {            
+            this.node.err('MongoLayer.updateEndow: no active connection!');
+            return false;
         }
-        else {
-            this.node.err('MongoLayer: no active connection!');
-        }
+        this.activeCollection.update(msg.playerID, {$set: msg.addEndow,});
         return true;
     };
 
     mongo.deleting = function(player, round) {
-        if (this.activeCollection) {
-            this.activeCollection.remove({Player_ID: player, Current_Round: round});
+        if (!this.activeCollection) {
+            this.node.err('MongoLayer.deleting: no active connection!');
+            return false;
         }
-        else {
-            this.node.err('MongoLayer: no active connection!');
-        }
+        this.activeCollection.remove({Player_ID: player, Current_Round: round});
+        return true;
     };
 
     // TODO: test this method
@@ -157,87 +132,95 @@ function decorateMongoObj(mongo) {
     };
 
     mongo.getCollectionObj = function(playerID, callback) {
-        if (this.activeCollection) {
-            this.activeCollection.find({"Player_ID": playerID}, {"Profit": 1, "_id": 0}).toArray(function(err, items) {
+        if (!this.activeCollection) {
+            this.node.err('MongoLayer.getCollectionObj: no active connection!');
+        }
+        this.activeCollection.find({"Player_ID": playerID},
+                                   {"Profit": 1, "_id": 0})
+            .toArray(function(err, items) {
                 if (err) callback(err);
                 else callback(null, items);
-            });
-        }
-        else {
-            this.node.err('MongoLayer: no active connection!');
-        }
+        });
+        return true;
     };
 
     mongo.getInitEndow = function(playerID, callback) {
-        if (this.activeCollection) {
-            this.activeCollection.find({"Player_ID": playerID }, 
-                                       {"Initial_Endowment": 1, 
-                                        "Climate_Risk": 1, "_id": 0}
-                                      ).toArray(function(err, items) {
+        if (!this.activeCollection) {
+            this.node.err('MongoLayer.getInitEndow: no active connection!');
+            return false;
+        }
+        this.activeCollection.find({"Player_ID": playerID }, 
+                                   {"Initial_Endowment": 1, 
+                                    "Climate_Risk": 1, "_id": 0}
+                                  ).toArray(function(err, items) {
 
-                if (err) callback(err);
-                else { callback(null, items); }
-            });
-        }
-        else {
-            this.node.err('MongoLayer: no active connection!');
-        }
+                                      if (err) callback(err);
+                                      else { callback(null, items); }
+                                  });
+        return true;
     };
 
     mongo.checkData = function(msg, callback) {
-        if (this.activeCollection) {
-            this.activeCollection.find({
-                "Player_ID": msg.Player_ID,
-                "Current_Round": msg.Current_Round
-            }, {
-                "Current_Round": 1, 
-                "_id": 0
-            }).toArray(function(err, items) {
-                if (err) callback(err);
-                else {
-                    callback(null, items);
-                }
-            });
+        if (!this.activeCollection) {
+            this.node.err('MongoLayer.checkData: no active connection!');
+            return false;
         }
-        else {
-            this.node.err('MongoLayer: no active connection!');
-        }
+        this.activeCollection.find({
+            "Player_ID": msg.Player_ID,
+            "Current_Round": msg.Current_Round
+        }, {
+            "Current_Round": 1, 
+            "_id": 0
+        }).toArray(function(err, items) {
+            if (err) callback(err);
+            else {
+                callback(null, items);
+            }
+        });
+        return true;
     };
 
     mongo.checkProfit = function(playerID, callback) {
-        if (this.activeCollection) {
-            this.activeCollection.find({"Player_ID": playerID}, {"_id": 0}).toArray(function(err, items) {
-                if (err) callback(err);
-                else {
-                    callback(null, items);
-                }
-            });
+        if (!this.activeCollection) {
+            this.node.err('MongoLayer.checkProfit: no active connection!');
+            return false;
         }
-        else {
-            this.node.err('MongoLayer: no active connection!');
-        }
+        this.activeCollection.find({"Player_ID": playerID},
+                                   {"_id": 0}).toArray(function(err, items) {
+                                       if (err) callback(err);
+                                       else {
+                                           callback(null, items);
+                                       }
+                                   });
+        return true;
     };
 }
 
 // Exports objects.
-
 module.exports = {
 
     mdbWrite: mdbWrite,
-    mdbGetProfit: mdbWrite, // mdbGetProfit,
-    mdbCheckData: mdbWrite, // mdbCheckData,
-    mdbDelet: mdbWrite, // mdbDelet,
 
     mdbWrite_idData: mdbWrite_idData,
-    mdbgetInitEndow: mdbWrite_idData,  // mdbgetInitEndow,
 
-    mdbWrite_questTime: mdbWrite_questTime,
+    mdbWrite_quest: mdbWrite_quest,
 
-    mdbWrite_gameTime: mdbWrite_gameTime,
-    mdbDeletTime: mdbWrite_gameTime, // mdbDeletTime,
-
-    mdbInstrTime: mdbInstrTime,
-
-    mdbWriteProfit: mdbWriteProfit,
-    mdbCheckProfit: mdbWriteProfit, // mdbCheckProfit,
+    mdbWriteProfit: mdbWriteProfit
 };
+
+// Not used ?
+
+
+// mdbInstrTime = ngdb.getLayer('MongoDB', {
+//     dbName: 'burden_sharing',
+//     collectionName: 'bsc_instrTime'
+// });
+// 
+// decorateMongoObj(mdbInstrTime);
+
+// mdbWrite_gameTime = ngdb.getLayer('MongoDB', {
+//     dbName: 'burden_sharing',
+//     collectionName: 'bsc_gameTime'
+// });
+// 
+// decorateMongoObj(mdbWrite_gameTime);

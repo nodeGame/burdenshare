@@ -101,7 +101,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         // Stores the SELF BONUS to DB, and keeps a copy of the BONUS TO OTHER
         // in node.game.otherBonus. Sends a message to client.
         function addQuestionnaireBonus(msg) {
-            dbs.mdbCheckProfit.checkProfit(msg.data.player, function(rows, items) {
+            dbs.mdbWriteProfit.checkProfit(msg.data.player, function(rows, items) {
                 // Adds to the profit a bonus depending on the
                 // choice made in the SVO questionnaire block.
                 var choicesMade = msg.data.choices;
@@ -177,22 +177,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         // Reconnections must be handled by the game developer.
         node.on.preconnect(cbs.playerReconnects);
 
-
-        // dbs.mdbInstrTime.connect(function() {});
-        node.on.data('bsc_instrTime',function(msg) {
-            // Checking if game time has been saved already.
-            bsc_check_instrData = dbs.mdbInstrTime.checkData(msg.data, function(rows, items) {
-                var currentRound = items;
-                if (currentRound === '') {
-                    dbs.mdbInstrTime.store(msg.data);
-                }
-            });
-        });
-
-        node.on.data('bsc_instrTimeUpdate',function(msg) {
-            dbs.mdbInstrTime.update(msg.data);
-        });
-
         node.on.data('add_questionnaire_bonus', function(msg) {
             console.log('adding questionnaire bonus');
             addQuestionnaireBonus(msg);
@@ -203,27 +187,27 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             dbs.mdbWrite.store(msg.data);
         });
 
-        node.on.data('questionnaireAnswer', function(msg) {
-            console.log('Writing Questionnaire Answer!');
-            mdnWrite.store(msg.data);
+        node.on.data('bsc_quest', function(msg) {
+            console.log('Writing Questionnaire Data!!!');
+            dbs.mdbWrite_quest.store(msg.data);
         });
 
-        node.on.data('check_Data',function(msg) {
-            dbs.mdbCheckData.checkData(msg.data, function(rows, items) {
+        node.on.data('check_Data', function(msg) {
+            dbs.mdbWrite.checkData(msg.data, function(rows, items) {
                 node.say('CheckData', msg.data.Player_ID, items);
             });
         });
 
-        // Delete data from the database
-        node.on.data('delete_data',function(msg) {
-            dbs.mdbDelet.deleting(msg.from, msg.data.Current_Round);
+        // Delete data from the database.
+        node.on.data('delete_data', function(msg) {
+            dbs.mdbWrite.deleting(msg.from, msg.data.Current_Round);
             //dbs.mdbDelet.deleting(msg.data.Player_ID, msg.data.Current_Round);
         });
 
         // Check whether profit data has been saved already.
         // If not, save it, otherwise ignore it
         node.on.data('get_Profit',function(msg) {
-            dbs.mdbCheckProfit.checkProfit(msg.data, function(rows, items) {
+            dbs.mdbWriteProfit.checkProfit(msg.data, function(rows, items) {
                 var profit_data;
 
                 // Client has already a payoff assigned.
@@ -237,7 +221,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                 }
                 // Payoff must be computed.
                 else {
-                    dbs.mdbGetProfit.getCollectionObj(msg.data, function(
+                    dbs.mdbWrite.getCollectionObj(msg.data, function(
                         rows, items) {
 
                         var profit, nbrRounds, write_profit, profit_data;
@@ -312,30 +296,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             });
         });
 
-        node.on.data('bsc_gameTime', function(msg) {
-            //checking if game time has been saved already
-            bsc_check_data = dbs.mdbCheckData.checkData(msg.data, function(rows, items) {
-                var currentRound = items;
-                if (currentRound === '') {
-                    dbs.mdbWrite_gameTime.store(msg.data);
-                }
-                else {
-                    // first delete and then save new data
-                    dbs.mdbDeletTime.deleting(msg.data.Player_ID, msg.data.Current_Round);
-                    dbs.mdbWrite_gameTime.store(msg.data);
-                }
-            });
-        });
-
-        node.on.data('bsc_questionnaireTime',function(msg) {
-            console.log('Writing Time Questionaire!!!');
-            dbs.mdbWrite_questTime.store(msg.data);
-        });
-
-        node.on.data('bsc_questTime',function(msg) {
-            dbs.mdbWrite_questTime.update(msg.data);
-        });
-
         node.on.data("econGrowth", function(msg) {
             dbs.mdbWrite_idData.update(msg.data);
         });
@@ -345,7 +305,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         });
 
         node.on.data('get_InitEndow', function(msg) {
-            dbs.mdbgetInitEndow.getInitEndow(msg.data.otherPlayerId, function(rows, items) {
+            dbs.mdbWrite_idData.getInitEndow(msg.data.otherPlayerId, function(rows, items) {
                 var data;
                 data = -1;
                 if (!J.isEmpty(items[0])) {
@@ -400,7 +360,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         idList = J.shuffle(node.game.playerIDs);
 
         // Gets profit for all players.
-        dbs.mdbCheckProfit.checkProfit({ $in : idList}, function(rows, items) {
+        dbs.mdbWriteProfit.checkProfit({ $in : idList}, function(rows, items) {
             var j;
             var item;
             var bonus;
@@ -679,7 +639,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         nodename: 'lgc' + counter,
         game_metadata: {
             name: 'burdenSharingControl',
-            version: '0.0.1'
+            version: '0.2.0'
         },
         game_settings: {
             publishLevel: 0,

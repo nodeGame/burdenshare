@@ -65,13 +65,10 @@ function questionnaire() {
                                         }
                                     }
                                     if (questionnaire.currentAnswerMade) {
-                                        node.set('bsc_data',{
-                                            player:
-                                                node.game.ownID,
-                                            question:
-                                                block + '/' + page,
-                                            answer:
-                                                questionnaire.currentAnswer,
+                                        node.set('bsc_quest', {
+                                            player: node.player.id,
+                                            question: block + '/' + page,
+                                            answer: questionnaire.currentAnswer,
                                             timeElapsed:
                                                 node.timer.getTimeSince(block +
                                                                         '/' +
