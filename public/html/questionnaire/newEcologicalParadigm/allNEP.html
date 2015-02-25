@@ -7,9 +7,9 @@
 
         // i is answer to question number j.
         function makeChoice(i, j) {
-            questionnaire.numberOfClicks[j] =
-                questionnaire.numberOfClicks[j] + 1 || 1;
-            questionnaire.currentAnswer[j] = i;
+            questionnaire.numberOfClicks["Question" + j] =
+                questionnaire.numberOfClicks["Question" + j] + 1 || 1;
+            questionnaire.currentAnswer["Question" + j] = i;
         }
     </script>
     <style>

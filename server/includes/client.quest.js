@@ -46,7 +46,6 @@ function questionnaire() {
 
     makePageLoad = function(page) {
         return function() {
-            debugger;
             page.load();
         };
     };
@@ -147,8 +146,8 @@ function questionnaire() {
         // Shuffle the nodes (randomly the first time).
         if (!this.order) {
             this.order = W.shuffleNodes(questionsBody);
-            node.game.questionnaire.currentAnswer = [];
-            node.game.questionnaire.numberOfClicks = [];
+            node.game.questionnaire.currentAnswer = {};
+            node.game.questionnaire.numberOfClicks = {};
         }
         else {
             W.shuffleNodes(questionsBody, this.order);
@@ -156,11 +155,11 @@ function questionnaire() {
 
         // Hide some questions such that only `questionsPerPage` questions
         // remain visible.
-        for (i = 0; i < questionsDone; ++i) {
+        for (i = 0; i < this.questionsDone; ++i) {
             questions[i].style.display = 'none';
         }
-        for (i = questionsDone + questionsPerPage;
-                i < numberOfQuestions; ++i) {
+        for (i = this.questionsDone + this.questionsPerPage;
+                i < this.numberOfQuestions; ++i) {
             questions[i].style.display = 'none';
         }
         Page.prototype.onLoad.call(this);
@@ -169,16 +168,14 @@ function questionnaire() {
     NEPPage.prototype.checkAnswer = function() {
         var i,
         currentAnswer = node.game.questionnaire.currentAnswer;
-        for (i = 0; i < questionsPerPage; ++i) {
+        for (i = 0; i < this.questionsPerPage; ++i) {
             if ('undefined' ===
-                    typeof currentAnswer[i + questionsDone]) {
+                    typeof currentAnswer[this.order[i + this.questionsDone]]) {
 
                 return false;
             }
-            return true;
         }
-        return false;
-
+        return true;
     };
 
     NEPPage.prototype.onValidAnswer = function() {
@@ -195,6 +192,7 @@ function questionnaire() {
             });
             this.cleanUp();
         }
+        node.emit("DONE");
     };
 
     NEPPage.prototype.cleanUp = function() {
@@ -217,7 +215,7 @@ function questionnaire() {
     DemographicsPage.prototype.constructor = DemographicsPage;
 
     DemographicsPage.prototype.cleanUp = function() {
-        node.game.questionnaire.pageExecutor = { next: next };
+        node.game.questionnaire.pageExecutor = { next: this.next };
         Page.prototype.cleanUp.call(this);
     };
 
@@ -234,7 +232,7 @@ function questionnaire() {
         node.game.questionnaire.pageExecutor = randomPageExecutor;
 
         for (i = 1; i < 7; ++i) {
-            callbacks[i - 1] = makePageLoad(makePageLoad(SVOPage(i)));
+            callbacks[i - 1] = makePageLoad(new SVOPage(i));
         }
         randomPageExecutor.setCallbacks(callbacks);
 
@@ -250,7 +248,6 @@ function questionnaire() {
         W.loadFrame('/burdenshare/html/questionnaire/' +
                     'socialValueOrientation/instructions.html', function() {
                         W.getElementById('done').onclick = function() {
-                            debugger;
                             randomPageExecutor.execute();
                         };
                     }
@@ -407,6 +404,7 @@ function questionnaire() {
                         node.game.questionnaire.currentAnswer = 'Other: ' +
                             W.getElementById('textForOther').value;
                     }
+                    Page.prototype.onValidAnswer.call(this);
                 };
             }
         }
