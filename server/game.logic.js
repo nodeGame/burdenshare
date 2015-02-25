@@ -178,7 +178,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         node.on.preconnect(cbs.playerReconnects);
 
         node.on.data('add_questionnaire_bonus', function(msg) {
-            console.log('adding questionnaire bonus');
+            console.log('Adding questionnaire bonus.');
             addQuestionnaireBonus(msg);
         });
 
@@ -206,7 +206,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
         // Check whether profit data has been saved already.
         // If not, save it, otherwise ignore it
-        node.on.data('get_Profit',function(msg) {
+        node.on.data('get_Profit', function(msg) {
             dbs.mdbWriteProfit.checkProfit(msg.data, function(rows, items) {
                 var profit_data;
 
