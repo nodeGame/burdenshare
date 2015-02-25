@@ -378,7 +378,7 @@ function init() {
                 timeRespondeResp: node.game.timeResponse,
                 GroupNumber: node.game.nbrGroup,
                 Role_Of_Player: node.game.role,
-                Offer: "not available",
+                Offer: offer,
                 Decision_Accept1_Reject0: acceptPlayer,
                 Decision_Response: node.game.decisionResponse,
                 Climate_Catastrophy: cc,
