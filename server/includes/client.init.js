@@ -250,8 +250,6 @@ function init() {
         node.game.timeResultResp =
             Math.round(Math.abs(node.game.timeResultResp - Date.now())/1000);
 
-        console.log("Time InitResp:" + node.game.timeInitSituaResp);
-
         // Check if data for playerID
         // and current round already exists.
         W.loadFrame('/burdenshare/html/questionRounds_resp.html', function() {
@@ -374,7 +372,7 @@ function init() {
             node.game.results = {
                 Current_Round: node.player.stage.round,
                 Player_ID: node.game.ownID,
-                timeInitSituaResp: node.game.timeInitialSituationResp,
+                timeInitSitua: node.game.timeInitialSituation,
                 timeRespondeResp: node.game.timeResponse,
                 GroupNumber: node.game.nbrGroup,
                 Role_Of_Player: node.game.role,

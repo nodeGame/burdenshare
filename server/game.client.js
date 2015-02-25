@@ -42,14 +42,9 @@ module.exports = function(gameRoom, treatmentName, settings) {
             milliseconds: settings.timer.initialSituation,
             update: 1000,
             timeup: function() {
-
-                node.game.timer.stop();
                 node.game.timeInitialSituation =
-                    Math.round(Math.abs(node.game.timeInitialSituation - Date.now())/1000);
-                node.game.timeInitialSituationResp =
-                    Math.round(Math.abs(node.game.timeInitialSituationResp - Date.now())/1000);
-
-                node.emit('DONE');
+                    node.timer.getTimeSince('initialSituation');
+                node.done();
             },
         }
     });

@@ -25,30 +25,27 @@ function initialSituation() {
     node.set('get_InitEndow', IDs);
 
     node.on.data("Endow", function(msg) {        
-        var url, varTime;
+        var url, initialEndow;
 
         if (msg.data === -1) {
             alert('An error occurred.');
             return;
         }
 
-        var initialEndow = msg.data.init_Endow;
+        initialEndow = msg.data.init_Endow;
         node.game.ClimateRisk = msg.data.cl_Risk + node.game.risk;
         node.game.riskOwn = node.game.risk - 7.5;
         node.game.riskOther = msg.data.cl_Risk - 7.5;        
+       
+        node.game.endowment_responder = initialEndow;
+        node.game.endowment_proposer = node.game.endowment_own;
 
         if (node.game.role == 'PROPOSER') {
-            node.game.endowment_responder = initialEndow;
-            node.game.endowment_proposer = node.game.endowment_own;
             url = node.game.url_initprop;
-            varTime = 'timeInitialSituation';
         }        
         // RESPONDER
         else {
-            node.game.endowment_proposer = initialEndow;
-            node.game.endowment_responder = node.game.endowment_own;
             url = node.game.url_initresp;
-            varTime = 'timeInitialSituationResp';
         }
 
         W.loadFrame(url, function() {
@@ -79,7 +76,7 @@ function initialSituation() {
             }
 
             // Keep time.
-            node.game[varTime] = Date.now();
+            node.timer.setTimestamp('initialSituation');
 
             var propEndow = W.getElementById('propEndow');
             var respEndow = W.getElementById('respEndow');
@@ -98,10 +95,11 @@ function initialSituation() {
             var proceed = W.getElementById('continue');
             proceed.onclick = function() {
                 node.game.timer.stop();
-                node.game[varTime] = Math.round(Math.abs(
-                    node.game[varTime] - Date.now())/1000);
                 node.game.timer.setToZero();
-                node.emit('DONE');
+
+                node.game.timeInitialSituation = 
+                    node.timer.getTimeSince('initialSituation');
+                node.done();
             };
         });
 

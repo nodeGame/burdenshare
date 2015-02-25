@@ -27,7 +27,7 @@ function decision() {
         node.game.results = {
             Current_Round: node.player.stage.round,
             Player_ID: node.game.ownID,
-            timeInitSituaProp: node.game.timeInitialSituation,
+            timeInitSitua: node.game.timeInitialSituation,
             timeOffer: node.game.timeMakingOffer,
             GroupNumber: node.game.nbrGroup,
             Role_Of_Player: node.game.role,
