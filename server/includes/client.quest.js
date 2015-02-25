@@ -16,12 +16,15 @@ function questionnaire() {
     var socialValueOrientation, newEcologicalParadigm, risk;
     var makePageLoad, makeBlockArray;
 
+    // Updates the bonus received from questionnaire.
     node.on.data('ADDED_QUESTIONNAIRE_BONUS', function(msg) {
         console.log("Profit Adjustment" + msg.data.oldAmountUCE +
                     "+" + msg.data.newAmountUCE);
+
         node.game.bonus = msg.data;
     });
 
+    // Displays the last page.
     node.on.data("win", function(msg) {
         W.loadFrame('/burdenshare/html/ended.html', function() {
             W.writeln("Exit code: " + msg.data);
@@ -309,34 +312,35 @@ function questionnaire() {
                 done: function() {
                     W.loadFrame('/burdenshare/html/questionnaire' +
                                 '/profit_adjustment.html', function() {
-                                    W.getElementById(
-                                        'continue'
-                                    ).onclick = function() {
+                                    var button = W.getElementById('continue');
+
+                                    button.onclick = function() {
                                         node.game.timeQuest1 =
                                             Math.round(Math.abs(
                                                 node.game.timeQuest1 -
                                                     Date.now())/1000
                                                       );
+                                        
                                         node.game.timer.stop();
                                         node.say("QUEST_DONE", "SERVER",
                                                  node.game.bonus.newAmountUSD);
                                     };
+
                                     W.write(node.game.bonus.newAmountUCE,
-                                        W.getElementById("amountECU")
-                                    );
+                                        W.getElementById("amountECU"));
+
                                     W.write(node.game.bonus.oldAmountUCE,
-                                        W.getElementById("ECUfromGame")
-                                    );
+                                        W.getElementById("ECUfromGame"));
+
                                     W.write(
                                         node.game.bonus.newAmountUCE -
                                             node.game.bonus.oldAmountUCE,
-                                        W.getElementById("ECUfromQuest")
-                                    );
+                                        W.getElementById("ECUfromQuest"));
+
                                     W.write((node.game.bonus.newAmountUSD +
                                             1.0).toFixed(2) +
                                             ' $',
-                                        W.getElementById("amountUSD")
-                                    );
+                                        W.getElementById("amountUSD"));
                                 }
                     );
                 }

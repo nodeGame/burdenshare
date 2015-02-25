@@ -84,7 +84,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
         // Contains the bonuses that players assign to other players
         // in the questionnaire.
-        node.game.otherBonus = [];
+        node.game.otherBonus = [,,,];
 
         // LISTENERS
         ////////////
@@ -153,7 +153,9 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                     node.game.pl.id.resolve[msg.data.player]
                 ] = bonusToOther;
 
-                var newAmountUCE = profit.Amount_UCE + bonusFromSelf;
+                var oldUCE = profit.Amount_UCE === "NA" ? 0 : profit.Amount_UCE;
+
+                var newAmountUCE = oldUCE + bonusFromSelf;
                 var newAmountUSD = cbs.round((newAmountUCE/50),2);
 
                 dbs.mdbWriteProfit.update({
@@ -166,7 +168,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                 });
 
                 node.say('ADDED_QUESTIONNAIRE_BONUS', msg.data.player, {
-                    oldAmountUCE: profit.Amount_UCE,
+                    oldAmountUCE: oldUCE,
                     newAmountUCE: newAmountUCE,
                     newAmountUSD: newAmountUSD
                 });
@@ -333,10 +335,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             }
         })();
 
-        node.on.data('bsc_surveyID', function(msg) {
-            dbs.mdbWrite_idData.update(msg.data);
-        });
-
     });
 
     function notEnoughPlayers() {
@@ -366,12 +364,14 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             var bonus;
             var bonusSVO;
             var code;
-            var otherBonus = node.game.otherBonus || [];
+            var otherBonus = node.game.otherBonus || [,,,];
             var otherPlayer;
             var postPayoffs = [];
             var bonusFromOther;
             var bonusFromSelf;
             var writeProfitUpdate;
+
+            debugger
 
             for (i = 0; i < idList.length; ++i) {
                 code = dk.codes.id.get(idList[i]);
@@ -422,6 +422,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                 }
                 // SVO filled in.
                 else {
+                    // Given that the players are shuffled, there is a chance
+                    // that a player gets back his own bonus to other.
                     otherPlayer = (i + 1) % idList.length;
                     bonusFromOther = otherBonus[otherPlayer];
 
@@ -451,12 +453,14 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
                 console.log(idList[i], ' bonus: ', profit);
 
-                postPayoffs[i] = {
+                postPayoffs.push({
                     "AccessCode": code.AccessCode,
                     "Bonus": profit,
                     "BonusReason": "Full Bonus"
-                };
+                });
             }
+
+            console.log(postPayoffs);
 
             // Post payoffs.
             dk.postPayoffs(postPayoffs, function(err, response, body) {
