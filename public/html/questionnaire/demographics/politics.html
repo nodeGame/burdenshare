@@ -3,24 +3,12 @@
 
 <head>
     <script>
-        var numberOfQuestions = 0
-    </script>
-    <script>
-        var currentAnswersMade = [];
         var questionnaire = parent.node.game.questionnaire;
-        questionnaire.currentAnswerMade = false;
         questionnaire.currentAnswer = [];
 
         function makeChoice(i, j) {
             unselectOther();
-            if (numberOfQuestions <= 1) {
-                questionnaire.currentAnswerMade = true;
-                questionnaire.currentAnswer = i;
-                return;
-            }
-            questionnaire.currentAnswer[j] = i;
-            currentAnswersMade[j] = true;
-            questionnaire.currentAnswerMade = allAnswered()
+            questionnaire.currentAnswer = i;
         }
 
         function unselectOther() {
@@ -31,15 +19,6 @@
             var textField = document.getElementById('divForOther');
             textField.style.display = '';
             questionnaire.currentAnswer = 5;
-        }
-
-        function allAnswered() {
-            for (j = 0; j < numberOfQuestions; ++j) {
-                if (!currentAnswersMade[j]) {
-                    return false;
-                }
-            }
-            return true;
         }
     </script>
 

@@ -14,13 +14,6 @@ function RandomOrderExecutor(options) {
     this.index = null;
 
     /**
-     * ### RandomOrderExecutor.numberOfCallbacks
-     *
-     * Represents total number of callbacks
-     */
-    this.numberOfCallbacks = null;
-
-    /**
      * ### RandomOrderExecutor.rankedCallbacks
      *
      * Array of objects which contain a random rank and a callback
@@ -29,17 +22,6 @@ function RandomOrderExecutor(options) {
      */
     this.rankedCallbacks = [];
 
-
-    /**
-     * ### RandomOrderExecutor.callbacks
-     *
-     * Array of callbacks to be executed
-     *
-     * The callbacks must call RandomOrderExecutor.next.
-     *
-     * @see RandomOrderExecutor.wrapCallback
-     */
-    this.callbacks = [];
 
     /**
      * ### RandomOrderExecutor.onDone
@@ -64,30 +46,23 @@ RandomOrderExecutor.prototype.init = function(options) {
 
     // In very old browsers array.sort is unsupported.
     if (!Array.prototype.sort) {
-        console.log('Error: Cannot randomize Questionnaire');
+        console.log('Error: Cannot randomize execution order');
         this.prototype.rankCallbacks = function() {
-            this.rankedCallbacks = this.callbacks;
+            this.rankedCallbacks = options.callbacks;
         };
     }
 };
 
 RandomOrderExecutor.prototype.setCallbacks = function(callbacks) {
+    var i;
     if (!JSUS.isArray(callbacks)) {
         throw new TypeError('RandomOrderExecution.setCallbacks:' +
             'callbacks should be array');
     }
-    this.callbacks = callbacks;
-    this.numberOfCallbacks = this.callbacks.length;
-};
-
-RandomOrderExecutor.prototype.rankCallbacks = function() {
-    var i;
-
-    this.rankedCallbacks = [];
-    for (i = 0; i < this.callbacks.length; ++i) {
+    for (i = 0; i < callbacks.length; ++i) {
         this.rankedCallbacks.push({
             rank: Math.random(),
-            callback: this.callbacks[i]
+            callback: callbacks[i]
         });
     }
     this.rankedCallbacks.sort(function(left,right) {
@@ -97,7 +72,7 @@ RandomOrderExecutor.prototype.rankCallbacks = function() {
 
 RandomOrderExecutor.prototype.next = function() {
     ++this.index;
-    if (this.index < this.numberOfCallbacks) {
+    if (this.index < this.rankedCallbacks.length) {
         this.rankedCallbacks[this.index].callback(this);
     }
     else {
@@ -138,8 +113,7 @@ RandomOrderExecutor.prototype.execute = function(callbacks, onDone) {
     if (onDone) {
         this.setOnDone(onDone);
     }
-    this.rankCallbacks();
-    if (this.numberOfCallbacks) {
+    if ('undefined' !== typeof this.rankedCallbacks[0]) {
         this.rankedCallbacks[0].callback(this);
     }
 };

@@ -58,7 +58,7 @@ module.exports = {
         responseDone: 300000, // 5 minutes
 
         // Questionnaire.
-        questionnaire: 9000, // 15 minutes.
+        questionnaire: 900000, // 15 minutes.
         questProfit: 150000, // 2.5 minutes
 
         // Logic.

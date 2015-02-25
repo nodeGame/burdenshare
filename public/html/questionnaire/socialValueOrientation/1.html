@@ -2,14 +2,12 @@
 <title></title>
 
 <head>
-    <script>
+    script>
         var questionnaire = parent.node.game.questionnaire;
-        questionnaire.currentAnswerMade = false;
         questionnaire.numberOfClicks = 0;
 
         function makeChoice(i) {
             ++questionnaire.numberOfClicks;
-            questionnaire.currentAnswerMade = true;
             questionnaire.currentAnswer = i;
         }
     </script>
@@ -30,8 +28,6 @@
             word-wrap: break-word;
             font-size: 25px;
         }
-    </style>
-    <style>
         table td {
             width: 10%;
         }
