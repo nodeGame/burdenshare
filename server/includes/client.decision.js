@@ -36,7 +36,7 @@ function decision() {
             Decision_Accept1_Reject0: accept,
             Climate_Catastrophy: data.cc,
             Profit: remain,
-            P_QuestRound: '',
+            questRound: '',
             Endow_Prop: node.game.endowment_proposer,
             RiskContrib_P: node.game.riskOwn,
             GroupRisk: (node.game.riskOwn + node.game.riskOther + 15)

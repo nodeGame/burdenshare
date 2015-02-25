@@ -53,8 +53,8 @@ module.exports = {
         proposer: 2000, // 2 minutes
         reply2Prop: 2000, // 2 minutes
         respondent: 2000, // 2 minutes
-        proposerDone: 2000, //2 minutes
-        respondentDone: 2000, // 2 minutes
+        proposerDone: 10000, //2 minutes
+        respondentDone: 10000, // 2 minutes
         responseDone: 3000, // 5 minutes
 
         // Questionnaire.

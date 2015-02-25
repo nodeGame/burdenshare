@@ -65,7 +65,7 @@ function init() {
         var dataExist, answerQR;
 
         answerQR = W.getElementById('questRounds').value;
-        node.game.results.P_QuestRound = answerQR;
+        node.game.results.questionRound = answerQR;
 
         // Check if data for playerID
         // and current round already exists.
@@ -202,7 +202,7 @@ function init() {
 
             options = {
                 // Count down time.
-                milliseconds: node.game.globals.timer.propDone,
+                milliseconds: node.game.globals.timer.proposerDone,
                 // if count down elapsed and no action has been taken by participant function is called
                 timeup: function() {
 
@@ -262,7 +262,7 @@ function init() {
             options = {
                 milliseconds: node.game.globals.timer.respondentDone,
                 timeup: function() {
-                    checkAndSendResults();
+                    sendDataToServer();
                 }
             };
 
@@ -285,8 +285,13 @@ function init() {
             }
 
             next = W.getElementById("continue");
-            next.onclick = function() {               
-                checkAndSendResults();
+            next.onclick = function() {
+                // TODO: see if we need this timer, 
+                // or if we can move it inside the func.
+                node.game.timequestionsRounds =
+                    Math.round(Math.abs(node.game.timequestionsRounds - Date.now())/1000);
+                node.game.timer.stop();
+                sendDataToServer();
             };
         });
     });
@@ -378,7 +383,7 @@ function init() {
                 Decision_Response: node.game.decisionResponse,
                 Climate_Catastrophy: cc,
                 Profit: node.game.remainNum,
-                R_QuestRound: '',
+                questionRound: '',
                 Endow_Resp: node.game.endowment_responder,
                 RiskContrib_R: node.game.riskOwn,
                 GroupRisk: (node.game.riskOwn + node.game.riskOther + 15)
@@ -392,57 +397,6 @@ function init() {
             };
         });
     });
-
-    node.on.data('burdenSharingControl', function(msg) {
-        var leftSrc, rightSrc, data, imgLeft, imgRight;
-        data = msg.data;
-        leftSrc = msg.data.left;
-        rightSrc = msg.data.right;
-        imgLeft = document.createElement('img');
-        imgLeft.src = leftSrc;
-        imgLeft.className = 'face';
-        W.getElementById('td_face_left').appendChild(imgLeft);
-        imgRight = document.createElement('img');
-        imgRight.src = rightSrc;
-        imgRight.className = 'face';
-        W.getElementById('td_face_right').appendChild(imgRight);
-        console.log('created and updated pictures');
-    });
-
-
-    function checkAndSendResults() {
-        var answerQR, datExist;
-
-        node.game.timequestionsRounds =
-            Math.round(Math.abs(node.game.timequestionsRounds - Date.now())/1000);
-        
-        node.game.timer.stop();
-
-        answerQR = W.getElementById('questRounds').value;
-        node.game.results.R_QuestRound = answerQR;
-
-        // Check if data for playerID
-        // and current round already exists
-        dataExist = {
-            Player_ID: node.game.results.Player_ID,
-            Current_Round: node.player.stage.round
-        };
-
-        node.set('check_Data', dataExist);
-
-        node.on.data("CheckData", function(msg) {
-            console.log('Current Round: ' + msg.data[0]);
-            // Why Deleting data ??
-            if ('undefined' !== typeof msg.data[0]) {
-                console.log('Data Exist: ' + dataExist.Player_ID);
-                node.set('delete_data', dataExist);
-                console.log('Player already finished this round.');
-            }
-            node.set('bsc_data', node.game.results);
-            that.endOfQuestionsround();
-        });
-    }
-
 
     this.endOfQuestionsround = function() {
         var options = {};
