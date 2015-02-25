@@ -236,6 +236,7 @@ function init() {
 
             next = W.getElementById("continue");
             next.onclick = function() {
+                this.disabled = "disabled";
                 sendDataToServer();
             };
         });
@@ -243,7 +244,7 @@ function init() {
 
 
     // Function called as soon as responder has finished the current round.
-    node.on('RESPONDER_DONE', function(data) {
+    node.on('RESPONDER_DONE', function() {
         var quest, string, next;
 
         node.game.timeResultResp =
@@ -254,44 +255,14 @@ function init() {
         // Check if data for playerID
         // and current round already exists.
         W.loadFrame('/burdenshare/html/questionRounds_resp.html', function() {
-            var options;
+            var options, next, quest, string;
 
             node.game.timequestionsRounds = Date.now();
 
             options = {
                 milliseconds: node.game.globals.timer.respondentDone,
                 timeup: function() {
-                    var answerQR, dataExist;
-                    node.game.timequestionsRounds =
-                        Math.round(Math.abs(node.game.timequestionsRounds - Date.now())/1000);
-
-                    node.game.timer.stop();
-                    this.disabled = "disabled";
-
-                    answerQR = W.getElementById('questRounds').value;
-                    node.game.results.R_QuestRound = answerQR;
-
-                    // Check if data for playerID
-                    // and current round already exists.
-                    dataExist = {
-                        Player_ID: data.Player_ID,
-                        Current_Round: node.player.stage.round
-                    };
-
-                    node.set('check_Data', dataExist);
-
-                    node.on("in.say.DATA", function(msg) {
-                        if (msg.text == "CheckData") {
-                            console.log('Current Round: ' + msg.data[0]);
-                            if ('undefined' !== typeof msg.data[0]) {
-                                console.log('Data Exist: ' + dataExist.Player_ID);
-                                node.set('delete_data', dataExist);
-                                console.log('Player already finished this round.');
-                            }
-                            node.set('bsc_data',node.game.results);
-                            that.endOfQuestionsround();
-                        }
-                    });
+                    checkAndSendResults();
                 }
             };
 
@@ -314,32 +285,8 @@ function init() {
             }
 
             next = W.getElementById("continue");
-            next.onclick = function() {
-                var answerQR, datExist;
-
-                answerQR = W.getElementById('questRounds').value;
-                node.game.results.R_QuestRound = answerQR;
-
-                // Check if data for playerID
-                // and current round already exists
-                dataExist = {
-                    Player_ID: data.Player_ID,
-                    Current_Round: node.player.stage.round
-                };
-
-                node.set('check_Data', dataExist);
-                node.on("in.say.DATA", function(msg) {
-                    if (msg.text == "CheckData") {
-                        console.log('Current Round: ' + msg.data[0]);
-                        if ('undefined' !== typeof msg.data[0]) {
-                            console.log('Data Exist: ' + dataExist.Player_ID);
-                            node.set('delete_data', dataExist);
-                            console.log('Player already finished this round.');
-                        }
-                        node.set('bsc_data',node.game.results);
-                        that.endOfQuestionsround();
-                    }
-                });
+            next.onclick = function() {               
+                checkAndSendResults();
             };
         });
     });
@@ -370,8 +317,7 @@ function init() {
                 timeup: function() {
                     node.game.timer.stop();
                     this.disabled = "disabled";
-                    node.emit('RESPONDER_DONE', node.game.results,
-                              node.game.ownID);
+                    node.emit('RESPONDER_DONE');
                 }
             };
 
@@ -442,7 +388,7 @@ function init() {
             proceed.onclick = function() {
                 node.game.timer.stop();
                 this.disabled = "disabled";
-                node.emit('RESPONDER_DONE', node.game.results, node.game.ownID);
+                node.emit('RESPONDER_DONE');
             };
         });
     });
@@ -462,6 +408,40 @@ function init() {
         W.getElementById('td_face_right').appendChild(imgRight);
         console.log('created and updated pictures');
     });
+
+
+    function checkAndSendResults() {
+        var answerQR, datExist;
+
+        node.game.timequestionsRounds =
+            Math.round(Math.abs(node.game.timequestionsRounds - Date.now())/1000);
+        
+        node.game.timer.stop();
+
+        answerQR = W.getElementById('questRounds').value;
+        node.game.results.R_QuestRound = answerQR;
+
+        // Check if data for playerID
+        // and current round already exists
+        dataExist = {
+            Player_ID: node.game.results.Player_ID,
+            Current_Round: node.player.stage.round
+        };
+
+        node.set('check_Data', dataExist);
+
+        node.on.data("CheckData", function(msg) {
+            console.log('Current Round: ' + msg.data[0]);
+            // Why Deleting data ??
+            if ('undefined' !== typeof msg.data[0]) {
+                console.log('Data Exist: ' + dataExist.Player_ID);
+                node.set('delete_data', dataExist);
+                console.log('Player already finished this round.');
+            }
+            node.set('bsc_data', node.game.results);
+            that.endOfQuestionsround();
+        });
+    }
 
 
     this.endOfQuestionsround = function() {
