@@ -24,22 +24,57 @@ function decision() {
     function writeRoundResults(data, accept, remain) {
         var proceed;
 
+//         node.game.results = {
+//             // Current_Round: node.player.stage.round,
+//             // Player_ID: node.player.id
+//             // timeInitSitua: node.game.timeInitialSituation,
+//             
+//             timeOffer: node.game.timeMakingOffer,
+//             
+//             // GroupNumber: node.game.nbrGroup,
+//             // Role_Of_Player: node.game.role,
+//             // Offer: data.offer,
+//             
+//             Decision_Offer: node.game.decisionOffer,
+//             Decision_Accept1_Reject0: accept,
+//             
+//             //Climate_Catastrophy: data.cc,
+//             Profit: remain,
+//             //questRound: '',
+//             Endow_Prop: node.game.endowment_proposer,
+//             //RiskContrib_P: node.game.riskOwn,
+//             //GroupRisk: (node.game.riskOwn + node.game.riskOther + 15)
+//         };
+
         node.game.results = {
+            Player_ID: node.player.id,
             Current_Round: node.player.stage.round,
-            Player_ID: node.game.ownID,
-            timeInitSitua: node.game.timeInitialSituation,
-            timeOffer: node.game.timeMakingOffer,
             GroupNumber: node.game.nbrGroup,
             Role_Of_Player: node.game.role,
-            Offer: data.offer,
-            Decision_Offer: node.game.decisionOffer,
+
+            // Risk.
+            riskOwn: node.game.riskOwn,
+            riskOther: node.game.riskOther,
+            riskGroup: (node.game.riskOwn + node.game.riskOther + 15),
+
+            // Endow.                
+            endowOwn: node.game.endowment_own,
+            endowOther: node.game.endowment_responder,
+            
+            // Offer.
+            Offer: node.game.offer,
+            questionRound: '',
+
+            // Decision.               
             Decision_Accept1_Reject0: accept,
+            Decision_Response: node.game.decisionResponse,
             Climate_Catastrophy: data.cc,
+
             Profit: remain,
-            questRound: '',
-            Endow_Prop: node.game.endowment_proposer,
-            RiskContrib_P: node.game.riskOwn,
-            GroupRisk: (node.game.riskOwn + node.game.riskOther + 15)
+
+            // Time.
+            timeInitSitua: node.game.timeInitialSituation,
+            timeDecision: node.game.timeMakingOffer
         };
 
         proceed = W.getElementById('continue');        
@@ -63,7 +98,7 @@ function decision() {
             }
 
             W.getElementById("offer").selectedIndex = -1;
-            node.game.timeMakingOffer = Date.now();
+            node.timer.setTimestamp('readyToBid');
 
 
             var submitoffer = W.getElementById('submitOffer');
@@ -124,7 +159,7 @@ function decision() {
                         W.getElementById("practiceAccept").style.display = "";
                     }
 
-                    node.game.timeResultProp = Date.now();
+                    node.timer.setTimestamp('resultDisplayed');
                     // Start the timer.
                     var options = {
                         milliseconds: node.game.globals.timer.reply2Prop,
@@ -191,7 +226,7 @@ function decision() {
 
                     }
 
-                    node.game.timeResultProp = Date.now();
+                    node.timer.setTimestamp('resultDisplayed');
                     // Start the timer.
                     var options = {
                         milliseconds: node.game.globals.timer.reply2Prop,
@@ -297,7 +332,7 @@ function decision() {
             W.write(node.game.ClimateRisk.toString(),clRisk);
 
             node.on.data("OFFER", function(msg) {
-                node.game.timeResponse = Date.now();
+                node.timer.setTimestamp('offerArrived');
 
                 var options = {
                     milliseconds: node.game.globals.timer.respondent,

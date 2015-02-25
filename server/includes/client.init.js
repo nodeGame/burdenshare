@@ -52,6 +52,7 @@ function init() {
     var gameName = node.game.globals.gameName;
     var chosenTreatment = node.game.globals.chosenTreatment;
 
+    // Hide unused div from waiting room.
     if (waitingForPlayers) {
         waitingForPlayers.style.display = 'none';
     }
@@ -96,6 +97,7 @@ function init() {
     node.game.endowment_own = 25;
     node.game.endowment_responder = 0;
     node.game.endowment_proposer = 0;
+
     // cost green house gas emmisions, two Versions: 30 or 80 ECU
     node.game.costGE = node.game.globals.costGE;
     // number of rounds including the test round
@@ -163,11 +165,9 @@ function init() {
 
     // Function called as soon as proposer made his offer (bid).
     node.on('BID_DONE', function(offer, to) {
-        var timeMakingOffer, bidDone, span_dots;
+        var bidDone, span_dots;
 
-        node.game.timeMakingOffer =
-            Math.round(Math.abs(node.game.timeMakingOffer - Date.now())/1000);
-        timeMakingOffer = {timeMakingOffer: node.game.timeMakingOffer};
+        node.game.timeMakingOffer = node.timer.getTimeSince('readyToBid');
 
         W.getElementById('submitOffer').disabled = 'disabled';
         bidDone = W.getElementById('offered');
@@ -191,14 +191,13 @@ function init() {
     // Function called as soon as proposer has finished the current round.
     node.on('PROPOSER_DONE', function() {
 
-        node.game.timeResultProp =
-            Math.round(Math.abs(node.game.timeResultProp - Date.now())/1000);
+        node.game.timeResultProp = node.timer.getTimeSince('resultDisplayed');
 
         // short question at the end of each round
         W.loadFrame('/burdenshare/html/questionRounds_prop.html', function() {
             var options, quest, string, next;
 
-            node.game.timequestionsRounds = Date.now();
+            node.timer.setTimestamp('questionRound');
 
             options = {
                 // Count down time.
@@ -207,7 +206,7 @@ function init() {
                 timeup: function() {
 
                     node.game.timequestionsRounds =
-                        Math.round(Math.abs(node.game.timequestionsRounds - Date.now())/1000);
+                        node.timer.getTimeSince('questionRound');
 
                     node.game.timer.stop();
                     this.disabled = "disabled";
@@ -247,15 +246,14 @@ function init() {
     node.on('RESPONDER_DONE', function() {
         var quest, string, next;
 
-        node.game.timeResultResp =
-            Math.round(Math.abs(node.game.timeResultResp - Date.now())/1000);
+        node.timer.setTimestamp('resultDisplayed');
 
         // Check if data for playerID
         // and current round already exists.
         W.loadFrame('/burdenshare/html/questionRounds_resp.html', function() {
             var options, next, quest, string;
 
-            node.game.timequestionsRounds = Date.now();
+            node.timer.setTimestamp('questionRound');
 
             options = {
                 milliseconds: node.game.globals.timer.respondentDone,
@@ -287,7 +285,7 @@ function init() {
                 // TODO: see if we need this timer, 
                 // or if we can move it inside the func.
                 node.game.timequestionsRounds =
-                    Math.round(Math.abs(node.game.timequestionsRounds - Date.now())/1000);
+                        node.timer.getTimeSince('questionRound');
                 node.game.timer.stop();
                 sendDataToServer();
             };
@@ -296,8 +294,7 @@ function init() {
 
     // Function called as soon as responder made his descision (accept or reject the offer)
     node.on('RESPONSE_DONE', function(response, offer, from) {
-        node.game.timeResponse =
-            Math.round(Math.abs(node.game.timeResponse - Date.now())/1000);
+        node.game.timeResponse = node.timer.getTimeSince('offerArrived');
 
         W.loadFrame('/burdenshare/html/resultResponder.html', function() {
             var options, proceed;
@@ -312,7 +309,7 @@ function init() {
                     (response ==='ACCEPT' ? 'Accept' : 'Reject')
                 ).style.display = '';
             }
-            node.game.timeResultResp = Date.now();
+            node.timer.setTimestamp('resultDisplayed')
 
             // Start the timer.
             options = {
@@ -370,21 +367,35 @@ function init() {
 
             // These values are stored in the mongoDB data base table called bsc_data
             node.game.results = {
+                Player_ID: node.player.id,
                 Current_Round: node.player.stage.round,
-                Player_ID: node.game.ownID,
-                timeInitSitua: node.game.timeInitialSituation,
-                timeRespondeResp: node.game.timeResponse,
                 GroupNumber: node.game.nbrGroup,
                 Role_Of_Player: node.game.role,
+
+                // Risk.
+                riskOwn: node.game.riskOwn,
+                riskOther: node.game.riskOther,
+                riskGroup: (node.game.riskOwn + node.game.riskOther + 15),
+
+                // Endow.                
+                endowOwn: node.game.endowment_own,
+                endowOther: node.game.endowment_responder,
+                
+                // Offer.
                 Offer: offer,
+                questionRound: '',
+
+                // Decision.               
                 Decision_Accept1_Reject0: acceptPlayer,
                 Decision_Response: node.game.decisionResponse,
                 Climate_Catastrophy: cc,
+
                 Profit: node.game.remainNum,
-                questionRound: '',
-                Endow_Resp: node.game.endowment_responder,
-                RiskContrib_R: node.game.riskOwn,
-                GroupRisk: (node.game.riskOwn + node.game.riskOther + 15)
+
+                // Time.
+                timeInitSitua: node.game.timeInitialSituation,
+                timeDecision: node.game.timeResponse,
+
             };
 
             proceed = W.getElementById('continue');
