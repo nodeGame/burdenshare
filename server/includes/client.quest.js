@@ -205,7 +205,7 @@ function questionnaire() {
                 });
             };
             var finishNEP = function() {
-                node.set('bsc_data',{
+                node.set('bsc_quest',{
                     player: node.game.ownID,
                     question: 'newEcologicalParadigm',
                     answer: node.game.questionnaire.currentAnswer,
