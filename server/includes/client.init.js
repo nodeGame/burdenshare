@@ -190,18 +190,9 @@ function init() {
 
     // Function called as soon as proposer has finished the current round.
     node.on('PROPOSER_DONE', function() {
-        var gameTimeResp;
 
         node.game.timeResultProp =
             Math.round(Math.abs(node.game.timeResultProp - Date.now())/1000);
-
-        gameTimeResp = {
-            Player_ID: node.player.id,
-            Current_Round: node.game.results.Current_Round,
-            timeInitSituaProp: node.game.results.timeInitSituaProp,
-            timeOffer: node.game.results.timeOffer,
-            timeResultProp: node.game.timeResultProp
-        };
 
         // short question at the end of each round
         W.loadFrame('/burdenshare/html/questionRounds_prop.html', function() {
@@ -253,19 +244,12 @@ function init() {
 
     // Function called as soon as responder has finished the current round.
     node.on('RESPONDER_DONE', function(data) {
-        var gameTimeResp, quest, string, next;
+        var quest, string, next;
 
         node.game.timeResultResp =
             Math.round(Math.abs(node.game.timeResultResp - Date.now())/1000);
 
-        gameTimeResp = {
-            Player_ID: data.Player_ID,
-            Current_Round: data.Current_Round,
-            timeInitSituaResp: data.timeInitSituaResp,
-            timeRespondeResp: data.timeRespondeResp,
-            timeResultResp: node.game.timeResultResp
-        };
-        console.log("Time InitResp:" + gameTimeResp.timeInitSituaResp);
+        console.log("Time InitResp:" + node.game.timeInitSituaResp);
 
         // Check if data for playerID
         // and current round already exists.
