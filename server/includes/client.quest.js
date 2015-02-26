@@ -111,7 +111,8 @@ function questionnaire() {
 
     SVOPage.prototype = Object.create(Page.prototype);
     SVOPage.prototype.constructor = SVOPage;
-    SVOPage.prototype.onValidAnswer = function () {
+
+    SVOPage.prototype.onValidAnswer = function() {
         node.game.questionnaire.SVOChoices[this.number] =
             node.game.questionnaire.currentAnswer;
         node.game.questionnaire.SVOChoices.length++;
@@ -136,6 +137,7 @@ function questionnaire() {
 
     NEPPage.prototype = Object.create(Page.prototype);
     NEPPage.prototype.constructor = NEPPage;
+
     NEPPage.prototype.onLoad = function() {
         var i = 0;
         var questionsBody = W.getElementById('Questions');
@@ -194,8 +196,8 @@ function questionnaire() {
     };
 
     NEPPage.prototype.cleanUp = function() {
-            node.game.questionnaire.pageExecutor = this.executor;
-            Page.prototype.cleanUp.call(this);
+        node.game.questionnaire.pageExecutor = this.executor;
+        Page.prototype.cleanUp.call(this);
     };
 
     NEPPage.prototype.onInvalidAnswer = function() {
