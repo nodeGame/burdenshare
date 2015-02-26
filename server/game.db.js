@@ -135,11 +135,12 @@ function decorateMongoObj(mongo) {
         if (!this.activeCollection) {
             this.node.err('MongoLayer.getCollectionObj: no active connection!');
         }
-        this.activeCollection.find({"Player_ID": playerID},
-                                   {"Profit": 1, "_id": 0})
-            .toArray(function(err, items) {
-                if (err) callback(err);
-                else callback(null, items);
+        this.activeCollection.find({
+            Player_ID: playerID,
+            Offer: { "$exists": true }
+        },{"Profit": 1, "_id": 0}).toArray(function(err, items) {
+            if (err) callback(err);
+            else callback(null, items);
         });
         return true;
     };
