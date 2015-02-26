@@ -12,7 +12,7 @@ module.exports = function(settings) {
     stager.init()
     .next('instructions')
     .repeat('burdenSharingControl', settings.REPEAT)
-    .repeat('questionnaire', 23);
+    .repeat('questionnaire', 22);
 
     // Modifty the stager to skip one stage.
     stager.skip('instructions');

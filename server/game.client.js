@@ -128,7 +128,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     game.debug = settings.debug;
 
-
     game.verbosity = 1;
 
     game.window = {
