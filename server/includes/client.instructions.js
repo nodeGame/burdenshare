@@ -16,19 +16,21 @@ function instructions() {
 
     console.log('instructions');
 
+    function sendTimeInstr(page) {
+        node.game.timeInstruction = node.timer.getTimeSince('instr' + page);
+        node.set('bsc_data', {
+            Player_ID: node.game.ownID,
+            Current_Round: "Instructions" + page,
+            timeDecision: node.game.timeInstruction
+        });
+    }
+
     W.loadFrame('/burdenshare/html/instructions.html', function() {
-        node.game.timeInstruction = Date.now();
+        node.timer.setTimestamp('instr1');
         var options = {
             milliseconds: node.game.globals.timer.instructions1,
             timeup: function() {
-                node.game.timeInstruction =
-                    Math.round(Math.abs(node.game.timeInstruction - Date.now())/1000);
-                var timeInstr = {
-                    Player_ID: node.game.ownID,
-                    Current_Round: "Instructions",
-                    TimeInstruction_1: node.game.timeInstruction
-                };
-                this.disabled = "disabled";
+                sendTimeInstr(1);
                 instructions2();
             }
         };
@@ -42,31 +44,20 @@ function instructions() {
         var next;
         next = W.getElementById("continue");
         next.onclick = function() {
-            node.game.timeInstruction = Math.round(Math.abs(node.game.timeInstruction - Date.now())/1000);
-            var timeInstr = {
-                Player_ID: node.game.ownID,
-                Current_Round: "Instructions",
-                TimeInstruction_1: node.game.timeInstruction
-            };
             node.game.timer.stop();
             this.disabled = "disabled";
+            sendTimeInstr(1);
             instructions2();
         };
     });
 
     function instructions2() {
         W.loadFrame('/burdenshare/html/' + gameName + '/instructions2.html', function() {
-            node.game.timeInstruction2 = Date.now();
+            node.timer.setTimestamp('instr2');
             var options = {
                 milliseconds: node.game.globals.timer.instructions2,
                 timeup: function() {
-                    node.game.timeInstruction2 = Math.round(Math.abs(node.game.timeInstruction2 - Date.now())/1000);
-                    var timeInstr = {
-                        playerID: {Player_ID: node.game.ownID},
-                        add: {TimeInstruction_2: node.game.timeInstruction2}
-                    };
-                    node.game.timer.stop();
-                    this.disabled = "disabled";
+                    sendTimeInstr(2);
                     instructions3();
                 }
             };
@@ -82,13 +73,9 @@ function instructions() {
             var next;
             next = W.getElementById("continue");
             next.onclick = function() {
-                node.game.timeInstruction2 = Math.round(Math.abs(node.game.timeInstruction2 - Date.now())/1000);
-                var timeInstr = {
-                    playerID: {Player_ID: node.game.ownID},
-                    add: {TimeInstruction_2: node.game.timeInstruction2}
-                };
                 node.game.timer.stop();
                 this.disabled = "disabled";
+                sendTimeInstr(2);
                 instructions3();
             };
         });
@@ -96,17 +83,11 @@ function instructions() {
 
     function instructions3() {
         W.loadFrame('/burdenshare/html/' + gameName + '/instructions3.html', function() {
-            node.game.timeInstruction3 = Date.now();
+            node.timer.setTimestamp('instr3');
             var options = {
                 milliseconds: node.game.globals.timer.instructions3,
                 timeup: function() {
-                    node.game.timeInstruction3 = Math.round(Math.abs(node.game.timeInstruction3 - Date.now())/1000);
-                    var timeInstr = {
-                        playerID: {Player_ID: node.game.ownID},
-                        add: {TimeInstruction_3: node.game.timeInstruction3}
-                    };
-                    node.game.timer.stop();
-                    this.disabled = "disabled";
+                    sendTimeInstr(3);
                     if (node.game.globals.chosenTreatment === 'ra') {
                         EconGrowthAndRisk();
                     }
@@ -126,13 +107,9 @@ function instructions() {
             var next;
             next = W.getElementById("continue");
             next.onclick = function() {
-                node.game.timeInstruction3 = Math.round(Math.abs(node.game.timeInstruction3 - Date.now())/1000);
-                var timeInstr = {
-                    playerID: {Player_ID: node.game.ownID},
-                    add: {TimeInstruction_3: node.game.timeInstruction3}
-                };
                 node.game.timer.stop();
                 this.disabled = "disabled";
+                sendTimeInstr(3);
                 if (chosenTreatment === 'ra') {
                     EconGrowthAndRisk();
                 }
@@ -146,7 +123,7 @@ function instructions() {
     function instructions4() { 
 
         W.loadFrame('/burdenshare/html/instructions4.html', function() {
-            node.game.timeInstruction4 = Date.now();
+            node.timer.setTimestamp('instr4');
             var options = {
                 milliseconds: node.game.globals.timer.instructions4,
                 timeup: initEndowFunc
@@ -164,12 +141,11 @@ function instructions() {
     }
 
     function initEndowFunc() {
-        var timeInstr;
         var setDBEconGrowth, j;
         var next;
 
         var initEndow = {
-            playerID: { Player_ID: node.game.ownID },
+            playerID: { Player_ID: node.player.id },
             addEndow: { 
                 Initial_Endowment: node.game.endowment_own,
                 Climate_Risk: node.game.risk
@@ -179,13 +155,7 @@ function instructions() {
         next = W.getElementById("continue");
         if (next) next.disabled = "disabled";
         
-        node.game.timer.stop();
-        
-        node.game.timeInstruction4 = Math.round(Math.abs(node.game.timeInstruction4 - Date.now())/1000);
-        timeInstr = {
-            playerID: {Player_ID: node.game.ownID},
-            add: {TimeInstruction_4: node.game.timeInstruction4}
-        };
+        node.game.timer.stop();        
 
         // Set back values in database in case of a disconnection - reconnection.
         node.game.pgCounter = 0;
@@ -197,63 +167,16 @@ function instructions() {
         node.set('initEndow', initEndow);
 
         setDBEconGrowth = {
-            playerID : { Player_ID: node.game.ownID },
+            playerID : { Player_ID: node.player.id },
             add: {}
         };
+
         for (j = 1; j <= 5; j++) {
             node.game.EGRnd[j] = 0;
             setDBEconGrowth.add['EGRnd' + j] = node.game.EGRnd[j];
         }
         node.set("econGrowth", setDBEconGrowth);
         chooseEconGrowth();
-    }
-
-    function setGrowthAndDecide() {
-        var initEndow = {
-            playerID: { Player_ID: node.game.ownID },
-            addEndow: {
-                Initial_Endowment: node.game.endowment_own,
-                Climate_Risk: node.game.risk
-            }
-        };
-
-        // Randomly chooses on of the values
-        // within the chosen economy growth level.
-        var ind = node.game.EGRnd[node.game.pgCounter] - 1;
-        var rnd = Math.floor((Math.random()*node.game.growth[ind].length)+1) - 1;
-
-        node.game.endowment_own = node.game.endowment_own + node.game.growth[ind][rnd];
-
-        console.log("Growth Endowment = " + node.game.growth[ind][rnd]);
-
-        var setDBEconGrowth = {
-            playerID : { Player_ID: node.game.ownID }, 
-            add: {}
-        };
-
-        setDBEconGrowth.add['EGRnd' + node.game.pgCounter] = 
-            node.game.EGRnd[node.game.pgCounter];
-
-        node.set("econGrowth", setDBEconGrowth);
-
-        node.game.timer.stop();
-
-        var next;
-        next = W.getElementById("submitGrowth");
-        next.disabled = "disabled";
-
-        if (node.game.pgCounter < 5) {
-            chooseEconGrowth();
-        }
-        else {
-            W.getElementById("propEndow").innerHTML = node.game.endowment_own;
-            W.getElementById("clRiskOwn").innerHTML = node.game.risk - 7.5;
-            initEndow.addEndow.Initial_Endowment = node.game.endowment_own;
-            initEndow.addEndow.Climate_Risk = node.game.risk;
-            node.set('initEndow', initEndow);
-            node.game.pgCounter = 0;
-            node.emit('DONE');
-        }
     }
 
     /**
@@ -265,7 +188,7 @@ function instructions() {
     function chooseEconGrowth() {
         W.loadFrame(node.game.url_preGame, function() {
             W.getElementById("instructionsFrame").setAttribute(
-                "src",node.game.url_instructionsFrame);
+                "src", node.game.url_instructionsFrame);
 
             if (node.game.pgCounter === 0) {
                 // Test Round
@@ -354,6 +277,55 @@ function instructions() {
         return found;
     }
 
+    function setGrowthAndDecide() {
+        var initEndow = {
+            playerID: { Player_ID: node.player.id },
+            addEndow: {
+                Initial_Endowment: node.game.endowment_own,
+                Climate_Risk: node.game.risk
+            }
+        };
+
+        // Randomly chooses on of the values
+        // within the chosen economy growth level.
+        var ind = node.game.EGRnd[node.game.pgCounter] - 1;
+        var rnd = Math.floor((Math.random()*node.game.growth[ind].length)+1) - 1;
+
+        node.game.endowment_own = node.game.endowment_own + node.game.growth[ind][rnd];
+
+        console.log("Growth Endowment = " + node.game.growth[ind][rnd]);
+
+        var setDBEconGrowth = {
+            playerID : { Player_ID: node.player.id }, 
+            add: {}
+        };
+
+        setDBEconGrowth.add['EGRnd' + node.game.pgCounter] = 
+            node.game.EGRnd[node.game.pgCounter];
+
+        node.set("econGrowth", setDBEconGrowth);
+
+        node.game.timer.stop();
+
+        var next;
+        next = W.getElementById("submitGrowth");
+        next.disabled = "disabled";
+
+        if (node.game.pgCounter < 5) {
+            chooseEconGrowth();
+        }
+        else {
+            sendTimeInstr(4);
+            W.getElementById("propEndow").innerHTML = node.game.endowment_own;
+            W.getElementById("clRiskOwn").innerHTML = node.game.risk - 7.5;
+            initEndow.addEndow.Initial_Endowment = node.game.endowment_own;
+            initEndow.addEndow.Climate_Risk = node.game.risk;
+            node.set('initEndow', initEndow);
+            node.game.pgCounter = 0;
+            node.done();
+        }
+    }
+
     /**
      * ## EconGrowthAndRisk
      *
@@ -363,8 +335,11 @@ function instructions() {
      */
     function EconGrowthAndRisk() {
         var initEndow = {
-            playerID: {Player_ID: node.game.ownID},
-            addEndow: {Initial_Endowment: node.game.endowment_own, Climate_Risk: node.game.risk}
+            playerID: { Player_ID: node.player.id },
+            addEndow: { 
+                Initial_Endowment: node.game.endowment_own,
+                Climate_Risk: node.game.risk
+            }
         };
         // randomly assigned value of historical growth between 5 and 100
         var endowment_assigned = Math.floor((Math.random() * 96) + 1) + 4;

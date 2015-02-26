@@ -15,8 +15,8 @@ module.exports = function(settings) {
     .repeat('questionnaire', 22);
 
     // Modifty the stager to skip one stage.
-    stager.skip('instructions');
-    stager.skip('burdenSharingControl');
+    // stager.skip('instructions');
+    // stager.skip('burdenSharingControl');
 
     return stager.getState();
 };
