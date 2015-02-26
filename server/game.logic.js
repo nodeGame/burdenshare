@@ -86,6 +86,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         // in the questionnaire.
         node.game.otherBonus = [,,,];
 
+        node.game.playerIDs = [];
+
         // LISTENERS
         ////////////
 
@@ -186,7 +188,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
         node.on.data('bsc_data', function(msg) {
             console.log('Writing Result Data!!!');
-            debugger
             dbs.mdbWrite.store(msg.data);
         });
 
@@ -355,6 +356,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     function adjustPayoffAndCheckout() {
         var i, profit, idList;
 
+        console.log(gameRoom.name, ': Checking out!');
+
         checkoutFlag = true;
 
         idList = J.shuffle(node.game.playerIDs);
@@ -372,8 +375,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             var bonusFromOther;
             var bonusFromSelf;
             var writeProfitUpdate;
-
-            debugger
 
             for (i = 0; i < idList.length; ++i) {
                 code = dk.codes.id.get(idList[i]);
@@ -617,7 +618,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                 console.log('Checkout code of player: ' + msg.from);
                 code.checkout = true;
 
-                node.say("win", msg.from, code.ExitCode);
+                node.say('win', msg.from, code.ExitCode);
 
                 if (checkoutFlag) {
                     console.log('Already checked-out, returning.');

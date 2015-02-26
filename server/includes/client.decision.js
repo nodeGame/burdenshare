@@ -24,28 +24,6 @@ function decision() {
     function writeRoundResults(data, accept, remain) {
         var proceed;
 
-//         node.game.results = {
-//             // Current_Round: node.player.stage.round,
-//             // Player_ID: node.player.id
-//             // timeInitSitua: node.game.timeInitialSituation,
-//             
-//             timeOffer: node.game.timeMakingOffer,
-//             
-//             // GroupNumber: node.game.nbrGroup,
-//             // Role_Of_Player: node.game.role,
-//             // Offer: data.offer,
-//             
-//             Decision_Offer: node.game.decisionOffer,
-//             Decision_Accept1_Reject0: accept,
-//             
-//             //Climate_Catastrophy: data.cc,
-//             Profit: remain,
-//             //questRound: '',
-//             Endow_Prop: node.game.endowment_proposer,
-//             //RiskContrib_P: node.game.riskOwn,
-//             //GroupRisk: (node.game.riskOwn + node.game.riskOther + 15)
-//         };
-
         node.game.results = {
             Player_ID: node.player.id,
             Current_Round: node.player.stage.round,
