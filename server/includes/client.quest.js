@@ -82,7 +82,7 @@ function questionnaire() {
     };
 
     Page.prototype.onValidAnswer = function() {
-        node.set('bsc_data', {
+        node.set('bsc_quest', {
             player:         node.player.id,
             question:       this.name,
             answer:         node.game.questionnaire.currentAnswer,
@@ -179,8 +179,8 @@ function questionnaire() {
     NEPPage.prototype.onValidAnswer = function() {
         this.questionsDone += this.questionsPerPage;
         if (this.questionsDone >= this.numberOfQuestions) {
-            node.set('bsc_data',{
-                player: node.game.ownID,
+            node.set('bsc_quest',{
+                player: node.player.id,
                 question: this.name,
                 answer: node.game.questionnaire.currentAnswer,
                 timeElapsed:
@@ -237,7 +237,7 @@ function questionnaire() {
         randomPageExecutor.setOnDone(function() {
             node.set('add_questionnaire_bonus',{
                 choices: node.game.questionnaire.SVOChoices,
-                player: node.game.ownID
+                player: node.player.id
             });
             randomBlockExecutor.next();
         });
@@ -357,8 +357,8 @@ function questionnaire() {
         ];
         var i;
         var finalize = function() {
-            node.set('bsc_data', {
-                player:         node.game.ownID,
+            node.set('bsc_quest', {
+                player:         node.player.id,
                 timeElapsed:    node.timer.getTimeSince("BEGIN_QUESTIONNAIRE"),
                 blockOrder:     node.game.questionnaire.blocks
             });
@@ -434,7 +434,7 @@ function questionnaire() {
                 node.game.timeResult =
                     Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
                 var timeResultProp = {
-                    Player_ID : node.game.ownID,
+                    Player_ID : node.player.id,
                     timeResult: node.game.timeResult
                 };
                 questionnaire(1);
@@ -449,7 +449,7 @@ function questionnaire() {
         quest2.onclick = function () {
             node.game.timeResult = Math.round(Math.abs(node.game.timeResult - Date.now())/1000);
             var timeResultProp = {
-                Player_ID : node.game.ownID,
+                Player_ID : node.player.id,
                 timeResult: node.game.timeResult
             };
             node.game.timer.stop();
@@ -464,11 +464,14 @@ function questionnaire() {
         var options = {
             milliseconds: node.game.globals.timer.questionnaire,
             timeup: function() {
-                node.game.timeQuest1 = Math.round(Math.abs(node.game.timeQuest1 - Date.now())/1000);
+                node.game.timeQuest1 = node.timer.getTimeSince('questionnaire');
+
+                // At the moment this is not used.
                 var timeResultProp = {
-                    playerID : {Player_ID: node.game.ownID},
+                    playerID : {Player_ID: node.player.id},
                     add: {timeQuest1: node.game.timeQuest1}
                 };
+
                 node.say("QUEST_DONE", "SERVER", node.game.bonus);
             },
             stopOnDone: false
@@ -476,6 +479,8 @@ function questionnaire() {
         node.game.timer.init(options);
         node.game.timer.updateDisplay();
         node.game.timer.start(options);
+
+        node.timer.setTimestamp('questionnaire');
 
         randomBlockExecutor.execute();
     }
