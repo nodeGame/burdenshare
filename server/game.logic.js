@@ -186,12 +186,14 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
         node.on.data('bsc_data', function(msg) {
             console.log('Writing Result Data!!!');
+            debugger
             dbs.mdbWrite.store(msg.data);
         });
 
         node.on.data('bsc_quest', function(msg) {
+            var i, len;
             console.log('Writing Questionnaire Data!!!');
-            dbs.mdbWrite_quest.store(msg.data);
+            dbs.mdbWrite_quest.store(msg.data);            
         });
 
         node.on.data('check_Data', function(msg) {

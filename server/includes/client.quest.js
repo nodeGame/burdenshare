@@ -49,7 +49,7 @@ function questionnaire() {
     };
 
     Page = function(block, name) {
-        this.name = block + '/' + name;
+        this.name = block + '_' + name;
         this.html = '/burdenshare/html/questionnaire/' + block + '/' +
             name + '.html';
     };
@@ -143,12 +143,12 @@ function questionnaire() {
 
         // Shuffle the nodes (randomly the first time).
         if (!this.order) {
-            this.order = W.shuffleNodes(questionsBody);
+            this.order = W.shuffleElements(questionsBody);
             node.game.questionnaire.currentAnswer = {};
             node.game.questionnaire.numberOfClicks = {};
         }
         else {
-            W.shuffleNodes(questionsBody, this.order);
+            W.shuffleElements(questionsBody, this.order);
         }
 
         // Hide some questions such that only `questionsPerPage` questions
@@ -185,7 +185,7 @@ function questionnaire() {
                 answer: node.game.questionnaire.currentAnswer,
                 timeElapsed:
                 node.timer.getTimeSince(this.name),
-                clicks: questionnaire.numberOfClicks,
+                clicks: node.game.questionnaire.numberOfClicks,
                 order: this.order
             });
             this.cleanUp();
