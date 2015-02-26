@@ -36,33 +36,33 @@ module.exports = {
     timer: {
 
         // Instructions.
-        instructions1: 150000, // 2.5 minutes
-        instructions2: 150000, // 2.5 minutes
-        instructions3: 150000, // 2.5 minutes
-        instructions4: 30000, // 2.5 minutes
+        instructions1: 2000, // 2.5 minutes
+        instructions2: 2000, // 2.5 minutes
+        instructions3: 2000, // 2.5 minutes
+        instructions4: 2000, // 2.5 minutes
 
         // Game.
         initialSituation: function() {
-            return 300000; // 5 minutes
+            return 2000; // 5 minutes
             //if (node.game.globals.chosenTreatment === "sa") return 36000;
             //return 18000;
         },
 
-        endOfPractice: 10000, // 10 seconds
-        econGrowth: 60000, // 1 minute
-        proposer: 120000, // 2 minutes
-        reply2Prop: 120000, // 2 minutes
-        respondent: 120000, // 2 minutes
-        proposerDone: 120000, //2 minutes
-        respondentDone: 120000, // 2 minutes
-        responseDone: 300000, // 5 minutes
+        endOfPractice: 2000, // 10 seconds
+        econGrowth: 6000, // 1 minute
+        proposer: 2000, // 2 minutes
+        reply2Prop: 2000, // 2 minutes
+        respondent: 2000, // 2 minutes
+        proposerDone: 2000, //2 minutes
+        respondentDone: 2000, // 2 minutes
+        responseDone: 3000, // 5 minutes
 
         // Questionnaire.
-        questionnaire: 900000, // 15 minutes.
-        questProfit: 150000, // 2.5 minutes
+        questionnaire: 200000, // 15 minutes.
+        questProfit: 2000, // 2.5 minutes
 
         // Logic.
-        notEnoughPlayers: 60000,
+        notEnoughPlayers: 6000,
     },
 
     // If TRUE, throws errors. For testing.

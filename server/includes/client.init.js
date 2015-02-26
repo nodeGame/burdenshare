@@ -10,6 +10,8 @@ module.exports = init;
 
 function init() {
 
+    console.log('INIT PLAYER!');
+
     // Polyfills
 
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now
@@ -50,6 +52,7 @@ function init() {
     var gameName = node.game.globals.gameName;
     var chosenTreatment = node.game.globals.chosenTreatment;
 
+    // Hide unused div from waiting room.
     if (waitingForPlayers) {
         waitingForPlayers.style.display = 'none';
     }
@@ -59,10 +62,42 @@ function init() {
         clearInterval(timeCheck);
     }
 
+    function sendDataToServer() {
+        var dataExist, answerQR;
+
+        answerQR = W.getElementById('questRounds').value;
+        node.game.results.questionRound = answerQR;
+
+        // Check if data for playerID
+        // and current round already exists.
+        dataExist = {
+            Player_ID: node.player.id,
+            Current_Round: node.player.stage.round
+        };
+
+        // Call data base and check existence of data.
+        // Triggers a msg CheckData.
+        node.set('check_Data', dataExist);
+        
+        node.on.data('CheckData', function(msg) {
+            console.log('Current Round: ' + msg.data[0]);
+            if ('undefined' !== typeof msg.data[0]) {
+                // If data already exists, delete and save the new data
+                console.log('Data Exist: ' + dataExist.Player_ID);
+                node.set('delete_data', dataExist);
+                console.log('Player already finished this round.');
+            }
+            node.set('bsc_data', node.game.results);
+            that.endOfQuestionsround();
+        });
+    }
+    
+
     // basic amount of own endowment (here 25).
     node.game.endowment_own = 25;
     node.game.endowment_responder = 0;
     node.game.endowment_proposer = 0;
+
     // cost green house gas emmisions, two Versions: 30 or 80 ECU
     node.game.costGE = node.game.globals.costGE;
     // number of rounds including the test round
@@ -120,8 +155,6 @@ function init() {
             '/instructions_full_80.html';
     }
 
-    console.log('INIT PLAYER!');
-
     // Generate header and frame.
     W.generateHeader();
     W.generateFrame();
@@ -132,11 +165,9 @@ function init() {
 
     // Function called as soon as proposer made his offer (bid).
     node.on('BID_DONE', function(offer, to) {
-        var timeMakingOffer, bidDone, span_dots;
+        var bidDone, span_dots;
 
-        node.game.timeMakingOffer =
-            Math.round(Math.abs(node.game.timeMakingOffer - Date.now())/1000);
-        timeMakingOffer = {timeMakingOffer: node.game.timeMakingOffer};
+        node.game.timeMakingOffer = node.timer.getTimeSince('readyToBid');
 
         W.getElementById('submitOffer').disabled = 'disabled';
         bidDone = W.getElementById('offered');
@@ -158,69 +189,29 @@ function init() {
     });
 
     // Function called as soon as proposer has finished the current round.
-    node.on('PROPOSER_DONE', function(data) {
-        var gameTimeResp;
+    node.on('PROPOSER_DONE', function() {
 
-        node.game.timeResultProp =
-            Math.round(Math.abs(node.game.timeResultProp - Date.now())/1000);
-
-        gameTimeResp = {
-            Player_ID: data.Player_ID,
-            Current_Round: data.Current_Round,
-            timeInitSituaProp: data.timeInitSituaProp,
-            timeOffer: data.timeOffer,
-            timeResultProp: node.game.timeResultProp
-        };
+        node.game.timeResultProp = node.timer.getTimeSince('resultDisplayed');
 
         // short question at the end of each round
         W.loadFrame('/burdenshare/html/questionRounds_prop.html', function() {
             var options, quest, string, next;
 
-            node.game.timequestionsRounds = Date.now();
+            node.timer.setTimestamp('questionRound');
 
             options = {
                 // Count down time.
-                milliseconds: node.game.globals.timer.propDone,
+                milliseconds: node.game.globals.timer.proposerDone,
                 // if count down elapsed and no action has been taken by participant function is called
                 timeup: function() {
-                    var timeInstr, answerQR, dataExist;
 
                     node.game.timequestionsRounds =
-                        Math.round(Math.abs(node.game.timequestionsRounds - Date.now())/1000);
-
-                    timeInstr = {
-                        playerID: {Player_ID: node.game.ownID},
-                        add: {TimeQuestionRounds: node.game.timequestionsRounds}
-                    };
+                        node.timer.getTimeSince('questionRound');
 
                     node.game.timer.stop();
                     this.disabled = "disabled";
-                    answerQR = W.getElementById('questRounds').value;
-                    node.game.results.P_QuestRound = answerQR;
 
-                    // Check if data for playerID
-                    // and current round already exists.
-                    dataExist = {
-                        Player_ID: data.Player_ID,
-                        Current_Round: node.player.stage.round
-                    };
-
-                    // Call data base and check existence of data.
-                    node.set('check_Data', dataExist);
-                    
-                    node.on("in.say.DATA", function(msg) {
-                        if (msg.text == "CheckData") {
-                            console.log('Current Round: ' + msg.data[0]);
-                            if ('undefined' !== typeof msg.data[0]) {
-                                // if data already exists, delete and save the new data
-                                console.log('Data Exist: ' + dataExist.Player_ID);
-                                node.set('delete_data', dataExist);
-                                console.log('Player already finished this round.');
-                            }
-                            node.set('bsc_data', node.game.results);
-                            that.endOfQuestionsround();
-                        }
-                    });
+                    sendDataToServer();
                 }
             };
 
@@ -244,100 +235,30 @@ function init() {
 
             next = W.getElementById("continue");
             next.onclick = function() {
-                var answerQR, dataExist;
-
-                answerQR = W.getElementById('questRounds').value;
-                node.game.results.P_QuestRound = answerQR;
-
-                // Check if data for playerID
-                // and current round already exists.
-                dataExist = {
-                    Player_ID: data.Player_ID,
-                    Current_Round: node.player.stage.round
-                };
-
-                // Call data base and check existence of data.
-                node.set('check_Data', dataExist);
-
-                node.on("in.say.DATA", function(msg) {
-                    if (msg.text == "CheckData") {
-                        console.log('Current Round: ' + msg.data[0]);
-                        if ('undefined' !== typeof msg.data[0]) {
-                            console.log('Data Exist: ' + dataExist.Player_ID);
-                            node.set('delete_data', dataExist);
-                            console.log('Player already finished this round.');
-                        }
-                        node.set('bsc_data',node.game.results);
-                        that.endOfQuestionsround();
-                    }
-                });
+                this.disabled = "disabled";
+                sendDataToServer();
             };
         });
     });
 
 
     // Function called as soon as responder has finished the current round.
-    node.on('RESPONDER_DONE', function(data) {
-        var gameTimeResp, quest, string, next;
+    node.on('RESPONDER_DONE', function() {
+        var quest, string, next;
 
-        node.game.timeResultResp =
-            Math.round(Math.abs(node.game.timeResultResp - Date.now())/1000);
-
-        gameTimeResp = {
-            Player_ID: data.Player_ID,
-            Current_Round: data.Current_Round,
-            timeInitSituaResp: data.timeInitSituaResp,
-            timeRespondeResp: data.timeRespondeResp,
-            timeResultResp: node.game.timeResultResp
-        };
-        console.log("Time InitResp:" + gameTimeResp.timeInitSituaResp);
+        node.timer.setTimestamp('resultDisplayed');
 
         // Check if data for playerID
         // and current round already exists.
         W.loadFrame('/burdenshare/html/questionRounds_resp.html', function() {
-            var options;
+            var options, next, quest, string;
 
-            node.game.timequestionsRounds = Date.now();
+            node.timer.setTimestamp('questionRound');
 
             options = {
                 milliseconds: node.game.globals.timer.respondentDone,
                 timeup: function() {
-                    var timeInstr, answerQR, dataExist;
-                    node.game.timequestionsRounds =
-                        Math.round(Math.abs(node.game.timequestionsRounds - Date.now())/1000);
-
-                    timeInstr = {
-                        playerID: {Player_ID: node.game.ownID},
-                        add: {TimeQuestionRounds: node.game.timequestionsRounds}
-                    };
-
-                    node.game.timer.stop();
-                    this.disabled = "disabled";
-
-                    answerQR = W.getElementById('questRounds').value;
-                    node.game.results.R_QuestRound = answerQR;
-
-                    // Check if data for playerID
-                    // and current round already exists.
-                    dataExist = {
-                        Player_ID: data.Player_ID,
-                        Current_Round: node.player.stage.round
-                    };
-
-                    node.set('check_Data', dataExist);
-
-                    node.on("in.say.DATA", function(msg) {
-                        if (msg.text == "CheckData") {
-                            console.log('Current Round: ' + msg.data[0]);
-                            if ('undefined' !== typeof msg.data[0]) {
-                                console.log('Data Exist: ' + dataExist.Player_ID);
-                                node.set('delete_data', dataExist);
-                                console.log('Player already finished this round.');
-                            }
-                            node.set('bsc_data',node.game.results);
-                            that.endOfQuestionsround();
-                        }
-                    });
+                    sendDataToServer();
                 }
             };
 
@@ -361,39 +282,19 @@ function init() {
 
             next = W.getElementById("continue");
             next.onclick = function() {
-                var answerQR, datExist;
-
-                answerQR = W.getElementById('questRounds').value;
-                node.game.results.R_QuestRound = answerQR;
-
-                // Check if data for playerID
-                // and current round already exists
-                dataExist = {
-                    Player_ID: data.Player_ID,
-                    Current_Round: node.player.stage.round
-                };
-
-                node.set('check_Data', dataExist);
-                node.on("in.say.DATA", function(msg) {
-                    if (msg.text == "CheckData") {
-                        console.log('Current Round: ' + msg.data[0]);
-                        if ('undefined' !== typeof msg.data[0]) {
-                            console.log('Data Exist: ' + dataExist.Player_ID);
-                            node.set('delete_data', dataExist);
-                            console.log('Player already finished this round.');
-                        }
-                        node.set('bsc_data',node.game.results);
-                        that.endOfQuestionsround();
-                    }
-                });
+                // TODO: see if we need this timer, 
+                // or if we can move it inside the func.
+                node.game.timequestionsRounds =
+                        node.timer.getTimeSince('questionRound');
+                node.game.timer.stop();
+                sendDataToServer();
             };
         });
     });
 
     // Function called as soon as responder made his descision (accept or reject the offer)
     node.on('RESPONSE_DONE', function(response, offer, from) {
-        node.game.timeResponse =
-            Math.round(Math.abs(node.game.timeResponse - Date.now())/1000);
+        node.game.timeResponse = node.timer.getTimeSince('offerArrived');
 
         W.loadFrame('/burdenshare/html/resultResponder.html', function() {
             var options, proceed;
@@ -408,7 +309,7 @@ function init() {
                     (response ==='ACCEPT' ? 'Accept' : 'Reject')
                 ).style.display = '';
             }
-            node.game.timeResultResp = Date.now();
+            node.timer.setTimestamp('resultDisplayed')
 
             // Start the timer.
             options = {
@@ -416,8 +317,7 @@ function init() {
                 timeup: function() {
                     node.game.timer.stop();
                     this.disabled = "disabled";
-                    node.emit('RESPONDER_DONE', node.game.results,
-                              node.game.ownID);
+                    node.emit('RESPONDER_DONE');
                 }
             };
 
@@ -467,48 +367,45 @@ function init() {
 
             // These values are stored in the mongoDB data base table called bsc_data
             node.game.results = {
+                Player_ID: node.player.id,
                 Current_Round: node.player.stage.round,
-                Player_ID: node.game.ownID,
-                timeInitSituaResp: node.game.timeInitialSituationResp,
-                timeRespondeResp: node.game.timeResponse,
                 GroupNumber: node.game.nbrGroup,
                 Role_Of_Player: node.game.role,
-                Offer: "not available",
+
+                // Risk.
+                riskOwn: node.game.riskOwn,
+                riskOther: node.game.riskOther,
+                riskGroup: (node.game.riskOwn + node.game.riskOther + 15),
+
+                // Endow.                
+                endowOwn: node.game.endowment_own,
+                endowOther: node.game.endowment_responder,
+                
+                // Offer.
+                Offer: offer,
+                questionRound: '',
+
+                // Decision.               
                 Decision_Accept1_Reject0: acceptPlayer,
                 Decision_Response: node.game.decisionResponse,
                 Climate_Catastrophy: cc,
+
                 Profit: node.game.remainNum,
-                R_QuestRound: '',
-                Endow_Resp: node.game.endowment_responder,
-                RiskContrib_R: node.game.riskOwn,
-                GroupRisk: (node.game.riskOwn + node.game.riskOther + 15)
+
+                // Time.
+                timeInitSitua: node.game.timeInitialSituation,
+                timeDecision: node.game.timeResponse,
+
             };
 
             proceed = W.getElementById('continue');
             proceed.onclick = function() {
                 node.game.timer.stop();
                 this.disabled = "disabled";
-                node.emit('RESPONDER_DONE', node.game.results, node.game.ownID);
+                node.emit('RESPONDER_DONE');
             };
         });
     });
-
-    node.on.data('burdenSharingControl', function(msg) {
-        var leftSrc, rightSrc, data, imgLeft, imgRight;
-        data = msg.data;
-        leftSrc = msg.data.left;
-        rightSrc = msg.data.right;
-        imgLeft = document.createElement('img');
-        imgLeft.src = leftSrc;
-        imgLeft.className = 'face';
-        W.getElementById('td_face_left').appendChild(imgLeft);
-        imgRight = document.createElement('img');
-        imgRight.src = rightSrc;
-        imgRight.className = 'face';
-        W.getElementById('td_face_right').appendChild(imgRight);
-        console.log('created and updated pictures');
-    });
-
 
     this.endOfQuestionsround = function() {
         var options = {};
