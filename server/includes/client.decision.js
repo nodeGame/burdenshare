@@ -87,9 +87,7 @@ function decision() {
                     W.getElementById("fieldset").disabled = true;
                     submitoffer.onclick = null;
                     node.game.timer.stop();
-                    var randnum = Math.floor(1+Math.random()*node.game.costGE);
-                    var offer = W.getElementById('offer');
-                    node.game.proposal = ""+randnum;
+                    var randnum = JSUS.randomInt(-1, node.game.costGE);
                     node.game.decisionOffer = 0;
                     node.emit('BID_DONE', randnum, node.game.otherID);
                 }
@@ -102,30 +100,34 @@ function decision() {
             var clRiskOwn = W.getElementById('clRiskOwn');
             var clRiskOther = W.getElementById('clRiskOther');
             var clRisk = W.getElementById('clRisk');
-            W.write(node.game.endowment_proposer.toString(),propEndow);
-            W.write(node.game.endowment_responder.toString(),respEndow);
-            W.write(node.game.costGE.toString(),costGHGE);
-            W.write(node.game.riskOwn.toString(),clRiskOwn);
-            W.write(node.game.riskOther.toString(),clRiskOther);
-            W.write(node.game.ClimateRisk.toString(),clRisk);
+
+            W.write(node.game.endowment_proposer, propEndow);
+            W.write(node.game.endowment_responder, respEndow);
+            W.write(node.game.costGE, costGHGE);
+            W.write(node.game.riskOwn, clRiskOwn);
+            W.write(node.game.riskOther, clRiskOther);
+            W.write(node.game.ClimateRisk, clRisk);
 
             submitoffer.onclick = function() {
-                var offer = W.getElementById('offer');
+                var offerInput, offer;
+                offerInput = W.getElementById('offer');
+
                 if (!that.isValidBid(offer.value)) {
                     var msg = 'Please choose an integer number between 0 and ' +
                         node.game.costGE;
                     node.game.globals.checkID(msg);
                     return;
                 }
-                node.game.proposal = parseInt(offer.value);
+                offer = parseInt(offer.value, 2);
 
                 node.game.timer.stop();
                 node.game.timer.setToZero();
                 W.getElementById("fieldset").disabled = true;
                 submitoffer.onclick = null;
                 node.game.decisionOffer = 1;
-                node.emit('BID_DONE', node.game.proposal, node.game.otherID);
+                node.emit('BID_DONE', offer, node.game.otherID);
             };
+           
 
             node.on.data("ACCEPT", function(msg) {
                 W.loadFrame('html/resultProposer.html', function() {
@@ -148,14 +150,18 @@ function decision() {
                         }
                     };
 
-
                     node.game.timer.restart(options);
+
                     var result1 = W.getElementById('result1');
                     var result2 = W.getElementById('result2');
                     var result3 = W.getElementById('result3');
-                    var propOffer = W.getElementById('propOffer');
-                    node.game.offer = msg.data.offer.toString();
-                    W.write(msg.data.offer.toString(),propOffer);
+                    var propOffer = W.getElementById('propOffer');            
+                    var remainProp = W.getElementById('remainProp');            
+                    var remainResp = W.getElementById('remainResp');
+
+
+                    W.write(msg.data.offer, propOffer);
+
                     var resp = node.game.costGE - msg.data.offer;
                     node.game.respPay = resp.toString();
 
@@ -171,20 +177,23 @@ function decision() {
                     node.game.catastrophe =  'No';
 
                     var respDecision = W.getElementById('respDecision');
-                    W.write('Accept',respDecision);
+                    W.write('Accept', respDecision);
                     var remain = node.game.endowment_proposer - msg.data.offer;
+
+                    // TODO: see what to do when offer goes negative.
                     if (remain < 0) {
                         remain = 0;
                     }
+
                     node.game.remainProp = remain.toString();
-                    var remainProp = W.getElementById('remainProp');
-                    W.write(remain.toString(),remainProp);
-                    var remainResp = W.getElementById('remainResp');
+                    W.write(remain, remainProp);
                     remResp = node.game.endowment_responder - resp;
+                    
+                    // TODO: see what to do when remain foes negative.
                     if (remResp < 0) {
                         remResp = 0;
                     }
-                    W.write(remResp.toString(), remainResp);
+                    W.write(remResp, remainResp);
 
                     // Write Round Results.
                     writeRoundResults(msg.data, 1, remain);
@@ -201,7 +210,6 @@ function decision() {
                         W.getElementById("practiceReject").style.display = "";
                         W.getElementById('practice' + (msg.data.cc === 0 ? 'No':'') +
                         'Catastrophe').style.display = '';
-
                     }
 
                     node.timer.setTimestamp('resultDisplayed');
@@ -211,17 +219,20 @@ function decision() {
                         timeup: function() {
                             node.game.timer.stop();
                             this.disabled = "disabled";
-                            node.emit('PROPOSER_DONE', node.game.results, node.game.ownID);
+                            node.emit('PROPOSER_DONE');
                         }
                     };
                     node.game.timer.restart(options);
-
+                    
                     var result1 = W.getElementById('result1');
                     var result2 = W.getElementById('result2');
                     var result3 = W.getElementById('result3');
-                    var propOffer = W.getElementById('propOffer');
-                    node.game.offer =  msg.data.offer.toString();
-                    W.write(msg.data.offer.toString(),propOffer);
+                    var propOffer = W.getElementById('propOffer');            
+                    var remainProp = W.getElementById('remainProp');            
+                    var remainResp = W.getElementById('remainResp');
+
+                    W.write(msg.data.offer, propOffer);
+
                     var resp = node.game.costGE - msg.data.offer;
                     node.game.respPay = resp.toString();
 
@@ -239,13 +250,11 @@ function decision() {
                             }, result3);
                         }
                         node.game.catastrophe =  'No';
-                        var remainProp = W.getElementById('remainProp');
                         remaining = node.game.endowment_proposer;
                         node.game.remainProp = remaining.toString();
-                        W.write(remaining.toString(),remainProp);
-                        var remainResp = W.getElementById('remainResp');
+                        W.write(remaining, remainProp);
                         remResp = node.game.endowment_responder;
-                        W.write(remResp.toString(),remainResp);
+                        W.write(remResp,remainResp);
                     }
                     else {
                         if (node.player.stage.round !== 1) {
@@ -254,17 +263,16 @@ function decision() {
                                       { '%strong': {} }, result3);
                         }
                         node.game.catastrophe =  'Yes';
-                        var remainProp = W.getElementById('remainProp');
                         remaining = node.game.endowment_proposer/2;
                         node.game.remainProp = remaining.toString();
                         W.write(remaining,remainProp);
-                        var remainResp = W.getElementById('remainResp');
                         remResp = node.game.endowment_responder / 2;
-                        W.write(remResp.toString(),remainResp);
+                        W.write(remResp, remainResp);
                     }
 
                     node.game.decision =  'Reject';
                     node.game.agreement =  'No';
+
                     var respDecision = W.getElementById('respDecision');
                     W.write('Reject', respDecision);
                     
@@ -302,12 +310,13 @@ function decision() {
             var clRiskOwn = W.getElementById('clRiskOwn');
             var clRiskOther = W.getElementById('clRiskOther');
             var clRisk = W.getElementById('clRisk');
-            W.write(node.game.endowment_proposer.toString(),propEndow);
-            W.write(node.game.endowment_responder.toString(),respEndow);
-            W.write(node.game.costGE.toString(),costGHGE);
-            W.write(node.game.riskOwn.toString(),clRiskOwn);
-            W.write(node.game.riskOther.toString(),clRiskOther);
-            W.write(node.game.ClimateRisk.toString(),clRisk);
+
+            W.write(node.game.endowment_proposer, propEndow);
+            W.write(node.game.endowment_responder, respEndow);
+            W.write(node.game.costGE, costGHGE);
+            W.write(node.game.riskOwn,clRiskOwn);
+            W.write(node.game.riskOther, clRiskOther);
+            W.write(node.game.ClimateRisk, clRisk);
 
             node.on.data("OFFER", function(msg) {
                 node.timer.setTimestamp('offerArrived');
@@ -333,9 +342,10 @@ function decision() {
                 offered.style.display = '';
                 var proposer = W.getElementById('proposer');
                 var respondent = W.getElementById('respondent');
+
                 var respPay = node.game.costGE - msg.data;
-                W.write(msg.data.toString(), proposer);
-                W.write(respPay.toString(), respondent);
+                W.write(msg.data, proposer);
+                W.write(respPay, respondent);
 
                 var accept = W.getElementById('accept');
                 var reject = W.getElementById('reject');
@@ -344,8 +354,7 @@ function decision() {
                     // Test Round
                     W.getElementById('practice3').style.display = '';
 
-                    W.getElementById('otherContribution').innerHTML =
-                        msg.data.toString();
+                    W.getElementById('otherContribution').innerHTML = msg.data;
                     W.getElementById('yourContribution').innerHTML = respPay;
                     W.getElementById('climateRisk').innerHTML =
                         node.game.ClimateRisk;

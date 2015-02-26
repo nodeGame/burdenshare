@@ -128,7 +128,6 @@ function instructions() {
                 milliseconds: node.game.globals.timer.instructions4,
                 timeup: initEndowFunc
             };
-
             node.game.timer.init(options);
             node.game.timer.updateDisplay();
             node.game.timer.start(options);

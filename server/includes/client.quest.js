@@ -10,6 +10,23 @@ module.exports = questionnaire;
 
 function questionnaire() {
 
+    // Updates the bonus received from questionnaire.
+    node.on.data('ADDED_QUESTIONNAIRE_BONUS', function(msg) {
+        console.log("Profit Adjustment" + msg.data.oldAmountUCE +
+                    "+" + msg.data.newAmountUCE);
+
+        node.game.bonus = msg.data;
+    });
+
+    // Displays the last page.
+    node.on.data("win", function(msg) {
+        W.loadFrame('/burdenshare/html/ended.html', function() {
+            W.writeln("Exit code: " + msg.data);
+            node.game.timer.stop();
+            node.game.timer.setToZero();
+        });
+    });
+
     var gameName = node.game.globals.gameName;
     var chosenTreatment = node.game.globals.chosenTreatment;
     var randomBlockExecutor;
@@ -484,24 +501,6 @@ function questionnaire() {
 
         randomBlockExecutor.execute();
     }
-
-
-    // Updates the bonus received from questionnaire.
-    node.on.data('ADDED_QUESTIONNAIRE_BONUS', function(msg) {
-        console.log("Profit Adjustment" + msg.data.oldAmountUCE +
-                    "+" + msg.data.newAmountUCE);
-
-        node.game.bonus = msg.data;
-    });
-
-    // Displays the last page.
-    node.on.data("win", function(msg) {
-        W.loadFrame('/burdenshare/html/ended.html', function() {
-            W.writeln("Exit code: " + msg.data);
-            node.game.timer.stop();
-            node.game.timer.setToZero();
-        });
-    });
 
     // Listeners for PROFIT DATA in the very first round.
     node.on.data('PROFIT', function(msg) {

@@ -129,8 +129,6 @@ function init() {
     // ground level of climate risk
     node.game.risk = 7.5;
     node.game.ClimateRisk = 0;
-    // offer in each round of the game, used at the end of each round in a short question for the participant
-    node.game.proposal = 0;
 
     // node.game.response is either "accept" or "reject", used at the end of each round in a short question for the participant
     node.game.response = '';
@@ -168,6 +166,8 @@ function init() {
         var bidDone, span_dots;
 
         node.game.timeMakingOffer = node.timer.getTimeSince('readyToBid');
+
+        node.game.offer = offer;
 
         W.getElementById('submitOffer').disabled = 'disabled';
         bidDone = W.getElementById('offered');
@@ -225,7 +225,7 @@ function init() {
             // short question at the end of each round
             quest = W.getElementById("quest");
             if (node.game.decisionOffer === 1) {
-                string = 'Why did you propose ' + node.game.proposal + ' ECU ?';
+                string = 'Why did you propose ' + node.game.offer + ' ECU ?';
                 W.write(string, quest);
             }
             else {

@@ -28,7 +28,7 @@ module.exports = {
     WAIT_ROOM_TIMEOUT: 60000, // 10 min
 
     // "ra80", "sa80", "ra30", "ra80", "rotate", "random"
-    CHOSEN_TREATMENT: "sa30",
+    CHOSEN_TREATMENT: "ra30",
 
     // How much does an agreement cost? (30 or 80).
     COSTGE: 80,
@@ -43,19 +43,19 @@ module.exports = {
 
         // Game.
         initialSituation: function() {
-            return 2000; // 5 minutes
+            return 40000; // 5 minutes
             //if (node.game.globals.chosenTreatment === "sa") return 36000;
             //return 18000;
         },
 
         endOfPractice: 2000, // 10 seconds
         econGrowth: 6000, // 1 minute
-        proposer: 2000, // 2 minutes
-        reply2Prop: 2000, // 2 minutes
-        respondent: 2000, // 2 minutes
-        proposerDone: 2000, //2 minutes
-        respondentDone: 2000, // 2 minutes
-        responseDone: 3000, // 5 minutes
+        proposer: 6000, // 2 minutes
+        reply2Prop: 20000, // 2 minutes
+        respondent: 20000, // 2 minutes
+        proposerDone: 20000, //2 minutes
+        respondentDone: 20000, // 2 minutes
+        responseDone: 20000, // 5 minutes
 
         // Questionnaire.
         questionnaire: 200000, // 15 minutes.

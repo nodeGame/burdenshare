@@ -26,6 +26,7 @@ function initialSituation() {
 
     node.on.data("Endow", function(msg) {        
         var url, initialEndow;
+        var respEnd, propEnd;
 
         if (msg.data === -1) {
             alert('An error occurred.');
@@ -37,15 +38,20 @@ function initialSituation() {
         node.game.riskOwn = node.game.risk - 7.5;
         node.game.riskOther = msg.data.cl_Risk - 7.5;        
        
+        // Responder is always the other person, proposer it's me.
         node.game.endowment_responder = initialEndow;
         node.game.endowment_proposer = node.game.endowment_own;
 
         if (node.game.role == 'PROPOSER') {
             url = node.game.url_initprop;
+            propEnd = node.game.endowment_own;
+            respEnd = node.game.endowment_responder;
         }        
         // RESPONDER
         else {
             url = node.game.url_initresp;
+            respEnd = node.game.endowment_own;
+            propEnd = node.game.endowment_responder;
         }
 
         W.loadFrame(url, function() {
@@ -85,8 +91,9 @@ function initialSituation() {
             var clRiskOther = W.getElementById('clRiskOther');
             var clRisk = W.getElementById('clRisk');
 
-            W.write(node.game.endowment_proposer.toString(), propEndow);
-            W.write(node.game.endowment_responder.toString(), respEndow);
+            W.write(respEnd, respEndow);
+            W.write(propEnd, propEndow);
+
             W.write(node.game.costGE.toString(), costGHGE);
             W.write(node.game.riskOwn.toString(), clRiskOwn);
             W.write(node.game.riskOther.toString(), clRiskOther);
