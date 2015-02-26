@@ -85,7 +85,7 @@ function questionnaire() {
 
     Page.prototype.onValidAnswer = function() {
         node.set('bsc_data', {
-            player:         node.game.ownID,
+            player:         node.player.id,
             question:       this.name,
             answer:         node.game.questionnaire.currentAnswer,
             timeElapsed:    node.timer.getTimeSince(this.name),
@@ -97,13 +97,11 @@ function questionnaire() {
     Page.prototype.cleanUp = function() {
         node.game.questionnaire.currentAnswer = undefined;
         node.game.questionnaire.numberOfClicks = 0;
-        node.emit("DONE");
+        node.done();
     };
 
     Page.prototype.onInvalidAnswer = function() {
-        node.game.globals.checkID(
-            'Please select an option.'
-        );
+        node.game.globals.checkID('Please select an option.');
     };
 
     SVOPage = function(number) {
