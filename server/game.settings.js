@@ -52,10 +52,10 @@ module.exports = {
         econGrowth: 6000, // 1 minute
         proposer: 20000, // 2 minutes
         reply2Prop: 20000, // 2 minutes
-        respondent: 20000, // 2 minutes
-        proposerDone: 40000, //2 minutes
-        respondentDone: 40000, // 2 minutes
-        responseDone: 40000, // 5 minutes
+        respondent: 400000, // 2 minutes
+        proposerDone: 400000, //2 minutes
+        respondentDone: 400000, // 2 minutes
+        responseDone: 400000, // 5 minutes
 
         // Questionnaire.
         questionnaire: 200000, // 15 minutes.
