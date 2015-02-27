@@ -171,7 +171,7 @@ function init() {
 
         W.getElementById('submitOffer').disabled = 'disabled';
         bidDone = W.getElementById('offered');
-        bidDone.innerHTML = ' You offer to pay ' +  offer.toString() +
+        bidDone.innerHTML = ' You offer to pay ' + offer.toString() +
             '. Please wait until the experiment continues <br> <span id="span_dots">.</span> ';
 
         span_dots = W.getElementById('span_dots');
@@ -214,6 +214,8 @@ function init() {
                     sendDataToServer();
                 }
             };
+
+            debugger
 
             node.game.timer.init(options);
             node.game.timer.updateDisplay();
@@ -266,6 +268,8 @@ function init() {
             node.game.timer.updateDisplay();
             node.game.timer.start(options);
 
+            debugger
+            
             // Build Tables for presentation and results. - 1
             node.game.globals.buildTables();
 
@@ -478,7 +482,7 @@ function init() {
         if (!regex.test(n)) return false;
 
         var r = parseFloat(n);
-        n = parseInt(n);
+        n = parseInt(n, 10);
 
         return !isNaN(n) && isFinite(n) && (r === n) && n >= 0 &&
             n <= node.game.costGE;

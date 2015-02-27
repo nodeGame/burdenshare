@@ -314,7 +314,7 @@ function questionnaire() {
             var min = 0;
             var value = W.getElementById('offer').value;
             var r = parseFloat(value);
-            var n = parseInt(value);
+            var n = parseInt(value, 10);
 
             if (isNaN(n) || !isFinite(n) || (r !== n) || n < min || n > max) {
                 return false;

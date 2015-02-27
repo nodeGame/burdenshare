@@ -50,7 +50,7 @@ module.exports = {
 
         endOfPractice: 2000, // 10 seconds
         econGrowth: 6000, // 1 minute
-        proposer: 6000, // 2 minutes
+        proposer: 20000, // 2 minutes
         reply2Prop: 20000, // 2 minutes
         respondent: 20000, // 2 minutes
         proposerDone: 20000, //2 minutes
@@ -59,7 +59,7 @@ module.exports = {
 
         // Questionnaire.
         questionnaire: 200000, // 15 minutes.
-        questProfit: 2000, // 2.5 minutes
+        questProfit: 20000, // 2.5 minutes
 
         // Logic.
         notEnoughPlayers: 6000,

@@ -112,13 +112,13 @@ function decision() {
                 var offerInput, offer;
                 offerInput = W.getElementById('offer');
 
-                if (!that.isValidBid(offer.value)) {
+                if (!that.isValidBid(offerInput.value)) {
                     var msg = 'Please choose an integer number between 0 and ' +
                         node.game.costGE;
                     node.game.globals.checkID(msg);
                     return;
                 }
-                offer = parseInt(offer.value, 2);
+                offer = parseInt(offerInput.value, 10);
 
                 node.game.timer.stop();
                 node.game.timer.setToZero();
@@ -128,6 +128,27 @@ function decision() {
                 node.emit('BID_DONE', offer, node.game.otherID);
             };
            
+            
+            var result1 = W.getElementById('result1');
+            var result2 = W.getElementById('result2');
+            var result3 = W.getElementById('result3');
+            var propOffer = W.getElementById('propOffer');            
+            var remainProp = W.getElementById('remainProp');            
+            var remainResp = W.getElementById('remainResp');
+            var respDecision = W.getElementById('respDecision');
+
+            // What the respondent has to pay.
+            var payProp = node.game.offer;
+            var payResp = node.game.costGE - payProp;            
+            node.game.respPay = payResp;
+
+            // Check this.
+            var remainPropValue = node.game.endowment_proposer - payProp;
+            //remResp = node.game.endowment_responder - resp;
+            var remainRespValue = node.game.endowment_own - remainPropValue;
+            // TODO: see what to do when offer goes negative.
+            if (remainPropValue < 0) remainPropValue = 0;
+            if (remainRespValue < 0) remainRespValue = 0;
 
             node.on.data("ACCEPT", function(msg) {
                 W.loadFrame('html/resultProposer.html', function() {
@@ -145,58 +166,33 @@ function decision() {
                         milliseconds: node.game.globals.timer.reply2Prop,
                         timeup: function() {
                             node.game.timer.stop();
-                            this.disabled = "disabled";
                             node.emit('PROPOSER_DONE');
                         }
                     };
 
                     node.game.timer.restart(options);
 
-                    var result1 = W.getElementById('result1');
-                    var result2 = W.getElementById('result2');
-                    var result3 = W.getElementById('result3');
-                    var propOffer = W.getElementById('propOffer');            
-                    var remainProp = W.getElementById('remainProp');            
-                    var remainResp = W.getElementById('remainResp');
-
-
-                    W.write(msg.data.offer, propOffer);
-
-                    var resp = node.game.costGE - msg.data.offer;
-                    node.game.respPay = resp.toString();
-
                     if (node.player.stage.round !== 1) {
                         W.sprintf('The other player has %strongaccepted%strong your offer.', {
                             '%strong': {}  
                         } , result1);
-                        W.write('You have successfully reached an agreement against global warming.',result2);
+                        W.write('You have successfully reached an agreement against global warming.', result2);
                     }
 
                     node.game.decision =  'Accept';
                     node.game.agreement =  'Yes';
                     node.game.catastrophe =  'No';
 
-                    var respDecision = W.getElementById('respDecision');
+                    W.write(payProp, propOffer);
                     W.write('Accept', respDecision);
-                    var remain = node.game.endowment_proposer - msg.data.offer;
 
-                    // TODO: see what to do when offer goes negative.
-                    if (remain < 0) {
-                        remain = 0;
-                    }
+                    node.game.remainProp = remainPropValue;
 
-                    node.game.remainProp = remain.toString();
-                    W.write(remain, remainProp);
-                    remResp = node.game.endowment_responder - resp;
-                    
-                    // TODO: see what to do when remain foes negative.
-                    if (remResp < 0) {
-                        remResp = 0;
-                    }
-                    W.write(remResp, remainResp);
+                    W.write(remainPropValue, remainProp);
+                    W.write(remainRespValue, remainResp);
 
                     // Write Round Results.
-                    writeRoundResults(msg.data, 1, remain);
+                    writeRoundResults(msg.data, 1, remainPropValue);
 
                 });
             });
@@ -224,17 +220,8 @@ function decision() {
                     };
                     node.game.timer.restart(options);
                     
-                    var result1 = W.getElementById('result1');
-                    var result2 = W.getElementById('result2');
-                    var result3 = W.getElementById('result3');
-                    var propOffer = W.getElementById('propOffer');            
-                    var remainProp = W.getElementById('remainProp');            
-                    var remainResp = W.getElementById('remainResp');
+                    W.write(payProp, propOffer);
 
-                    W.write(msg.data.offer, propOffer);
-
-                    var resp = node.game.costGE - msg.data.offer;
-                    node.game.respPay = resp.toString();
 
                     if (node.player.stage.round !== 1) {
                         W.sprintf('The other player has %strongrejected%strong your offer.', {
@@ -250,11 +237,9 @@ function decision() {
                             }, result3);
                         }
                         node.game.catastrophe =  'No';
-                        remaining = node.game.endowment_proposer;
-                        node.game.remainProp = remaining.toString();
-                        W.write(remaining, remainProp);
-                        remResp = node.game.endowment_responder;
-                        W.write(remResp,remainResp);
+                        node.game.remainProp = node.game.endowment_proposer;
+                        W.write(node.game.remainProp, remainProp);
+                        W.write(node.game.endowment_responder, remainResp);
                     }
                     else {
                         if (node.player.stage.round !== 1) {
@@ -263,21 +248,19 @@ function decision() {
                                       { '%strong': {} }, result3);
                         }
                         node.game.catastrophe =  'Yes';
-                        remaining = node.game.endowment_proposer/2;
-                        node.game.remainProp = remaining.toString();
-                        W.write(remaining,remainProp);
-                        remResp = node.game.endowment_responder / 2;
-                        W.write(remResp, remainResp);
+
+                        node.game.remainProp = node.game.endowment_proposer/2;
+                        W.write(node.game.remainProp, remainProp);
+                        W.write(node.game.endowment_responder / 2, remainResp);
                     }
 
                     node.game.decision =  'Reject';
                     node.game.agreement =  'No';
 
-                    var respDecision = W.getElementById('respDecision');
                     W.write('Reject', respDecision);
                     
                     // Write Round Results.
-                    writeRoundResults(msg.data, 0, remaining);
+                    writeRoundResults(msg.data, 0, node.game.remainProp);
 
                 });
             });
@@ -311,8 +294,10 @@ function decision() {
             var clRiskOther = W.getElementById('clRiskOther');
             var clRisk = W.getElementById('clRisk');
 
-            W.write(node.game.endowment_proposer, propEndow);
-            W.write(node.game.endowment_responder, respEndow);
+            // Naming inverted, but correct.
+            W.write(node.game.endowment_responder, propEndow);
+            W.write(node.game.endowment_proposer, respEndow);
+
             W.write(node.game.costGE, costGHGE);
             W.write(node.game.riskOwn,clRiskOwn);
             W.write(node.game.riskOther, clRiskOther);

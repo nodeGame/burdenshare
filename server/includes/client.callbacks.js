@@ -160,13 +160,6 @@ function buildTables() {
     var clRiskOther = W.getElementById('clRiskOther');
     var clRisk = W.getElementById('clRisk');
 
-    W.write(node.game.endowment_proposer, propEndow);
-    W.write(node.game.endowment_responder, respEndow);
-    W.write(node.game.costGE, costGHGE);
-    W.write(node.game.riskOwn, clRiskOwn);
-    W.write(node.game.riskOther, clRiskOther);
-    W.write(node.game.ClimateRisk, clRisk);
-
     // Show table with result after negatiation has been finished.
     var propOffer = W.getElementById('propOffer');
     var respToPay = W.getElementById('respToPay');
@@ -176,27 +169,44 @@ function buildTables() {
     var remainProp = W.getElementById('remainProp');
     var remainResp = W.getElementById('remainResp');
 
-    if (!!propOffer) {
-        W.write(node.game.offer, propOffer);
+    var propEnd, respEnd;
+    var propRemain, respRemain;
+
+    if (node.game.role === "RESPONDENT") {
+        respEnd = node.game.remainProp;
+        propEnd = node.game.remainResp;
     }
-    if (!!respToPay) {
-        W.write(node.game.respPay, respToPay);
+    else {
+        propEnd = node.game.remainProp;
+        respEnd = node.game.remainResp;
     }
-    if (!!respDecision) {
-        W.write(node.game.decision, respDecision);
+
+    if (node.game.role == 'PROPOSER') {
+        propEnd = node.game.endowment_own;
+        respEnd = node.game.endowment_responder;
+    }        
+    // RESPONDER
+    else {
+        respEnd = node.game.endowment_own;
+        propEnd = node.game.endowment_responder;
     }
-    if (!!agreement) {
-        W.write(node.game.agreement, agreement);
-    }
-    if (!!climateCatastrophe) {
-        W.write(node.game.catastrophe, climateCatastrophe);
-    }
-    if (!!remainProp) {
-        W.write(node.game.remainProp,remainProp);
-    }
-    if (!!remainResp) {
-        W.write(node.game.remainResp, remainResp);
-    }
+
+    W.write(propEnd, propEndow);
+    W.write(respEnd, respEndow);
+
+    W.write(node.game.costGE, costGHGE);
+    W.write(node.game.riskOwn, clRiskOwn);
+    W.write(node.game.riskOther, clRiskOther);
+    W.write(node.game.ClimateRisk, clRisk);
+
+
+    W.write(node.game.offer, propOffer);
+    W.write(node.game.respPay, respToPay);
+    W.write(node.game.decision, respDecision);
+    W.write(node.game.agreement, agreement);
+    W.write(node.game.catastrophe, climateCatastrophe);
+    W.write(propEnd, remainProp);
+    W.write(respEnd, remainResp);
 }
 
 /**
