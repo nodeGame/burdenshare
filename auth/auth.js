@@ -74,6 +74,11 @@ module.exports = function(auth) {
             return false;
         }
 
+        if (code.checkedOut) {
+            console.log('token was already checked out: ', token);
+            return false;
+        }
+
         // Code in use.
         if (code.usage) {
             if (code.disconnected) {

@@ -33,7 +33,6 @@ window.onload = function() {
         }
     });
     node.on.data('TIME', function(msg) {
-        console.log(msg.data);
         timeIsUp(msg.data);
     });
 
@@ -47,6 +46,8 @@ window.onload = function() {
 
         // All players have connected. Game starts.
         if (data && data.over === 'AllPlayersConnected') return;
+
+        node.socket.disconnect();
 
         // Enough Time passed, not enough players connected.
         if (data && data.over === 'Time elapsed!!!') {
