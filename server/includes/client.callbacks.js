@@ -174,17 +174,15 @@ function buildTables() {
 
     if (node.game.role == 'PROPOSER') {
         propRemain = node.game.remainProp;
-        respRemain = node.game.remainResp;
+        W.write(propRemain, remainProp);
 
         propEnd = node.game.endowment_own;
         respEnd = node.game.endowment_responder;
-
-        W.write(propRemain, remainProp);
     }        
     // RESPONDER
     else {
-        respRemain = node.game.remainProp;
         propRemain= node.game.remainResp;
+        W.write(respRemain, remainResp);
 
         respEnd = node.game.endowment_own;
         propEnd = node.game.endowment_responder;

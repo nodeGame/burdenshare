@@ -80,7 +80,8 @@ module.exports = function(auth) {
         }
 
         // Code in use.
-        if (code.usage) {
+        //  usage is for LOCAL check, IsUsed for MTURK
+        if (code.valid === false) {
             if (code.disconnected) {
                 return true;
             }
