@@ -127,31 +127,17 @@ function decision() {
                 node.game.decisionOffer = 1;
                 node.emit('BID_DONE', offer, node.game.otherID);
             };
-           
-            
-            var result1 = W.getElementById('result1');
-            var result2 = W.getElementById('result2');
-            var result3 = W.getElementById('result3');
-            var propOffer = W.getElementById('propOffer');            
-            var remainProp = W.getElementById('remainProp');            
-            var remainResp = W.getElementById('remainResp');
-            var respDecision = W.getElementById('respDecision');
-
-            // What the respondent has to pay.
-            var payProp = node.game.offer;
-            var payResp = node.game.costGE - payProp;            
-            node.game.respPay = payResp;
-
-            // Check this.
-            var remainPropValue = node.game.endowment_proposer - payProp;
-            //remResp = node.game.endowment_responder - resp;
-            var remainRespValue = node.game.endowment_own - remainPropValue;
-            // TODO: see what to do when offer goes negative.
-            if (remainPropValue < 0) remainPropValue = 0;
-            if (remainRespValue < 0) remainRespValue = 0;
 
             node.on.data("ACCEPT", function(msg) {
                 W.loadFrame('html/resultProposer.html', function() {
+
+                    var result1 = W.getElementById('result1');
+                    var result2 = W.getElementById('result2');
+                    var result3 = W.getElementById('result3');
+                    var propOffer = W.getElementById('propOffer');            
+                    var remainProp = W.getElementById('remainProp');            
+                    var remainResp = W.getElementById('remainResp');
+                    var respDecision = W.getElementById('respDecision');
 
                     // Unhide stuff.
                     if (node.player.stage.round === 1) {
@@ -178,6 +164,20 @@ function decision() {
                         } , result1);
                         W.write('You have successfully reached an agreement against global warming.', result2);
                     }
+                    
+                    // What the respondent has to pay.
+                    var payProp = node.game.offer;
+                    var payResp = node.game.costGE - payProp;            
+                    node.game.respPay = payResp;
+
+                    // Check this.
+                    var remainPropValue = node.game.endowment_proposer - payProp;
+                    var remainRespValue = node.game.endowment_responder - payResp;
+                    // TODO: see what to do when offer goes negative.
+                    if (remainPropValue < 0) remainPropValue = 0;
+                    if (remainRespValue < 0) remainRespValue = 0;
+
+                    debugger
 
                     node.game.decision =  'Accept';
                     node.game.agreement =  'Yes';
@@ -187,6 +187,7 @@ function decision() {
                     W.write('Accept', respDecision);
 
                     node.game.remainProp = remainPropValue;
+                    node.game.remainResp = remainRespValue;
 
                     W.write(remainPropValue, remainProp);
                     W.write(remainRespValue, remainResp);
@@ -220,6 +221,28 @@ function decision() {
                     };
                     node.game.timer.restart(options);
                     
+                    var result1 = W.getElementById('result1');
+                    var result2 = W.getElementById('result2');
+                    var result3 = W.getElementById('result3');
+                    var propOffer = W.getElementById('propOffer');            
+                    var remainProp = W.getElementById('remainProp');            
+                    var remainResp = W.getElementById('remainResp');
+                    var respDecision = W.getElementById('respDecision');
+
+                    debugger
+                    // What the respondent has to pay.
+                    var payProp = node.game.offer;
+                    var payResp = node.game.costGE - payProp;            
+                    node.game.respPay = payResp;
+
+                    // Check this.
+                    var remainPropValue = node.game.endowment_proposer - payProp;
+                    //remResp = node.game.endowment_responder - resp;
+                    var remainRespValue = node.game.endowment_responder - payResp;
+                    // TODO: see what to do when offer goes negative.
+                    if (remainPropValue < 0) remainPropValue = 0;
+                    if (remainRespValue < 0) remainRespValue = 0;
+
                     W.write(payProp, propOffer);
 
 

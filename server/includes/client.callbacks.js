@@ -172,21 +172,20 @@ function buildTables() {
     var propEnd, respEnd;
     var propRemain, respRemain;
 
-    if (node.game.role === "RESPONDENT") {
-        respEnd = node.game.remainProp;
-        propEnd = node.game.remainResp;
-    }
-    else {
-        propEnd = node.game.remainProp;
-        respEnd = node.game.remainResp;
-    }
-
     if (node.game.role == 'PROPOSER') {
+        propRemain = node.game.remainProp;
+        respRemain = node.game.remainResp;
+
         propEnd = node.game.endowment_own;
         respEnd = node.game.endowment_responder;
+
+        W.write(propRemain, remainProp);
     }        
     // RESPONDER
     else {
+        respRemain = node.game.remainProp;
+        propRemain= node.game.remainResp;
+
         respEnd = node.game.endowment_own;
         propEnd = node.game.endowment_responder;
     }
@@ -205,8 +204,6 @@ function buildTables() {
     W.write(node.game.decision, respDecision);
     W.write(node.game.agreement, agreement);
     W.write(node.game.catastrophe, climateCatastrophe);
-    W.write(propEnd, remainProp);
-    W.write(respEnd, remainResp);
 }
 
 /**
