@@ -177,8 +177,6 @@ function decision() {
                     if (remainPropValue < 0) remainPropValue = 0;
                     if (remainRespValue < 0) remainRespValue = 0;
 
-                    debugger
-
                     node.game.decision =  'Accept';
                     node.game.agreement =  'Yes';
                     node.game.catastrophe =  'No';
@@ -229,7 +227,7 @@ function decision() {
                     var remainResp = W.getElementById('remainResp');
                     var respDecision = W.getElementById('respDecision');
 
-                    debugger
+
                     // What the respondent has to pay.
                     var payProp = node.game.offer;
                     var payResp = node.game.costGE - payProp;            
@@ -326,7 +324,7 @@ function decision() {
             W.write(node.game.riskOther, clRiskOther);
             W.write(node.game.ClimateRisk, clRisk);
 
-            node.on.data("OFFER", function(msg) {
+            node.on.data('OFFER', function(msg) {
                 node.timer.setTimestamp('offerArrived');
 
                 var options = {
@@ -351,8 +349,11 @@ function decision() {
                 var proposer = W.getElementById('proposer');
                 var respondent = W.getElementById('respondent');
 
-                var respPay = node.game.costGE - msg.data;
-                W.write(msg.data, proposer);
+                
+                node.game.offer = msg.data;
+                var respPay = node.game.costGE - node.game.offer;
+
+                W.write(node.game.offer, proposer);
                 W.write(respPay, respondent);
 
                 var accept = W.getElementById('accept');
@@ -368,7 +369,6 @@ function decision() {
                         node.game.ClimateRisk;
                 }
 
-                node.game.offer = msg.data;
                 node.game.respPay = "" + respPay;
 
                 accept.onclick = function() {
@@ -376,7 +376,7 @@ function decision() {
                     node.game.timer.stop();
                     // It was not a timeout.
                     node.game.decisionResponse = 1;
-                    node.emit('RESPONSE_DONE', 'ACCEPT', msg.data, node.game.otherID);
+                    node.emit('RESPONSE_DONE', 'ACCEPT');
                 };
 
                 reject.onclick = function() {
@@ -384,7 +384,7 @@ function decision() {
                     node.game.timer.stop();
                     // It was not a timeout.
                     node.game.decisionResponse = 1;
-                    node.emit('RESPONSE_DONE', 'REJECT', msg.data, node.game.otherID);
+                    node.emit('RESPONSE_DONE', 'REJECT');
                 };
                 
             });

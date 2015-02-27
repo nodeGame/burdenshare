@@ -55,16 +55,15 @@ function syncGroup(stage, myStageLevel, pl, game) {
     }
 }
 
-function writeOfferAccepted(offer) {
+function writeOfferAccepted() {
 
     var result1, result2;
     result1 = W.getElementById('result1');
     result2 = W.getElementById('result2');
 
     var propOffer = W.getElementById('propOffer');
-    node.game.offer = offer;
-    W.write(offer, propOffer);
-    var resp = node.game.costGE - offer;
+    W.write(node.game.offer, propOffer);
+    var resp = node.game.costGE - node.game.offer;
     node.game.respPay =  resp.toString();
     if (node.player.stage.round !== 1) {
         W.sprintf('You have %strongaccepted%strong the offer.', {
@@ -78,48 +77,54 @@ function writeOfferAccepted(offer) {
     var respDecision = W.getElementById('respDecision');
     node.game.decision =  'Accept';
     W.write('Accept',respDecision);
-    var remain = node.game.endowment_responder - resp;
-    if (remain < 0) {remain = 0;}
+    var remain = node.game.endowment_own - resp;
+    if (remain < 0) remain = 0;
     node.game.remainResp = remain.toString();
     node.game.remainNum = remain;
     var remainResp = W.getElementById('remainResp');
     W.write(remain,remainResp);
-    remProp = node.game.endowment_proposer - offer;
-    if (remProp < 0) {remProp = 0;}
+    remProp = node.game.endowment_responder - node.game.offer;
+    if (remProp < 0) remProp = 0;
     var remainProp = W.getElementById('remainProp');
     W.write(remProp, remainProp);
 
 }
 
 function writeCatastrophe() {
-    node.game.catastrophe =  'Yes';
-    remProp = node.game.endowment_proposer / 2;
-    var remainProp = W.getElementById('remainProp');
-    W.write(remProp,remainProp);
     if (node.player.stage.round !== 1) {
         W.sprintf('A %strongclimate catastrophe has happened%strong and ' +
                   ' destroyed a part of your endowment.', null,
                   W.getElementById('result3'));
     }
+    var remainProp = W.getElementById('remainProp');
+    W.write(node.game.endowment_responder / 2, remainProp);
+ 
 }
 
 function writeNoCatastrophe() {
-    var result3 = W.getElementById('result3');
     if (node.player.stage.round !== 1) {
-        // W.write('However, no climate catastrophe has happened.', result3);
-
         W.sprintf('However, %strongno climate catastrophe%strong has happened.', {
             '%strong': {}
-        }, result3);
+        }, W.getElementById('result3'));
     }
-    node.game.catastrophe =  'No';
-    remProp = node.game.endowment_proposer;
     var remainProp = W.getElementById('remainProp');
-    W.write(remProp,remainProp);
+    W.write(node.game.endowment_responder, remainProp);
 }
 
 function writeOfferRejected() {
-    var result1, result2;
+    var result1, result2, id;
+
+    if (node.game.catastrophe ===  'Yes') {
+        id = '';
+        node.game.remainResp = node.game.endowment_own / 2;
+        node.game.globals.writeCatastrophe();
+    }
+    else {
+        id = 'No';
+        node.game.remainResp = node.game.endowment_own;
+        node.game.globals.writeNoCatastrophe();
+    }
+
     if (node.player.stage.round !== 1) {
         result1 = W.getElementById('result1');
         result2 = W.getElementById('result2');
@@ -132,6 +137,11 @@ function writeOfferRejected() {
         W.write('You have not been able to reach an ' +
                 'agreement against global warming.', result2);
     }
+    else {
+        // Practice round.
+        W.getElementById('practice' + id + 'Catastrophe').style.display = '';
+    }
+
 
     node.game.decision =  'Reject';
     node.game.agreement =  'No';
@@ -139,15 +149,8 @@ function writeOfferRejected() {
     var respDecision = W.getElementById('respDecision');
     W.write('Reject', respDecision);
 
-    if (node.game.catastrophe ===  'Yes') {
-        node.game.remainNum = node.game.endowment_responder / 2;
-    }
-    else {
-        node.game.remainNum = node.game.endowment_responder;
-    }
 
     var remainResp = W.getElementById('remainResp');
-    node.game.remainResp = node.game.remainNum.toString();
     W.write(node.game.remainResp, remainResp);
 }
 
@@ -173,16 +176,14 @@ function buildTables() {
     var propRemain, respRemain;
 
     if (node.game.role == 'PROPOSER') {
-        propRemain = node.game.remainProp;
-        W.write(propRemain, remainProp);
+        W.write(node.game.remainProp, remainProp);
 
         propEnd = node.game.endowment_own;
         respEnd = node.game.endowment_responder;
     }        
     // RESPONDER
     else {
-        propRemain= node.game.remainResp;
-        W.write(respRemain, remainResp);
+        W.write(node.game.remainResp, remainResp);
 
         respEnd = node.game.endowment_own;
         propEnd = node.game.endowment_responder;

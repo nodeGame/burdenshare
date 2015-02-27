@@ -215,8 +215,6 @@ function init() {
                 }
             };
 
-            debugger
-
             node.game.timer.init(options);
             node.game.timer.updateDisplay();
             node.game.timer.start(options);
@@ -268,8 +266,6 @@ function init() {
             node.game.timer.updateDisplay();
             node.game.timer.start(options);
 
-            debugger
-            
             // Build Tables for presentation and results. - 1
             node.game.globals.buildTables();
 
@@ -297,14 +293,12 @@ function init() {
     });
 
     // Function called as soon as responder made his descision (accept or reject the offer)
-    node.on('RESPONSE_DONE', function(response, offer, from) {
+    node.on('RESPONSE_DONE', function(response) {
         node.game.timeResponse = node.timer.getTimeSince('offerArrived');
 
         W.loadFrame('/burdenshare/html/resultResponder.html', function() {
             var options, proceed;
             var catastrObj;
-
-            var cc, acceptPlayer;
 
             if (node.player.stage.round == 1) {
                 // Test Round.
@@ -329,47 +323,39 @@ function init() {
 
             catastrObj = {
                 cc: 0,
-                offer: offer
+                offer: node.game.offer
             };
 
             if (response === 'ACCEPT') {
-                node.say('ACCEPT', node.game.otherID, catastrObj);
-                acceptPlayer = 1;
-                cc = 0;
-
-                // Display to the user.
-                node.game.globals.writeOfferAccepted(offer);
+                // Display catastrophe to the user.
+                node.game.globals.writeOfferAccepted();
             }
-            else {
-                acceptPlayer = 0;
-
-                catastrObj.remainEndowResp = node.game.endowment_responder;
+            // REJECT.
+            else {   
 
                 // A climate catastrophe will happen with a
                 // probability of node.game.ClimateRisk.
                 if (Math.random() <= (node.game.ClimateRisk/100)) {
-                    // Climate catastrophy happened.
+                    // Climate catastrophy happened.                    
+                    node.game.catastrophe =  'Yes';
                     catastrObj.cc = 1;
                     catastrObj.remainEndowResp = node.game.endowment_responder/2;
-                    cc = 1;
-                    node.game.globals.writeCatastrophe();
                 }
-                else {
+                else {                    
                     // Climate catastrophy did not happen.
-                    cc = 0;
-                    node.game.globals.writeNoCatastrophe();
+                    node.game.catastrophe =  'No';
+                    catastrObj.remainEndowResp = node.game.endowment_responder;
                 }
 
-                // Practice round.
-                if (node.player.stage.round === 1) {
-                    W.getElementById('practice' + (cc === 0 ? 'No':'') +
-                        'Catastrophe').style.display = '';
-                }
-                node.say('REJECT', node.game.otherID, catastrObj);
+                // Display catastrophe to the user.
                 node.game.globals.writeOfferRejected();
             }
 
-            // These values are stored in the mongoDB data base table called bsc_data
+            // Send reply to other player.
+            node.say(response, node.game.otherID, catastrObj);
+
+            // These values are stored in the mongoDB 
+            // database table called bsc_data
             node.game.results = {
                 Player_ID: node.player.id,
                 Current_Round: node.player.stage.round,
@@ -386,13 +372,13 @@ function init() {
                 endowOther: node.game.endowment_responder,
                 
                 // Offer.
-                Offer: offer,
+                Offer: node.game.offer,
                 questionRound: '',
 
                 // Decision.               
-                Decision_Accept1_Reject0: acceptPlayer,
+                Decision_Accept1_Reject0: response === 'ACCEPT' ? 1 : 0,
                 Decision_Response: node.game.decisionResponse,
-                Climate_Catastrophy: cc,
+                Climate_Catastrophy: catastrObj.cc,
 
                 Profit: node.game.remainNum,
 

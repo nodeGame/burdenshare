@@ -43,7 +43,7 @@ module.exports = {
 
         // Game.
         initialSituation: function() {
-            return 40000; // 5 minutes
+            return 2000; // 5 minutes
             //if (node.game.globals.chosenTreatment === "sa") return 36000;
             //return 18000;
         },
@@ -53,9 +53,9 @@ module.exports = {
         proposer: 20000, // 2 minutes
         reply2Prop: 20000, // 2 minutes
         respondent: 20000, // 2 minutes
-        proposerDone: 20000, //2 minutes
-        respondentDone: 20000, // 2 minutes
-        responseDone: 20000, // 5 minutes
+        proposerDone: 40000, //2 minutes
+        respondentDone: 40000, // 2 minutes
+        responseDone: 40000, // 5 minutes
 
         // Questionnaire.
         questionnaire: 200000, // 15 minutes.
