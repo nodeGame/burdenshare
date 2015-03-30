@@ -11,6 +11,24 @@
                 questionnaire.currentAnswer = i;
                 return;
         }
+        
+        var oldSelected = null;
+        function makeChoiceTD(i, td) {
+            var input;
+
+            ++questionnaire.numberOfClicks;
+            questionnaire.currentAnswer = i;
+
+            if (oldSelected) {
+                oldSelected.style.border = '1px solid black';
+                oldSelected.style.background = 'white';
+            }
+            input = td.children[0];
+            input.checked = true;
+            td.style.border = '3px solid #CCC';
+            td.style.background = 'yellow';
+            oldSelected = td;
+        }
     </script>
     <style>
         th.centeredHead,
@@ -56,14 +74,14 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>
-                            <input type="radio" name="QButton" onclick="makeChoice(0,0)">
+                        <td onclick="makeChoiceTD(0, this)">
+                            <input type="radio" name="QButton">
                         </td>
-                        <td>
-                            <input type="radio" name="QButton" onclick="makeChoice(1,0)">
+                        <td onclick="makeChoiceTD(1, this)">
+                            <input type="radio" name="QButton">
                         </td>
-                        <td>
-                            <input type="radio" name="QButton" onclick="makeChoice(2,0)">
+                        <td onclick="makeChoiceTD(2, this)">
+                            <input type="radio" name="QButton">
                         </td>
                     </tr>
                 </tbody>

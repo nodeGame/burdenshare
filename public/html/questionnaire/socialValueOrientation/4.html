@@ -10,6 +10,23 @@
             ++questionnaire.numberOfClicks;
             questionnaire.currentAnswer = i;
         }
+        var oldSelected = null;
+        function makeChoiceTD(i, td) {
+            var input;
+
+            ++questionnaire.numberOfClicks;
+            questionnaire.currentAnswer = i;
+
+            if (oldSelected) {
+                oldSelected.style.border = '1px solid black';
+                oldSelected.style.background = 'white';
+            }
+            input = td.children[0];
+            input.checked = true;
+            td.style.border = '3px solid #CCC';
+            td.style.background = 'yellow';
+            oldSelected = td;
+        }
     </script>
     <style>
         th.centeredHead,
@@ -61,32 +78,32 @@
                 <tbody>
                     <tr>
                         <th class="centeredHead">Choice</th>
-                        <td>
-                            <input type="radio" name="QButton" onclick="makeChoice(0)">
+                        <td onclick="makeChoiceTD(0, this)">
+                            <input type="radio" name="QButton">
                         </td>
-                        <td>
-                            <input type="radio" name="QButton" onclick="makeChoice(1)">
+                        <td onclick="makeChoiceTD(1, this)">
+                            <input type="radio" name="QButton">
                         </td>
-                        <td>
-                            <input type="radio" name="QButton" onclick="makeChoice(2)">
+                        <td onclick="makeChoiceTD(2, this)">
+                            <input type="radio" name="QButton">
                         </td>
-                        <td>
-                            <input type="radio" name="QButton" onclick="makeChoice(3)">
+                        <td onclick="makeChoiceTD(3, this)">
+                            <input type="radio" name="QButton">
                         </td>
-                        <td>
-                            <input type="radio" name="QButton" onclick="makeChoice(4)">
+                        <td onclick="makeChoiceTD(4, this)">
+                            <input type="radio" name="QButton">
                         </td>
-                        <td>
-                            <input type="radio" name="QButton" onclick="makeChoice(5)">
+                        <td onclick="makeChoiceTD(5, this)">
+                            <input type="radio" name="QButton">
                         </td>
-                        <td>
-                            <input type="radio" name="QButton" onclick="makeChoice(6)">
+                        <td onclick="makeChoiceTD(6, this)">
+                            <input type="radio" name="QButton">
                         </td>
-                        <td>
-                            <input type="radio" name="QButton" onclick="makeChoice(7)">
+                        <td onclick="makeChoiceTD(7, this)">
+                            <input type="radio" name="QButton">
                         </td>
-                        <td>
-                            <input type="radio" name="QButton" onclick="makeChoice(8)">
+                        <td onclick="makeChoiceTD(8, this)">
+                            <input type="radio" name="QButton">
                         </td>
                     </tr>
                     <tr>
