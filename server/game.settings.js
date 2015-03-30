@@ -14,7 +14,7 @@ module.exports = {
         logic:    "game.logic.js",
         player:   "game.client.js",
         // bot:      "game.bot.js",
-        // autoplay: "game.autoplay.js",
+        autoplay: "game.autoplay.js",
     },
 
     REPEAT: 4,
@@ -23,6 +23,7 @@ module.exports = {
 
     // AUTH: 'local',
     // AUTH: 'remote',
+    // AUTH: 'none',
     AUTH: 'none',
 
     WAIT_ROOM_TIMEOUT: 60000, // 10 min
@@ -36,21 +37,21 @@ module.exports = {
     timer: {
 
         // Instructions.
-        instructions1: 2000, // 2.5 minutes
-        instructions2: 2000, // 2.5 minutes
-        instructions3: 2000, // 2.5 minutes
-        instructions4: 2000, // 2.5 minutes
+        instructions1: 20000, // 2.5 minutes
+        instructions2: 20000, // 2.5 minutes
+        instructions3: 20000, // 2.5 minutes
+        instructions4: 20000, // 2.5 minutes
 
         // Game.
         initialSituation: function() {
-            return 2000; // 5 minutes
+            return 20000; // 5 minutes
             //if (node.game.globals.chosenTreatment === "sa") return 36000;
             //return 18000;
         },
 
-        endOfPractice: 2000, // 10 seconds
-        econGrowth: 6000, // 1 minute
-        proposer: 20000, // 2 minutes
+        endOfPractice: 20000, // 10 seconds
+        econGrowth: 60000, // 1 minute
+        proposer: 200000, // 2 minutes
         reply2Prop: 20000, // 2 minutes
         respondent: 400000, // 2 minutes
         proposerDone: 400000, //2 minutes

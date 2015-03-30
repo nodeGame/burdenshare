@@ -21,6 +21,8 @@ module.exports = function(node, channel, room) {
 
     // Functions
 
+    var pinged = {};
+
     function init() {
         var that = this;
 
@@ -37,54 +39,8 @@ module.exports = function(node, channel, room) {
             node.remoteCommand('start', player.id);
         });
 
-        node.on('get.MTID', function(msg) {
-            var mtid, errUri, code;
-
-            console.log('MTID');
-
-            // TODO: remove then.
-            return {
-                success: true,
-                msg: 'Code validated.',
-                gameLink: '/burdenshare/html/informedConsent.html'
-                // gameLink: '/burdenHR/index.htm'
-            };
-
-            // M-Turk id
-            mtid = msg.data;
-
-            if ('string' !== typeof mtid) {
-                return {
-                    success: false,
-                    msg: 'Malformed or empty code received.'
-                };
-            }
-
-            code = dk.codeExists(mtid);
-
-            if (!code) {
-                // errUri = '/ultimatum/unauth.html?id=' + mtid + '&err0=1';
-                // node.redirect(errUri, msg.data.id);
-                return {
-                    success: false,
-                    msg: 'Code not found: ' + mtid
-                };
-            }
-
-            // usage is for LOCAL check, IsUsed for MTURK
-            if ((code.usage || code.IsUsed) && !code.disconnected) {
-                return {
-                    success: false,
-                    msg: 'Code already in use: ' + mtid
-                };
-            }
-
-            return {
-                success: true,
-                msg: 'Code validated.',
-                gameLink: '/burdenshare/html/informedConsent.html'
-                // gameLink: '/burdenHR/index.htm'
-            };
+        node.on.pdisconnect(function(player) {
+            console.log('Player disconnected from Requirements room: ' + player.id);
         });
 
         // Results of the requirements check.
@@ -99,6 +55,90 @@ module.exports = function(node, channel, room) {
             console.log(msg.data);
         });
     }
+
+    stager.addStage({
+        id: 'requirements',
+        cb: function() {
+            node.on('get.MTID', function(msg) {
+                var mtid, errUri, code;
+
+                console.log('MTID');
+
+                pinged[msg.from] = {};
+
+                // Test Speed here.
+                var ping, count, LIMIT, totalTime, pingMore;
+
+                count = 1;
+                LIMIT = 10;
+                pingMore = true;
+                pingId = 'ping_' + msg.from;
+
+                ping = function() {
+                    node.get('PING', function(msg) {
+                        if (pingMore) {
+                            if (++count >= LIMIT) {
+                                pingMore = false;
+                            }
+                            ping();
+                        }
+                        else {
+                            totalTime = node.timer.getTimeSince(pingId);
+                            console.log('-----> Total time: ' + totalTime);
+                        }
+                    }, msg.from);
+                };
+
+                node.timer.setTimestamp(pingId);
+                ping();
+
+
+                // TODO: remove then.
+                //             return {
+                //                 success: true,
+                //                 msg: 'Code validated.',
+                //                 gameLink: '/burdenshare/html/informedConsent.html'
+                //                 // gameLink: '/burdenHR/index.htm'
+                //             };
+
+                // M-Turk id
+                mtid = msg.data;
+
+                if ('string' !== typeof mtid) {
+                    return {
+                        success: false,
+                        msg: 'Malformed or empty code received.'
+                    };
+                }
+
+                code = dk.codeExists(mtid);
+
+                if (!code) {
+                    // errUri = '/ultimatum/unauth.html?id=' + mtid + '&err0=1';
+                    // node.redirect(errUri, msg.data.id);
+                    return {
+                        success: false,
+                        msg: 'Code not found: ' + mtid
+                    };
+                }
+
+                // usage is for LOCAL check, IsUsed for MTURK
+                if ((code.usage || code.IsUsed) && !code.disconnected) {
+                    return {
+                        success: false,
+                        msg: 'Code already in use: ' + mtid
+                    };
+                }
+
+                return {
+                    success: true,
+                    msg: 'Code validated.',
+                    gameLink: '/burdenshare/html/informedConsent.html'
+                    // gameLink: '/burdenHR/index.htm'
+                };
+            });            
+        }
+    });
 
     // Define stager.
 
@@ -121,6 +161,10 @@ module.exports = function(node, channel, room) {
     game.debug = true;
 
     game.plot = stager.getState();
+
+    game.nodename = 'requirements';
+
+    // game.verbosity = 100;
 
     return game;
 };

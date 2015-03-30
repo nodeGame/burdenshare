@@ -110,16 +110,16 @@ window.onload = function() {
     });
 
     // Connecting to waiting room.
-    //            if (location.search) {
-    //                // Pass query arguments on.
-    //                node.connect("/burdenshare", { query: location.search.substr(1) });
-    //            }
-    //            else {
-    //                node.connect("/burdenshare");
-    //            }
+    if (location.search) {
+        // Pass query arguments on.
+        node.connect("/burdenshare", { query: location.search.substr(1) });
+    }
+    else {
+        node.connect("/burdenshare");
+    }
 
     // Connect.
-    node.connect("/burdenshare");
+    // node.connect("/burdenshare");
 
     // Start waiting time timer.
     node.on.data('WAITTIME', function(msg) {
