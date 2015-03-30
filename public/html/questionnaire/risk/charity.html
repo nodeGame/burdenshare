@@ -1,7 +1,19 @@
 <!DOCTYPE html>
 <title></title>
 
-<head>
+<head>    
+     <script>
+        var node = parent.node;
+
+        node.env('auto', function() {
+            node.timer.randomExec(function() {
+                var randnu = node.JSUS.randomInt(-1, 1000);
+                node.window.getElementById('offer').value = randnu;
+                node.window.getElementById('done').click();
+            }, 
+            node.game.globals.timer.randomExec);
+        });
+    </script>
     <style>
         div.questionDiv {
             width: 720px;

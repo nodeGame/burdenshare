@@ -3,7 +3,8 @@
 
 <head>
     <script>
-        var questionnaire = parent.node.game.questionnaire;
+        var node = parent.node;
+        var questionnaire = node.game.questionnaire;
 
         function makeChoice(i, j) {
             questionnaire.numberOfClicks[j] =
@@ -27,6 +28,19 @@
             td.style.background = 'yellow';
             oldSelected[''+j] = td;
         }
+
+        node.env('auto', function() {
+            node.timer.randomExec(function() {
+                var randnu, i, inputs;
+                inputs = node.window.getElementsByTagName('tr');
+                for (i = 0; i < inputs.length ; ++i) {
+                    randnu = node.JSUS.randomInt(-1, 1);
+                    makeChoiceTD(randnu, i, inputs.children[randnu+1]);                    
+                }
+                node.window.getElementById('done').click();
+            }, 
+            node.game.globals.timer.randomExec);
+        });
     </script>
     <style>
         th.centeredHead,
@@ -65,7 +79,7 @@
             <table>
                 <thead>
                     <tr>
-                        <td></td>
+                        <th></th>
                         <th class="centeredHead">Yes</th>
                         <th class="centeredHead">No</th>
                     </tr>

@@ -367,6 +367,9 @@ function questionnaire() {
             node.game.globals.checkID('Please select an option for each row.');
         };
 
+        // Ste: was missing.
+        callbacks.push(makePageLoad(gamblesPage));
+
         randomPageExecutor.setCallbacks(callbacks);
 
         randomPageExecutor.setOnDone(function () {
