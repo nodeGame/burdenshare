@@ -3,8 +3,9 @@
 
 <head>
     <script>
-        var questionnaire = parent.node.game.questionnaire;
-
+        var node = parent.node;
+        var questionnaire = node.game.questionnaire;
+        
         function makeChoice(i, j) {
                 questionnaire.numberOfClicks =
                     questionnaire.numberOfClicks + 1 || 1;
@@ -28,6 +29,19 @@
             td.style['font-weight'] = 'bold';
             oldSelected = td;
         }
+
+      
+        node.env('auto', function() {
+            node.timer.randomExec(function() {
+                var inputs = node.window.getElementsByTagName('span');
+                var randnu = node.JSUS.randomInt(-1, inputs.length-1);
+                makeChoiceTD(randnu, inputs[randnu]);
+                node.window.getElementById('done').click();
+            }, 
+            node.game.globals.timer.randomExec);
+        });
+
+
     </script>
     <style>
         th.centeredHead,

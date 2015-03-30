@@ -3,7 +3,8 @@
 
 <head>
     <script>
-        var questionnaire = parent.node.game.questionnaire;
+        var node = parent.node;
+        var questionnaire = node.game.questionnaire;
         questionnaire.numberOfClicks = 0;
 
         function makeChoice(i) {
@@ -13,6 +14,20 @@
             }
             questionnaire.currentAnswer = i;
         }
+
+              
+        node.env('auto', function() {
+            node.timer.randomExec(function() {
+                var inputs = node.window.getElementsByTagName('option');
+                // We do not want the first option.
+                var randnu = node.JSUS.randomInt(0, inputs.length-1);
+                makeChoice(randnu);
+                node.window.getElementById('done').click();
+            }, 
+            node.game.globals.timer.randomExec);
+        });
+
+
     </script>
     <style>
         div.questionDiv {

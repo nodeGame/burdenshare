@@ -3,7 +3,8 @@
 
 <head>
     <script>
-        var questionnaire = parent.node.game.questionnaire;
+        var node = parent.node;
+        var questionnaire = node.game.questionnaire;
 
         function makeChoice(i, j) {
             unselectOther();
@@ -17,7 +18,7 @@
         function selectOther() {
             var textField = document.getElementById('divForOther');
             textField.style.display = '';
-            questionnaire.currentAnswer = 5;
+            questionnaire.currentAnswer = 6;
         }
 
         var oldSelected = null;
@@ -37,6 +38,17 @@
             td.style['font-weight'] = 'bold';
             oldSelected = td;
         }
+        
+        node.env('auto', function() {
+            node.timer.randomExec(function() {
+                var inputs = node.window.getElementsByTagName('span');
+                var randnu = node.JSUS.randomInt(-1, inputs.length-1);
+                makeChoiceTD(randnu, inputs[randnu]);
+                node.window.getElementById('done').click();
+            }, 
+            node.game.globals.timer.randomExec);
+        });
+
     </script>
 
     <style>
@@ -73,7 +85,7 @@
             <span onclick="makeChoiceTD(2,this)"><input type="radio" name="QButton"> Centre </span></br>
             <span onclick="makeChoiceTD(3,this)"><input type="radio" name="QButton"> Mostly Right </span></br>
             <span onclick="makeChoiceTD(4,this)"><input type="radio" name="QButton"> Right </span></br>           
-            <span onclick="makeChoiceTD(6,this)"><input type="radio" name="QButton"> Don't Know </span></br>
+            <span onclick="makeChoiceTD(5,this)"><input type="radio" name="QButton"> Don't Know </span></br>
             <span onclick="selectOther()"><input type="radio" name="QButton"> Other </span></br>
             <div id="divForOther" style="display: none">
                 Specify "Other":
