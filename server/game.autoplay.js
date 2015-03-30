@@ -108,23 +108,13 @@ module.exports = function(gameRoom, treatmentName, settings) {
     //We serialize the game sequence before sending it
     game.plot = stager.getState();
 
-    //Let's add the metadata information
-    game.metadata = {
-        name: 'burdenSharingControl',
-        version: '0.1.0',
-        session: 1,
-        description: 'no descr'
-    };
-
     //Other settings, optional
     game.settings = {
         publishLevel: 2
     };
 
     //auto: true = automatic run, auto: false = user input
-    game.env = {
-        auto: false
-    };
+    game.env = { auto: true };
 
     game.debug = settings.debug;
 

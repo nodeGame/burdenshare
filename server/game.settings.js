@@ -59,11 +59,14 @@ module.exports = {
         responseDone: 400000, // 5 minutes
 
         // Questionnaire.
-        questionnaire: 200000, // 15 minutes.
-        questProfit: 20000, // 2.5 minutes
+        questionnaire: 2000000, // 15 minutes.
+        questProfit: 200000, // 2.5 minutes
 
         // Logic.
         notEnoughPlayers: 6000,
+
+        // AutoPlay: time before an automatic decision is made.
+        randomExec: 3000
     },
 
     // If TRUE, throws errors. For testing.
