@@ -50,14 +50,13 @@
     <div class="questionDiv">
         <h1 class="questionExplanation">How would you place your political views on the scale from &quot;the left&quot; to &quot;the right&quot;, generally speaking?</h1>
         <p>
-
-            <input type="radio" name="QButton" onclick="makeChoice(0,0)"> Left </br>
-            <input type="radio" name="QButton" onclick="makeChoice(1,0)"> Mostly Left </br>
-            <input type="radio" name="QButton" onclick="makeChoice(2,0)"> Centre </br>
-            <input type="radio" name="QButton" onclick="makeChoice(3,0)"> Mostly Right </br>
-            <input type="radio" name="QButton" onclick="makeChoice(4,0)"> Right </br>
-            <input type="radio" name="QButton" onclick="selectOther()"> Other </br>
-            <input type="radio" name="QButton" onclick="makeChoice(6,0)"> Don't Know </br>
+            <span onclick="makeChoice(0,0)"><input type="radio" name="QButton"> Left </span></br>
+            <span onclick="makeChoice(1,0)"><input type="radio" name="QButton"> Mostly Left </span> </br>
+            <span onclick="makeChoice(2,0)"><input type="radio" name="QButton"> Centre </span></br>
+            <span onclick="makeChoice(3,0)"><input type="radio" name="QButton"> Mostly Right </span></br>
+            <span onclick="makeChoice(4,0)"><input type="radio" name="QButton"> Right </span></br>
+            <span onclick="selectOther()"><input type="radio" name="QButton"> Other </span></br>
+            <span onclick="makeChoice(6,0)"><input type="radio" name="QButton"> Don't Know </span></br>
             <div id="divForOther" style="display: none">
                 Specify "Other":
                 <br>
