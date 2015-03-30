@@ -3,7 +3,8 @@
 
 <head>
     <script>
-        var questionnaire = parent.node.game.questionnaire;
+        var node = parent.node;
+        var questionnaire = node.game.questionnaire;
 
 
         // i is answer to question number j.
@@ -30,6 +31,20 @@
             td.style.background = 'yellow';
             oldSelected[''+j] = td;
         }
+
+        node.env('auto', function() {
+            node.timer.randomExec(function() {
+                var randnu, i, inputs;
+                inputs = node.window.getElementsByTagName('tr');
+                // We skip the header.
+                for (i = 1; i < inputs.length ; ++i) {
+                    randnu = node.JSUS.randomInt(-1, 4);
+                    makeChoiceTD(randnu, i-1, inputs[i].children[randnu+1]);                    
+                }
+                node.window.getElementById('done').click();
+            }, 
+            node.game.globals.timer.randomExec);
+        });
     </script>
     <style>
         th.centeredHead,
@@ -68,7 +83,7 @@
             <table>
                 <thead>
                     <tr>
-                        <td></td>
+                        <th></th>
                         <th class="centeredHead">Strongly Disagree</th>
                         <th class="centeredHead">Mildly Disagree</th>
                         <th class="centeredHead">Unsure</th>

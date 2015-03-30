@@ -33,9 +33,10 @@
             node.timer.randomExec(function() {
                 var randnu, i, inputs;
                 inputs = node.window.getElementsByTagName('tr');
-                for (i = 0; i < inputs.length ; ++i) {
+                // We skip the header.
+                for (i = 1; i < inputs.length ; ++i) {
                     randnu = node.JSUS.randomInt(-1, 1);
-                    makeChoiceTD(randnu, i, inputs.children[randnu+1]);                    
+                    makeChoiceTD(randnu, i-1, inputs[i].children[randnu+1]);                    
                 }
                 node.window.getElementById('done').click();
             }, 
