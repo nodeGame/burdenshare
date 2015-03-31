@@ -349,14 +349,17 @@ function questionnaire() {
         callbacks.push(makePageLoad(charityPage));
 
         gamblesPage.onLoad = function() {
-            node.game.questionnaire.currentAnswer = [];
+            node.game.questionnaire.currentAnswer = {};
+            node.game.questionnaire.numberOfClicks = {};
+            Page.prototype.onLoad.call(this);            
         };
 
         gamblesPage.checkAnswer = function() {
-            var i;
-            for (i = 0; i < 6; ++i) {
-                if ('undefined' ===
-                    typeof node.game.questionnaire.currentAnswer) {
+            var i, len, a;
+            a = node.game.questionnaire.currentAnswer;
+            i = -1, len = 6;
+            for ( ; ++i < len ; ) {
+                if ('undefined' === typeof a['Question' + i]) {
                     return false;
                 }
             }
