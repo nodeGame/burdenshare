@@ -55,6 +55,8 @@ function Requirements() {
     req.onSuccess = function() {
         var str, args;
         var button, link;
+        var clientType;
+
         node.emit('HIDE', 'unsupported');
         str = '%spanYou are allowed to take the HIT.%span';
         args = {
@@ -76,11 +78,13 @@ function Requirements() {
         link.appendChild(button);
         div.appendChild(link);
 
-        // TODO: remove then.
-        setTimeout(function() {
-            // button.click();
-        }, 0);
-
+        clientType = J.getQueryString('clientType');
+        if (clientType === 'autoplay') {
+            link.href = link.href + '?clientType=autoplay';
+            setTimeout(function() {
+                button.click();
+            }, 3000);
+        }
     };
 
     // Synchronous callback function for the Requirements widget.

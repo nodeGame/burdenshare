@@ -27,6 +27,33 @@
             });
         }
     </script>
+    <script type="text/javascript">
+      var clientType, link;
+      link  = '/burdenshare/index.htm';
+
+      // Copied from JSUS.
+      function getQueryString(name, referer) {
+        var regex;
+        referer = window.location.search;
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+        results = regex.exec(referer);
+        return results === null ? false :
+            decodeURIComponent(results[1].replace(/\+/g, " "));
+      };
+      
+      function gotogame() { location.href = link; }
+
+      clientType = getQueryString('clientType');
+      if (clientType) {
+          link = link + '?clientType=' + clientType;
+          if (clientType === 'autoplay') {
+              setTimeout(function() {
+                  gotogame();
+              }, 3000);
+          }
+      }      
+    </script>
 </head>
 
 <body>
@@ -65,7 +92,7 @@
             <div class="well" id = "btn1" style="background-color:white;">
                 <p align="center">I have read and understood the consent form and agree to participate in this experiment. <br/></p>
                 <center>
-                    <a class="btn btn-success" style="font-size:85%; align:center;" onClick="location.href = '/burdenshare/index.htm'">Continue</a>
+                    <a class="btn btn-success" style="font-size:85%; align:center;" id="gotogame" onclick="gotogame()">Continue</a>
                 </center>
             </div>
 

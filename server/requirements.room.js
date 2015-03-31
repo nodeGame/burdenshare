@@ -92,14 +92,14 @@ module.exports = function(node, channel, room) {
                 node.timer.setTimestamp(pingId);
                 ping();
 
+                if (settings.AUTH === 'none') {
 
-                // TODO: remove then.
-                //             return {
-                //                 success: true,
-                //                 msg: 'Code validated.',
-                //                 gameLink: '/burdenshare/html/informedConsent.html'
-                //                 // gameLink: '/burdenHR/index.htm'
-                //             };
+                    return {
+                        success: true,
+                        msg: 'Code validated.',
+                        gameLink: '/burdenshare/html/informedConsent.html'
+                    };
+                }
 
                 // M-Turk id
                 mtid = msg.data;
