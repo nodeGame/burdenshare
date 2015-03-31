@@ -8,6 +8,7 @@
 
 module.exports = {
     makeTimeOut: makeTimeOut,
+    clearTimeOut: clearTimeOut,
     connectingPlayer: connectingPlayer
 };
 
@@ -22,7 +23,7 @@ var J = require('JSUS').JSUS;
 // Game Rooms counter.
 var counter = 1;
 
-function makeTimeOut(playerID, nbrPlayers) {
+function makeTimeOut(playerID) {
 
     var code = dk.codes.id.get(playerID);
 
@@ -31,7 +32,7 @@ function makeTimeOut(playerID, nbrPlayers) {
         exit: code.ExitCode
     };
 
-    timeOuts[nbrPlayers] = setTimeout(function() {
+    timeOuts[playerID] = setTimeout(function() {
         // console.log("Timeout has not been cleared!!!");
         dk.checkOut(code.AccessCode, code.ExitCode, 0.0, function(err, response,
                                                                   body) {
@@ -59,6 +60,11 @@ function makeTimeOut(playerID, nbrPlayers) {
         }
 
     }, settings.WAIT_ROOM_TIMEOUT);
+}
+
+function clearTimeOut(playerID) {
+    clearTimeout(timeOuts[playerID]);
+    delete timeOuts[playerID];
 }
 
 var treatments = ['ra80','sa30','ra30','sa80'];
@@ -99,7 +105,7 @@ function connectingPlayer(p) {
         node.say("PLAYERSCONNECTED", wRoom.db[i].id, wRoom.size());
     }
 
-    makeTimeOut(p.id, (wRoom.size()-1));
+    makeTimeOut(p.id);
 
     // Wait for all players to connect.
     if (wRoom.size() < NPLAYERS) {

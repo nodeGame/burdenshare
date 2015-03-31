@@ -15,7 +15,7 @@ module.exports = function(node, channel, gameRoom) {
     var dk = require('descil-mturk')();
 
     // Keep timeouts for all 4 players.
-    var timeOuts = [undefined, undefined, undefined, undefined];
+    var timeOuts = {};
 
     // Objects shared with the included libraries.
     var sharedObjs = {
@@ -83,6 +83,9 @@ module.exports = function(node, channel, gameRoom) {
         // This callback is executed when a player connects to the channel.
         node.on.pdisconnect(function(p) {
             var wRoom, i;
+
+            // Clear timeout in any case.
+            cbs.clearTimeOut(p.id);
 
             // Client really disconnected (not moved into another game room).
             if (channel.registry.clients.disconnected.get(p.id)) {
