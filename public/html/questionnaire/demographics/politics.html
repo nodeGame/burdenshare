@@ -18,7 +18,7 @@
         function selectOther() {
             var textField = document.getElementById('divForOther');
             textField.style.display = '';
-            questionnaire.currentAnswer = 6;
+            questionnaire.currentAnswer = 7;
         }
 
         var oldSelected = null;
@@ -86,6 +86,7 @@
             <span onclick="makeChoiceTD(3,this)"><input type="radio" name="QButton"> Mostly Right </span></br>
             <span onclick="makeChoiceTD(4,this)"><input type="radio" name="QButton"> Right </span></br>           
             <span onclick="makeChoiceTD(5,this)"><input type="radio" name="QButton"> Don't Know </span></br>
+            <span onclick="makeChoiceTD(6,this)"><input type="radio" name="QButton"> Prefer not to say </span></br>
             <span onclick="selectOther()"><input type="radio" name="QButton"> Other </span></br>
             <div id="divForOther" style="display: none">
                 Specify "Other":
