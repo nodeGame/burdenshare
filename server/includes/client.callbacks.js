@@ -18,7 +18,7 @@ module.exports = {
 
     // Helper - high-level.
     clearFrame: clearFrame,
-    notEnoughPlayers: notEnoughPlayers,
+    // notEnoughPlayers: notEnoughPlayers,
     syncGroup: syncGroup,
 
     // Helper - Check Data.
@@ -38,13 +38,13 @@ function clearFrame() {
     return true;
 }
 
-function notEnoughPlayers() {
-    node.game.pause();
-    W.lockScreen('One player disconnected. We are now waiting to see if ' +
-                 'he or she reconnects. If there is no reconnection ' +
-                 'within 60 seconds the game will be terminated and ' +
-                 'you will be forwarded to the questionnaire.');
-}
+// function notEnoughPlayers() {
+//     node.game.pause();
+//     W.lockScreen('One player disconnected. We are now waiting to see if ' +
+//                  'he or she reconnects. If there is no reconnection ' +
+//                  'within 60 seconds the game will be terminated and ' +
+//                  'you will be forwarded to the questionnaire.');
+// }
 
 function syncGroup(stage, myStageLevel, pl, game) {
     var p = node.game.pl.get(node.game.otherID);

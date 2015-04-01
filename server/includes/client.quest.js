@@ -29,10 +29,11 @@ function questionnaire() {
 
     var gameName = node.game.globals.gameName;
     var chosenTreatment = node.game.globals.chosenTreatment;
-    var randomBlockExecutor;
-    var socialValueOrientation, newEcologicalParadigm, risk;
-    var makePageLoad, makeBlockArray;
-    var Page, SVOPage, RiskPage, NEPPage, DemographicsPage;
+    // var randomBlockExecutor;
+    // var socialValueOrientation, newEcologicalParadigm, risk;
+    // var makePageLoad, makeBlockArray;
+    // var Page, SVOPage, RiskPage, NEPPage, DemographicsPage;
+    // var finalize;
 
     // The first time this stage is executed, we set all listeners and callbacks
     // We also initialize node.game.questionnaire, which is why we use it for
@@ -207,7 +208,9 @@ function questionnaire() {
             });
             this.cleanUp();
         }
-        node.emit("DONE");
+        else {
+            node.done();
+        }
     };
 
     NEPPage.prototype.cleanUp = function() {
@@ -371,6 +374,40 @@ function questionnaire() {
         randomPageExecutor.execute();
     };
 
+
+     finalize = function() {
+         node.set('bsc_quest', {
+             player:         node.player.id,
+             question:       'overall',
+             timeElapsed:    node.timer.getTimeSince("BEGIN_QUESTIONNAIRE"),
+             blockOrder:     node.game.questionnaire.blocks
+         });
+         W.loadFrame('/burdenshare/html/questionnaire' +
+                     '/profit_adjustment.html', function() {
+
+                         W.getElementById('continue').onclick = function() {
+                             node.game.timer.stop();
+                             node.say("QUEST_DONE", "SERVER",
+                                      node.game.bonus.newAmountUSD || 0);
+                         };
+                         W.write(node.game.bonus.newAmountUCE || 0,
+                                 W.getElementById("amountECU")
+                                );
+                         W.write(node.game.bonus.oldAmountUCE || 0,
+                                 W.getElementById("ECUfromGame")
+                                );
+                         W.write(
+                             (node.game.bonus.newAmountUCE -
+                              node.game.bonus.oldAmountUCE) || 0,
+                             W.getElementById("ECUfromQuest")
+                         );
+                         W.write(((node.game.bonus.newAmountUSD || 0) + 1.0).toFixed(2) + ' $',
+                                 W.getElementById("amountUSD")
+                                );
+                     });
+     };
+
+
     // Callback for the demographics block.
     // This block is NOT randomized!
     demographics = function() {
@@ -379,37 +416,6 @@ function questionnaire() {
             'occupation', 'participation'
         ];
         var i;
-        var finalize = function() {
-            node.set('bsc_quest', {
-                player:         node.player.id,
-                timeElapsed:    node.timer.getTimeSince("BEGIN_QUESTIONNAIRE"),
-                blockOrder:     node.game.questionnaire.blocks
-            });
-            W.loadFrame('/burdenshare/html/questionnaire' +
-                        '/profit_adjustment.html', function() {
-
-                            W.getElementById('continue').onclick = function() {
-                                node.game.timer.stop();
-                                node.say("QUEST_DONE", "SERVER",
-                                         node.game.bonus.newAmountUSD);
-                            };
-                            W.write(node.game.bonus.newAmountUCE,
-                                    W.getElementById("amountECU")
-                                   );
-                            W.write(node.game.bonus.oldAmountUCE,
-                                    W.getElementById("ECUfromGame")
-                                   );
-                            W.write(
-                                node.game.bonus.newAmountUCE -
-                                    node.game.bonus.oldAmountUCE,
-                                W.getElementById("ECUfromQuest")
-                            );
-                            W.write((node.game.bonus.newAmountUSD + 1.0).toFixed(2) + ' $',
-                                    W.getElementById("amountUSD")
-                                   );
-                        });
-        };
-
         var begin = new DemographicsPage(names[names.length - 1], finalize);
 
         node.game.questionnaire.blocks.push('demographics');
@@ -444,9 +450,6 @@ function questionnaire() {
     randomBlockExecutor.setOnDone(
         demographics
     );
-
-    
-
 
     function displayWin() {
         node.game.timeResult = Date.now();

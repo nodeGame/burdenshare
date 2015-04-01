@@ -207,7 +207,9 @@ function questionnaire() {
             });
             this.cleanUp();
         }
-        node.emit("DONE");
+        else {
+            node.done();
+        }
     };
 
     NEPPage.prototype.cleanUp = function() {

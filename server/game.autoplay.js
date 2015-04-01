@@ -28,7 +28,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     stager.extendStep('instructions', {
         cb: cbs.instructions,
-        minPlayers: [ 4, cbs.notEnoughPlayers ],
         steprule: stepRules.SYNC_STAGE,
         syncOnLoaded: false,
         done: cbs.clearFrame
@@ -81,7 +80,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     stager.extendStage('burdenSharingControl', {
         steps: ["syncGroups", "initialSituation", "decision"],
-        minPlayers: [ 4, cbs.notEnoughPlayers ],
         steprule:  stepRules.SYNC_STEP,
         done: cbs.clearFrame
     });

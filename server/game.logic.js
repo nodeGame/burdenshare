@@ -170,9 +170,9 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                 });
 
                 node.say('ADDED_QUESTIONNAIRE_BONUS', msg.data.player, {
-                    oldAmountUCE: oldUCE,
-                    newAmountUCE: newAmountUCE,
-                    newAmountUSD: newAmountUSD
+                    oldAmountUCE: oldUCE || 0,
+                    newAmountUCE: newAmountUCE || 0,
+                    newAmountUSD: newAmountUSD || 0
                 });
             });
         }
@@ -341,13 +341,24 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     });
 
     function notEnoughPlayers() {
+        var msg, secs;
         console.log('Warning: not enough players!!');
         node.timer.setTimestamp('burden_paused');
+
+        secs = Math.floor(settings.timer.notEnoughPlayers / 1000);
+        msg = 'One player disconnected. We are now waiting to see if ' +
+            'he or she reconnects. If there is no reconnection ' +
+            'within ' + secs + ' seconds the game will be terminated and' +
+            'you will be forwarded to the questionnaire.'
+
+        // Pause all other players. (TODO: Should be ROOM_PLAYERS?)
+        node.remoteCommand('pause', 'ROOM', msg);
+
         this.countdown = setTimeout(function() {
             console.log('Countdown fired. Going to Step: questionnaire.');
-            node.remoteCommand('resume', 'ALL');
+            node.remoteCommand('resume', 'ROOM');
             // if syncStepping = false
-            node.remoteCommand('goto_step', 'ALL', '3.1');
+            node.remoteCommand('goto_step', 'ROOM', '3.1');
             node.game.gotoStep(new GameStage('3.1'));
         }, settings.timer.notEnoughPlayers);
     }
