@@ -456,6 +456,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                     bonusSVO = bonusFromSelf + bonusFromOther;
 
                     profit = bonus + cbs.round((bonusSVO / 50), 2);
+
+                    if (isNaN(profit)) debugger;
                     
                     dbs.mdbWriteProfit.update({
                         playerID: {
