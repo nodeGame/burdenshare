@@ -39,7 +39,9 @@ module.exports = [
 
             // A client changes stageLevel (e.g. INIT, CALLBACK_EXECUTED);
             onStageLevelUpdate: true,
-        }
+        },
+
+        enableReconnections: false
     }
 
     ,
@@ -61,12 +63,14 @@ module.exports = [
             name: 'requirementsBurden'
         },
 
-//        notify: {
-//            onConnect: false,
-//            onStageUpdate: false,
-//            onStageLevelUpdate: false,
-//            onStageLoadedUpdate: false
-//        }
+        notify: {
+            onConnect: false,
+            onStageUpdate: false,
+            onStageLevelUpdate: false,
+            onStageLoadedUpdate: false
+        },
+
+        enableReconnections: false
 
     }
 ];

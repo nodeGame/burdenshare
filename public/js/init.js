@@ -29,7 +29,12 @@ window.onload = function() {
         
         // Might not exists, when switching across pages.
         if (pConn) {
-            pConn.innerHTML = "Number of participants already in the group:  " + msg.data + " of 4";
+            try {
+                pConn.innerHTML = "Number of participants already in the group:  " + msg.data + " of 4";
+            }
+            catch(e) {
+                // Nothing...
+            }
         }
     });
     node.on.data('TIME', function(msg) {
@@ -148,5 +153,4 @@ window.onload = function() {
 
         }, 1000);
     });
-    
 };

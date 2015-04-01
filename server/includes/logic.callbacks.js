@@ -94,26 +94,15 @@ function playerReconnects(p) {
     // Start the game on the reconnecting client.
     node.remoteCommand('start', p.id, { step: false });
 
-    // Pause the game on the reconnecting client, will be resumed later.
-    // node.remoteCommand('pause', p.id);
-
     // It is not added automatically.
     // TODO: add it automatically if we return TRUE? It must be done
     // both in the alias and the real event handler
     node.game.pl.add(p);
 
-    // Pause the game on the reconnecting client, will be resumed later.
-    //node.remoteCommand('pause', p.id);
-
     if (!node.game.checkPlistSize()) {
         console.log('Player reconnected, but not yet enough players');
         return;
     }
-
-    // The client pauses itself if there aren't enough players, so this
-    // has to come after checkPlistSize (this is the last player
-    // reconnecting):
-    // node.remoteCommand('pause', p.id);
 
     // Move logic to previous stage.
     node.game.gotoStep(RECON_STAGE);
@@ -130,14 +119,8 @@ function playerReconnects(p) {
     else {
         // Will send all the players to current stage
         // (also those who were there already).
-        // node.remoteCommand('goto_step', 'ROOM', RECON_STAGE);
-        // was to ALL. Moved in the loop below.
-
-
         setTimeout(function() {
-            // Pause the game on the reconnecting client, will be resumed later.
-            //  node.remoteCommand('pause', p.id);
-            // Unpause ALL players
+            // Unpause ALL players.
             node.game.pl.each(function(player) {
                 node.remoteCommand('goto_step', player.id, RECON_STAGE);
                 if (player.id !== p.id) {

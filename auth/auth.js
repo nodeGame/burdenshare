@@ -110,7 +110,6 @@ module.exports = function(auth) {
             return cid;
         }
 
-
         // // Return the id only if token was validated.
         // // More checks could be done here to ensure that token is unique in ids.
         ids = channel.registry.getIds();

@@ -18,7 +18,6 @@ module.exports = {
 
     // Helper - high-level.
     clearFrame: clearFrame,
-    notEnoughPlayers: notEnoughPlayers,
     syncGroup: syncGroup,
 
     // Helper - Check Data.
@@ -36,14 +35,6 @@ module.exports = {
 function clearFrame() {
     node.emit('INPUT_DISABLE');
     return true;
-}
-
-function notEnoughPlayers() {
-    node.game.pause();
-    W.lockScreen('One player disconnected. We are now waiting to see if ' +
-                 'he or she reconnects. If there is no reconnection ' +
-                 'within 60 seconds the game will be terminated and ' +
-                 'you will be forwarded to the questionnaire.');
 }
 
 function syncGroup(stage, myStageLevel, pl, game) {
