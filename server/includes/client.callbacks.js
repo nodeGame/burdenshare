@@ -18,9 +18,8 @@ module.exports = {
 
     // Helper - high-level.
     clearFrame: clearFrame,
-    // notEnoughPlayers: notEnoughPlayers,
     syncGroup: syncGroup,
-
+    
     // Helper - Check Data.
     checkID: checkID,
     checkEntry: checkEntry,
@@ -31,6 +30,8 @@ module.exports = {
     writeOfferRejected: writeOfferRejected,
     writeCatastrophe: writeCatastrophe,
     writeNoCatastrophe: writeNoCatastrophe,
+    writeRoundResults: writeRoundResults
+
 };
 
 function clearFrame() {
@@ -245,4 +246,49 @@ function checkID(msg) {
             },
         }
     });
+}
+
+function writeRoundResults(data, accept, remain, who) {
+    var proceed, timeDecision;
+
+    timeDecition = who === 'PROPOSER' ? 
+        node.game.timeMakingOffer : node.game.timeResponse;
+    
+    node.game.results = {
+        Player_ID: node.player.id,
+        Current_Round: node.player.stage.round,
+        GroupNumber: node.game.nbrGroup,
+        Role_Of_Player: node.game.role,
+
+        // Risk.
+        riskOwn: node.game.riskOwn,
+        riskOther: node.game.riskOther,
+        riskGroup: (node.game.riskOwn + node.game.riskOther + 15),
+
+        // Endow.                
+        endowOwn: node.game.endowment_own,
+        endowOther: node.game.endowment_responder,
+        
+        // Offer.
+        Offer: node.game.offer,
+        questionRound: '',
+
+        // Decision.               
+        Decision_Accept1_Reject0: accept,
+        Decision_Response: node.game.decisionResponse,
+        Climate_Catastrophy: data.cc,
+
+        Profit: remain,
+
+        // Time.
+        timeInitSitua: node.game.timeInitialSituation,
+        timeDecision: timeDecision,
+    };
+
+    proceed = W.getElementById('continue');        
+    proceed.onclick = function() {
+        node.game.timer.stop();
+        this.disabled = "disabled";
+        node.emit(who + '_DONE');
+    };
 }

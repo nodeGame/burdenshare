@@ -20,49 +20,6 @@ function decision() {
 
     /////////////////////////////////// PROPOSER ///////////////////////////////////
 
-
-    function writeRoundResults(data, accept, remain) {
-        var proceed;
-
-        node.game.results = {
-            Player_ID: node.player.id,
-            Current_Round: node.player.stage.round,
-            GroupNumber: node.game.nbrGroup,
-            Role_Of_Player: node.game.role,
-
-            // Risk.
-            riskOwn: node.game.riskOwn,
-            riskOther: node.game.riskOther,
-            riskGroup: (node.game.riskOwn + node.game.riskOther + 15),
-
-            // Endow.                
-            endowOwn: node.game.endowment_own,
-            endowOther: node.game.endowment_responder,
-            
-            // Offer.
-            Offer: node.game.offer,
-            questionRound: '',
-
-            // Decision.               
-            Decision_Accept1_Reject0: accept,
-            Decision_Response: node.game.decisionResponse,
-            Climate_Catastrophy: data.cc,
-
-            Profit: remain,
-
-            // Time.
-            timeInitSitua: node.game.timeInitialSituation,
-            timeDecision: node.game.timeMakingOffer
-        };
-
-        proceed = W.getElementById('continue');        
-        proceed.onclick = function() {
-            node.game.timer.stop();
-            this.disabled = "disabled";
-            node.emit('PROPOSER_DONE');
-        };
-    }
-
     if (node.game.role == 'PROPOSER') {
         W.loadFrame(node.game.url_bidder, function() {
             var options;
@@ -191,7 +148,10 @@ function decision() {
                     W.write(remainRespValue, remainResp);
 
                     // Write Round Results.
-                    writeRoundResults(msg.data, 1, remainPropValue);
+                    node.game.globals.writeRoundResults(msg.data,
+                                                        1,
+                                                        remainPropValue,
+                                                        'PROPOSER');
 
                 });
             });
@@ -281,8 +241,10 @@ function decision() {
                     W.write('Reject', respDecision);
                     
                     // Write Round Results.
-                    writeRoundResults(msg.data, 0, node.game.remainProp);
-
+                    node.game.globals.writeRoundResults(msg.data,
+                                                        0,
+                                                        node.game.remainProp,
+                                                        'PROPOSER');
                 });
             });
 
@@ -292,6 +254,7 @@ function decision() {
 
 
     /////////////////////////////////// RESPONDENT ///////////////////////////////////
+
     else if (node.game.role == 'RESPONDENT') {
         W.loadFrame(node.game.url_resp, function() {
             W.getElementById("instructionsFrame").setAttribute(

@@ -100,7 +100,8 @@ module.exports = function(gameRoom, treatmentName, settings) {
         writeCatastrophe: cbs.writeCatastrophe,
         writeNoCatastrophe: cbs.writeNoCatastrophe,
         writeOfferRejected: cbs.writeOfferRejected,
-        writeOfferAccepted: cbs.writeOfferAccepted
+        writeOfferAccepted: cbs.writeOfferAccepted,
+        writeRoundResults: cbs.writeRoundResults
     });
 
     //We serialize the game sequence before sending it

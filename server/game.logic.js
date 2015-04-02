@@ -348,7 +348,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         secs = Math.floor(settings.timer.notEnoughPlayers / 1000);
         msg = 'One player disconnected. We are now waiting to see if ' +
             'he or she reconnects. If there is no reconnection ' +
-            'within ' + secs + ' seconds the game will be terminated and' +
+            'within ' + secs + ' seconds the game will be terminated and ' +
             'you will be forwarded to the questionnaire.'
 
         // Pause all other players. (TODO: Should be ROOM_PLAYERS?)
@@ -455,10 +455,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
                     bonusSVO = bonusFromSelf + bonusFromOther;
 
-                    profit = bonus + cbs.round((bonusSVO / 50), 2);
+                    profit = cbs.round((bonus + (bonusSVO / 50)), 2);
 
-                    if (isNaN(profit)) debugger;
-                    
                     dbs.mdbWriteProfit.update({
                         playerID: {
                             "Player_ID": idList[i]

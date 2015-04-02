@@ -354,46 +354,10 @@ function init() {
             // Send reply to other player.
             node.say(response, node.game.otherID, catastrObj);
 
-            // These values are stored in the mongoDB 
-            // database table called bsc_data
-            node.game.results = {
-                Player_ID: node.player.id,
-                Current_Round: node.player.stage.round,
-                GroupNumber: node.game.nbrGroup,
-                Role_Of_Player: node.game.role,
-
-                // Risk.
-                riskOwn: node.game.riskOwn,
-                riskOther: node.game.riskOther,
-                riskGroup: (node.game.riskOwn + node.game.riskOther + 15),
-
-                // Endow.                
-                endowOwn: node.game.endowment_own,
-                endowOther: node.game.endowment_responder,
-                
-                // Offer.
-                Offer: node.game.offer,
-                questionRound: '',
-
-                // Decision.               
-                Decision_Accept1_Reject0: response === 'ACCEPT' ? 1 : 0,
-                Decision_Response: node.game.decisionResponse,
-                Climate_Catastrophy: catastrObj.cc,
-
-                Profit: node.game.remainNum,
-
-                // Time.
-                timeInitSitua: node.game.timeInitialSituation,
-                timeDecision: node.game.timeResponse,
-
-            };
-
-            proceed = W.getElementById('continue');
-            proceed.onclick = function() {
-                node.game.timer.stop();
-                this.disabled = "disabled";
-                node.emit('RESPONDER_DONE');
-            };
+            node.game.globals.writeRoundResults(catastrObj,
+                                                response === 'ACCEPT' ? 1 : 0,
+                                                node.game.remainNum,
+                                                'RESPONDER');
         });
     });
 

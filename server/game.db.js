@@ -208,20 +208,3 @@ module.exports = {
 
     mdbWriteProfit: mdbWriteProfit
 };
-
-// Not used ?
-
-
-// mdbInstrTime = ngdb.getLayer('MongoDB', {
-//     dbName: 'burden_sharing',
-//     collectionName: 'bsc_instrTime'
-// });
-// 
-// decorateMongoObj(mdbInstrTime);
-
-// mdbWrite_gameTime = ngdb.getLayer('MongoDB', {
-//     dbName: 'burden_sharing',
-//     collectionName: 'bsc_gameTime'
-// });
-// 
-// decorateMongoObj(mdbWrite_gameTime);

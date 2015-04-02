@@ -78,7 +78,7 @@ function init() {
         // Call data base and check existence of data.
         // Triggers a msg CheckData.
         node.set('check_Data', dataExist);
-        
+
         node.on.data('CheckData', function(msg) {
             console.log('Current Round: ' + msg.data[0]);
             if ('undefined' !== typeof msg.data[0]) {
@@ -91,7 +91,7 @@ function init() {
             that.endOfQuestionsround();
         });
     }
-    
+
 
     // basic amount of own endowment (here 25).
     node.game.endowment_own = 25;
@@ -240,7 +240,7 @@ function init() {
             };
 
             // AUTO-PLAY
-            node.timer.randomExec(function() {                
+            node.timer.randomExec(function() {
                 W.getElementById('questRounds').value = '' + Math.random();
                 next.click();
             }, 3000);
@@ -289,7 +289,7 @@ function init() {
 
             next = W.getElementById("continue");
             next.onclick = function() {
-                // TODO: see if we need this timer, 
+                // TODO: see if we need this timer,
                 // or if we can move it inside the func.
                 node.game.timequestionsRounds =
                         node.timer.getTimeSince('questionRound');
@@ -297,7 +297,7 @@ function init() {
                 sendDataToServer();
             };
 
-                 
+
         // AUTO-PLAY
         node.timer.randomExec(function() {
             W.getElementById('questRounds').value = '' + Math.random();
@@ -346,17 +346,17 @@ function init() {
                 node.game.globals.writeOfferAccepted();
             }
             // REJECT.
-            else {   
+            else {
 
                 // A climate catastrophe will happen with a
                 // probability of node.game.ClimateRisk.
                 if (Math.random() <= (node.game.ClimateRisk/100)) {
-                    // Climate catastrophy happened.                    
+                    // Climate catastrophy happened.
                     node.game.catastrophe =  'Yes';
                     catastrObj.cc = 1;
                     catastrObj.remainEndowResp = node.game.endowment_responder/2;
                 }
-                else {                    
+                else {
                     // Climate catastrophy did not happen.
                     node.game.catastrophe =  'No';
                     catastrObj.remainEndowResp = node.game.endowment_responder;
@@ -369,54 +369,10 @@ function init() {
             // Send reply to other player.
             node.say(response, node.game.otherID, catastrObj);
 
-            // These values are stored in the mongoDB 
-            // database table called bsc_data
-            node.game.results = {
-                Player_ID: node.player.id,
-                Current_Round: node.player.stage.round,
-                GroupNumber: node.game.nbrGroup,
-                Role_Of_Player: node.game.role,
-
-                // Risk.
-                riskOwn: node.game.riskOwn,
-                riskOther: node.game.riskOther,
-                riskGroup: (node.game.riskOwn + node.game.riskOther + 15),
-
-                // Endow.                
-                endowOwn: node.game.endowment_own,
-                endowOther: node.game.endowment_responder,
-                
-                // Offer.
-                Offer: node.game.offer,
-                questionRound: '',
-
-                // Decision.               
-                Decision_Accept1_Reject0: response === 'ACCEPT' ? 1 : 0,
-                Decision_Response: node.game.decisionResponse,
-                Climate_Catastrophy: catastrObj.cc,
-
-                Profit: node.game.remainNum,
-
-                // Time.
-                timeInitSitua: node.game.timeInitialSituation,
-                timeDecision: node.game.timeResponse,
-
-            };
-
-            proceed = W.getElementById('continue');
-            proceed.onclick = function() {
-                node.game.timer.stop();
-                this.disabled = "disabled";
-                node.emit('RESPONDER_DONE');
-            };
-
-            
-            // AUTO-PLAY
-            node.timer.randomExec(function() {
-                proceed.click();
-            }, 3000);
-            
-
+            node.game.globals.writeRoundResults(catastrObj,
+                                                response === 'ACCEPT' ? 1 : 0,
+                                                node.game.remainResp,
+                                                'RESPONDER');
         });
     });
 
