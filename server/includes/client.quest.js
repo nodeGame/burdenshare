@@ -52,6 +52,7 @@ function questionnaire() {
     node.game.questionnaire = {
         blocks: [],
         SVOChoices: {length: 0},
+        oldSelected: null,
     };
 
     randomBlockExecutor = new RandomOrderExecutor();
@@ -113,6 +114,7 @@ function questionnaire() {
     Page.prototype.cleanUp = function() {
         node.game.questionnaire.currentAnswer = undefined;
         node.game.questionnaire.numberOfClicks = 0;
+        node.game.questionnaire.oldSelected = null;
         node.done();
     };
 
@@ -134,6 +136,7 @@ function questionnaire() {
         node.game.questionnaire.SVOChoices.length++;
         Page.prototype.onValidAnswer.call(this);
     };
+
 
     RiskPage = function(name) {
         Page.call(this, 'risk', name);
@@ -164,6 +167,7 @@ function questionnaire() {
             this.order = W.shuffleElements(questionsBody);
             node.game.questionnaire.currentAnswer = {};
             node.game.questionnaire.numberOfClicks = {};
+            node.game.questionnaire.oldSelected = {};
         }
         else {
             W.shuffleElements(questionsBody, this.order);
@@ -344,6 +348,7 @@ function questionnaire() {
         gamblesPage.onLoad = function() {
             node.game.questionnaire.currentAnswer = {};
             node.game.questionnaire.numberOfClicks = {};
+            node.game.questionnaire.oldSelected = {};
             Page.prototype.onLoad.call(this);            
         };
 

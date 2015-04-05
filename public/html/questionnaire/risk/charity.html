@@ -1,19 +1,7 @@
 <!DOCTYPE html>
 <title></title>
 
-<head>    
-     <script>
-        var node = parent.node;
-
-        node.env('auto', function() {
-            node.timer.randomExec(function() {
-                var randnu = node.JSUS.randomInt(-1, 1000);
-                node.window.getElementById('offer').value = randnu;
-                node.window.getElementById('done').click();
-            }, 
-            node.game.globals.timer.randomExec);
-        });
-    </script>
+<head>
     <style>
         div.questionDiv {
             width: 720px;
@@ -39,5 +27,19 @@
         <p>
             <input type="button" id="done" value="Submit Answer" class="btn btn-lg btn-primary">
         </p>
-    </div>
+    </div>    
+     <script>
+        var node = parent.node;
+
+      window.onload = function() {
+        node.env('auto', function() {
+            node.timer.randomExec(function() {
+                var randnu = node.JSUS.randomInt(-1, 1000);
+                node.window.getElementById('offer').value = randnu;
+                node.window.getElementById('done').click();
+            }, 
+            node.game.globals.timer.randomExec);           
+        });
+        };
+    </script>
 </body>

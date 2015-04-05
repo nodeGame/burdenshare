@@ -2,33 +2,10 @@
 <title></title>
 
 <head>
-    <script>
-        var node = parent.node;
-        var questionnaire = node.game.questionnaire;
-        questionnaire.numberOfClicks = 0;
-
-        function makeChoice(i) {
-            ++questionnaire.numberOfClicks;
-            if (i == 0) {
-                return;
-            }
-            questionnaire.currentAnswer = i;
-        }
-
-              
-        node.env('auto', function() {
-            node.timer.randomExec(function() {
-                var inputs = node.window.getElementsByTagName('option');
-                // We do not want the first option.
-                var randnu = node.JSUS.randomInt(0, inputs.length-1);
-                makeChoice(randnu);
-                node.window.getElementById('done').click();
-            }, 
-            node.game.globals.timer.randomExec);
-        });
-
-
-    </script>
+  <script type="text/javascript">
+    // Export makeChoiceSELECT.
+    makeChoiceSELECT = parent.node.game.globals.makeChoiceSELECT;
+  </script>
     <style>
         div.questionDiv {
             width: 720px;
@@ -49,7 +26,7 @@
     <div class="questionDiv">
         <h1 class="questionExplanation">Which occupational category best describes your employment?</h1>
         <p>
-            <select onchange="makeChoice(this.selectedIndex)">
+            <select onchange="makeChoiceSELECT(this.selectedIndex)">
                 <option></option>
                 <option>Management: professional or related occupations</option>
                 <option>Management: business or financial operations occupations</option>
@@ -94,4 +71,5 @@
             <input type="button" id="done" value="Submit Answer" class="btn btn-lg btn-primary">
         </p>
     </div>
+  
 </body>

@@ -2,32 +2,12 @@
 <title></title>
 
 <head>
-    <script>
-        var node = parent.node;
-        var questionnaire = node.game.questionnaire;
-        questionnaire.numberOfClicks = 0;
 
-        function makeChoice(i) {
-            ++questionnaire.numberOfClicks;
-            if (i == 0) {
-                return;
-            }
-            questionnaire.currentAnswer = i;
-        }
+  <script type="text/javascript">
+    // Export makeChoiceSELECT.
+    makeChoiceSELECT = parent.node.game.globals.makeChoiceSELECT;
+  </script>
 
-       
-        node.env('auto', function() {
-            node.timer.randomExec(function() {
-                var inputs = node.window.getElementsByTagName('option');
-                // We do not want the first option.
-                var randnu = node.JSUS.randomInt(0, inputs.length-1);
-                makeChoice(randnu);
-                node.window.getElementById('done').click();
-            }, 
-            node.game.globals.timer.randomExec);
-        });
-
-    </script>
     <style>
         div.questionDiv {
             width: 720px;
@@ -48,7 +28,7 @@
     <div class="questionDiv">
         <h1 class="questionExplanation">Thinking back over the last year, what was your household's annual income?</h1>
         <p>
-            <select onchange="makeChoice(this.selectedIndex)">
+            <select onchange="makeChoiceSELECT(this.selectedIndex)">
                 <option></option>
                 <option>Less than $10000</option>
                 <option>$10,000 - $19,999</option>

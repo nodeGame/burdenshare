@@ -2,43 +2,9 @@
 <title></title>
 
 <head>
-    <script>
-        var node = parent.node;
-        var questionnaire = node.game.questionnaire;
-
-        function makeChoice(i, j) {
-                questionnaire.numberOfClicks =
-                    questionnaire.numberOfClicks + 1 || 1;
-                questionnaire.currentAnswer = i;
-        }
-        var oldSelected = null;
-        function makeChoiceTD(i, td) {
-            var input;
-            questionnaire.numberOfClicks =
-                    questionnaire.numberOfClicks + 1 || 1;
-                questionnaire.currentAnswer = i;
-            
-        
-            if (oldSelected) {
-                oldSelected.style['font-weight'] = 'normal';
-            }
-
-            input = td.children[0];
-            input.checked = true;
-            td.style['font-weight'] = 'bold';
-            oldSelected = td;
-        }
-    
-        node.env('auto', function() {
-            node.timer.randomExec(function() {
-                var inputs = node.window.getElementsByTagName('span');
-                var randnu = node.JSUS.randomInt(-1, inputs.length-1);
-                makeChoiceTD(randnu, inputs[randnu]);
-                node.window.getElementById('done').click();
-            }, 
-            node.game.globals.timer.randomExec);
-        });
-
+    <script type="text/javascript">
+        // Export makeChoiceSPAN.
+        makeChoiceSPAN = parent.node.game.globals.makeChoiceSPAN;
     </script>
     <style>
         th.centeredHead,
@@ -74,10 +40,10 @@
     <div class="questionDiv">
         <h1 class="questionExplanation">Are you male or female?</h1>
         <p>
-          <span onclick="makeChoiceTD(0,this)"><input type="radio" name="QButton"> Male </span></br>
-          <span onclick="makeChoiceTD(1,this)"><input type="radio" name="QButton"> Female </span></br>
-          <span onclick="makeChoiceTD(2,this)"><input type="radio" name="QButton"> Other </span></br>
-          <span onclick="makeChoiceTD(3,this)"><input type="radio" name="QButton"> Prefer not to say </span></br>
+          <span onclick="makeChoiceSPAN(0,this)"><input type="radio" name="QButton"> Male </span></br>
+          <span onclick="makeChoiceSPAN(1,this)"><input type="radio" name="QButton"> Female </span></br>
+          <span onclick="makeChoiceSPAN(2,this)"><input type="radio" name="QButton"> Other </span></br>
+          <span onclick="makeChoiceSPAN(3,this)"><input type="radio" name="QButton"> Prefer not to say </span></br>
         </p>
         <p>
             <input type="button" id="done" value="Submit Answer" class="btn btn-lg btn-primary">

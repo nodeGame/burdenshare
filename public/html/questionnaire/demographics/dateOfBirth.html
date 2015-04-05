@@ -2,32 +2,11 @@
 <title></title>
 
 <head>
-    <script>
-        var node = parent.node;
-        var questionnaire = node.game.questionnaire;
-        questionnaire.numberOfClicks = 0;
-
-        function makeChoice(i) {
-            ++questionnaire.numberOfClicks;
-            if (i == 0) {
-                return;
-            }
-            questionnaire.currentAnswer = i;
-        }
-
-       
-        node.env('auto', function() {
-            node.timer.randomExec(function() {
-                var inputs = node.window.getElementsByTagName('option');
-                // We do not want the first option.
-                var randnu = node.JSUS.randomInt(0, inputs.length-1);
-                makeChoice(randnu);
-                node.window.getElementById('done').click();
-            }, 
-            node.game.globals.timer.randomExec);
-        });
-
-    </script>
+  <script type="text/javascript">
+    // Export makeChoiceSELECT.
+    makeChoiceSELECT = parent.node.game.globals.makeChoiceSELECT;
+  </script>
+ 
     <style>
         div.questionDiv {
             width: 720px;
@@ -48,7 +27,7 @@
     <div class="questionDiv">
         <h1 class="questionExplanation">When were you born?</h1>
         <p>
-            <select onchange="makeChoice(this.selectedIndex)">
+            <select onchange="makeChoiceSELECT(this.selectedIndex)">
                 <option></option>
                 <option>1900</option>
                 <option>1901</option>

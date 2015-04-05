@@ -1,44 +1,11 @@
 <!DOCTYPE html>
 <title></title>
 
-<head>
-    <script>
-        var node = parent.node;
-        var questionnaire = node.game.questionnaire;
-        questionnaire.numberOfClicks = 0;
-
-        function makeChoice(i) {
-            ++questionnaire.numberOfClicks;
-            questionnaire.currentAnswer = i;
-        }
-
-        var oldSelected = null;
-        function makeChoiceTD(i, td) {
-            var input;
-
-            ++questionnaire.numberOfClicks;
-            questionnaire.currentAnswer = i;
-            if (oldSelected) {
-                oldSelected.style.border = '1px solid black';
-                oldSelected.style.background = 'white';
-            }
-            input = td.children[0];
-            input.checked = true;
-            td.style.border = '3px solid #CCC';
-            td.style.background = 'yellow';
-            oldSelected = td;
-        }
-  
-        node.env('auto', function() {
-            node.timer.randomExec(function() {
-                var inputs = node.window.getElementsByTagName('td');
-                var randnu = node.JSUS.randomInt(-1, inputs.length-1);
-                makeChoiceTD(randnu, inputs[randnu]);
-                node.window.getElementById('done').click();
-            }, 
-            node.game.globals.timer.randomExec);
-        });
-    </script>
+<head>   
+  <script type="text/javascript">
+    // Export makeChoiceTD.
+    makeChoiceTD = parent.node.game.globals.makeChoiceTD;
+  </script>
     <style>
         th.centeredHead,
         td {
@@ -89,7 +56,7 @@
                 <tbody>
                     <tr>
                         <th class="centeredHead">Choice</th>
-                        <td  onclick="makeChoiceTD(0, this)">
+                        <td onclick="makeChoiceTD(0, this)">
                             <input type="radio" name="QButton">
                         </td>
                         <td onclick="makeChoiceTD(1, this)">
@@ -137,3 +104,10 @@
         </p>
     </div>
 </body>
+
+ 
+  
+
+   
+
+

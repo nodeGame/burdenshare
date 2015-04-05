@@ -30,7 +30,13 @@ module.exports = {
     writeOfferRejected: writeOfferRejected,
     writeCatastrophe: writeCatastrophe,
     writeNoCatastrophe: writeNoCatastrophe,
-    writeRoundResults: writeRoundResults
+    writeRoundResults: writeRoundResults,
+
+    // Questionnaire.
+    makeChoiceTD: makeChoiceTD,
+    makeChoiceTDRow: makeChoiceTDRow,
+    makeChoiceSPAN: makeChoiceSPAN,
+    makeChoiceSELECT: makeChoiceSELECT
 
 };
 
@@ -291,4 +297,78 @@ function writeRoundResults(data, accept, remain, who) {
         this.disabled = "disabled";
         node.emit(who + '_DONE');
     };
+}
+
+
+// Questionnaire
+
+
+function makeChoiceTD(i, td) {
+    var input, questionnaire, oldSelected;
+    questionnaire = node.game.questionnaire;
+    oldSelected = questionnaire.oldSelected;
+
+    ++questionnaire.numberOfClicks;
+    questionnaire.currentAnswer = i;
+    if (oldSelected) {
+        if (!oldSelected.style) debugger
+        oldSelected.style.border = '1px solid black';
+        oldSelected.style.background = 'white';
+    }
+    if (!td) debugger
+    input = td.children[0];
+    input.checked = true;
+    if (!td.style) debugger;
+    td.style.border = '3px solid #CCC';
+    td.style.background = 'yellow';
+    questionnaire.oldSelected = td;
+}
+
+// i is answer to question number j.
+function makeChoiceTDRow(i, j, td) {
+    var input, questionnaire;
+    questionnaire = node.game.questionnaire;
+    oldSelected = questionnaire.oldSelected;
+
+    questionnaire.numberOfClicks["Question" + j] =
+        questionnaire.numberOfClicks["Question" + j] + 1 || 1;
+    questionnaire.currentAnswer["Question" + j] = i;
+    if (!oldSelected) debugger
+    if (oldSelected[''+j]) {
+        oldSelected[''+j].style.border = '1px solid black';
+        oldSelected[''+j].style.background = 'white';
+    }
+    input = td.children[0];
+    if (!input) debugger
+    input.checked = true;
+    td.style.border = '3px solid #CCC';
+    td.style.background = 'yellow';
+    questionnaire.oldSelected[''+j] = td;
+}
+
+function makeChoiceSPAN(i, td) {
+    var input, questionnaire, oldSelected;
+    questionnaire = node.game.questionnaire;
+    oldSelected = questionnaire.oldSelected;
+
+    questionnaire.numberOfClicks =
+        questionnaire.numberOfClicks + 1 || 1;
+    questionnaire.currentAnswer = i;
+    
+    if (oldSelected) {
+        oldSelected.style['font-weight'] = 'normal';
+    }
+
+    input = td.children[0];
+    input.checked = true;
+    td.style['font-weight'] = 'bold';
+    questionnaire.oldSelected = td;
+}
+
+function makeChoiceSELECT(i) {
+    var input, questionnaire;
+    questionnaire = node.game.questionnaire;
+    ++questionnaire.numberOfClicks;
+    if (i == 0) return;            
+    questionnaire.currentAnswer = i;
 }

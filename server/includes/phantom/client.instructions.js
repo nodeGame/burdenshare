@@ -59,6 +59,7 @@ function instructions() {
 
     function instructions2() {
         W.loadFrame('/burdenshare/html/' + gameName + '/instructions2.html', function() {
+
             node.timer.setTimestamp('instr2');
             var options = {
                 milliseconds: node.game.globals.timer.instructions2,

@@ -2,49 +2,9 @@
 <title></title>
 
 <head>
-    <script>
-        var node = parent.node;
-        var questionnaire = node.game.questionnaire;
-
-
-        // i is answer to question number j.
-        function makeChoice(i, j) {
-            questionnaire.numberOfClicks["Question" + j] =
-            questionnaire.numberOfClicks["Question" + j] + 1 || 1;
-            questionnaire.currentAnswer["Question" + j] = i;
-        }
-
-        var oldSelected = {};
-        // i is answer to question number j.
-        function makeChoiceTD(i, j, td) {
-            var input;
-            questionnaire.numberOfClicks["Question" + j] =
-            questionnaire.numberOfClicks["Question" + j] + 1 || 1;
-            questionnaire.currentAnswer["Question" + j] = i;
-            if (oldSelected[''+j]) {
-                oldSelected[''+j].style.border = '1px solid black';
-                oldSelected[''+j].style.background = 'white';
-            }
-            input = td.children[0];
-            input.checked = true;
-            td.style.border = '3px solid #CCC';
-            td.style.background = 'yellow';
-            oldSelected[''+j] = td;
-        }
-
-        node.env('auto', function() {
-            node.timer.randomExec(function() {
-                var randnu, i, inputs;
-                inputs = node.window.getElementsByTagName('tr');
-                // We skip the header.
-                for (i = 1; i < inputs.length ; ++i) {
-                    randnu = node.JSUS.randomInt(-1, 4);
-                    makeChoiceTD(randnu, i-1, inputs[i].children[randnu+1]);                    
-                }
-                node.window.getElementById('done').click();
-            }, 
-            node.game.globals.timer.randomExec);
-        });
+    <script type="text/javascript">
+        // Export makeChoiceTD.
+        makeChoiceTDRow = parent.node.game.globals.makeChoiceTDRow;
     </script>
     <style>
         th.centeredHead,
@@ -94,217 +54,217 @@
                 <tbody id="Questions">
                     <tr id="Question0">
                         <th class="centeredHead">We are approaching the limit of the number of people the earth can support.</th>
-                        <td onclick="makeChoiceTD(0,0, this)">
+                        <td onclick="makeChoiceTDRow(0,0, this)">
                             <input type="radio" name="QButton0">
                         </td>
-                        <td onclick="makeChoiceTD(1,0, this)">
+                        <td onclick="makeChoiceTDRow(1,0, this)">
                             <input type="radio" name="QButton0">
                         </td>
-                        <td onclick="makeChoiceTD(2,0, this)">
+                        <td onclick="makeChoiceTDRow(2,0, this)">
                             <input type="radio" name="QButton0">
                         </td>
-                        <td onclick="makeChoiceTD(3,0, this)">
+                        <td onclick="makeChoiceTDRow(3,0, this)">
                             <input type="radio" name="QButton0">
                         </td>
-                        <td onclick="makeChoiceTD(4,0, this)">
+                        <td onclick="makeChoiceTDRow(4,0, this)">
                             <input type="radio" name="QButton0">
                         </td>
                     </tr>
                     <tr id="Question1">
                         <th class="centeredHead">Humans have the right to modify the natural environment to suit their needs.</th>
-                        <td onclick="makeChoiceTD(0,1, this)">
+                        <td onclick="makeChoiceTDRow(0,1, this)">
                             <input type="radio" name="QButton1">
                         </td>
-                        <td onclick="makeChoiceTD(1,1, this)">
+                        <td onclick="makeChoiceTDRow(1,1, this)">
                             <input type="radio" name="QButton1">
                         </td>
-                        <td onclick="makeChoiceTD(2,1, this)">
+                        <td onclick="makeChoiceTDRow(2,1, this)">
                             <input type="radio" name="QButton1">
                         </td>
-                        <td onclick="makeChoiceTD(3,1, this)">
+                        <td onclick="makeChoiceTDRow(3,1, this)">
                             <input type="radio" name="QButton1">
                         </td>
-                        <td onclick="makeChoiceTD(4,1, this)">
+                        <td onclick="makeChoiceTDRow(4,1, this)">
                             <input type="radio" name="QButton1">
                         </td>
                     </tr>
                     <tr id="Question2">
                         <th class="centeredHead">When humans interfere with nature it often produces disastrous consequences.</th>
-                        <td onclick="makeChoiceTD(0,2, this)">
+                        <td onclick="makeChoiceTDRow(0,2, this)">
                             <input type="radio" name="QButton2">
                         </td>
-                        <td onclick="makeChoiceTD(1,2, this)">
+                        <td onclick="makeChoiceTDRow(1,2, this)">
                             <input type="radio" name="QButton2">
                         </td>
-                        <td onclick="makeChoiceTD(2,2, this)">
+                        <td onclick="makeChoiceTDRow(2,2, this)">
                             <input type="radio" name="QButton2">
                         </td>
-                        <td onclick="makeChoiceTD(3,2, this)">
+                        <td onclick="makeChoiceTDRow(3,2, this)">
                             <input type="radio" name="QButton2">
                         </td>
-                        <td onclick="makeChoiceTD(4,2, this)">
+                        <td onclick="makeChoiceTDRow(4,2, this)">
                             <input type="radio" name="QButton2">
                         </td>
                     </tr>
                     <tr id="Question3">
                         <th class="centeredHead">Human ingenuity will insure that we do NOT make the earth unlivable.</th>
-                        <td onclick="makeChoiceTD(0,3, this)">
+                        <td onclick="makeChoiceTDRow(0,3, this)">
                             <input type="radio" name="QButton3">
                         </td>
-                        <td onclick="makeChoiceTD(1,3, this)">
+                        <td onclick="makeChoiceTDRow(1,3, this)">
                             <input type="radio" name="QButton3">
                         </td>
-                        <td onclick="makeChoiceTD(2,3, this)">
+                        <td onclick="makeChoiceTDRow(2,3, this)">
                             <input type="radio" name="QButton3">
                         </td>
-                        <td onclick="makeChoiceTD(3,3, this)">
+                        <td onclick="makeChoiceTDRow(3,3, this)">
                             <input type="radio" name="QButton3">
                         </td>
-                        <td onclick="makeChoiceTD(4,3, this)">
+                        <td onclick="makeChoiceTDRow(4,3, this)">
                             <input type="radio" name="QButton3">
                         </td>
                     </tr>
                     <tr id="Question4">
                         <th class="centeredHead">Humans are severely abusing the environment.</th>
-                        <td onclick="makeChoiceTD(0,4, this)">
+                        <td onclick="makeChoiceTDRow(0,4, this)">
                             <input type="radio" name="QButton4">
                         </td>
-                        <td onclick="makeChoiceTD(1,4, this)">
+                        <td onclick="makeChoiceTDRow(1,4, this)">
                             <input type="radio" name="QButton4">
                         </td>
-                        <td onclick="makeChoiceTD(2,4, this)">
+                        <td onclick="makeChoiceTDRow(2,4, this)">
                             <input type="radio" name="QButton4">
                         </td>
-                        <td onclick="makeChoiceTD(3,4, this)">
+                        <td onclick="makeChoiceTDRow(3,4, this)">
                             <input type="radio" name="QButton4">
                         </td>
-                        <td onclick="makeChoiceTD(4,4, this)">
+                        <td onclick="makeChoiceTDRow(4,4, this)">
                             <input type="radio" name="QButton4">
                         </td>
                     </tr>
                     <tr id="Question5">
                         <th class="centeredHead">The earth has plenty of natural resources if we just learn how to develop them.</th>
-                        <td onclick="makeChoiceTD(0,5, this)">
+                        <td onclick="makeChoiceTDRow(0,5, this)">
                             <input type="radio" name="QButton5">
                         </td>
-                        <td onclick="makeChoiceTD(1,5, this)">
+                        <td onclick="makeChoiceTDRow(1,5, this)">
                             <input type="radio" name="QButton5">
                         </td>
-                        <td onclick="makeChoiceTD(2,5, this)">
+                        <td onclick="makeChoiceTDRow(2,5, this)">
                             <input type="radio" name="QButton5">
                         </td>
-                        <td onclick="makeChoiceTD(3,5, this)">
+                        <td onclick="makeChoiceTDRow(3,5, this)">
                             <input type="radio" name="QButton5">
                         </td>
-                        <td onclick="makeChoiceTD(4,5, this)">
+                        <td onclick="makeChoiceTDRow(4,5, this)">
                             <input type="radio" name="QButton5">
                         </td>
                     </tr>
                     <tr id="Question6">
                         <th class="centeredHead">Plants and animals have as much right as humans to exist.</th>
-                        <td onclick="makeChoiceTD(0,6, this)">
+                        <td onclick="makeChoiceTDRow(0,6, this)">
                             <input type="radio" name="QButton6">
                         </td>
-                        <td onclick="makeChoiceTD(1,6, this)">
+                        <td onclick="makeChoiceTDRow(1,6, this)">
                             <input type="radio" name="QButton6">
                         </td>
-                        <td onclick="makeChoiceTD(2,6, this)">
+                        <td onclick="makeChoiceTDRow(2,6, this)">
                             <input type="radio" name="QButton6">
                         </td>
-                        <td onclick="makeChoiceTD(3,6, this)">
+                        <td onclick="makeChoiceTDRow(3,6, this)">
                             <input type="radio" name="QButton6">
                         </td>
-                        <td onclick="makeChoiceTD(4,6, this)">
+                        <td onclick="makeChoiceTDRow(4,6, this)">
                             <input type="radio" name="QButton6">
                         </td>
                     </tr>
                     <tr id="Question7">
                         <th class="centeredHead">The balance of nature is strong enough to cope with the impacts of modern industrial nations.</th>
-                        <td onclick="makeChoiceTD(0,7, this)">
+                        <td onclick="makeChoiceTDRow(0,7, this)">
                             <input type="radio" name="QButton7">
                         </td>
-                        <td onclick="makeChoiceTD(1,7, this)">
+                        <td onclick="makeChoiceTDRow(1,7, this)">
                             <input type="radio" name="QButton7">
                         </td>
-                        <td onclick="makeChoiceTD(2,7, this)">
+                        <td onclick="makeChoiceTDRow(2,7, this)">
                             <input type="radio" name="QButton7">
                         </td>
-                        <td onclick="makeChoiceTD(3,7, this)">
+                        <td onclick="makeChoiceTDRow(3,7, this)">
                             <input type="radio" name="QButton7">
                         </td>
-                        <td onclick="makeChoiceTD(4,7, this)">
+                        <td onclick="makeChoiceTDRow(4,7, this)">
                             <input type="radio" name="QButton7">
                         </td>
                     </tr>
                     <tr id="Question8">
                         <th class="centeredHead">The so-called "ecological crisis" facing humankind has been greatly exaggerated.</th>
-                        <td onclick="makeChoiceTD(0,8, this)">
+                        <td onclick="makeChoiceTDRow(0,8, this)">
                             <input type="radio" name="QButton8">
                         </td>
-                        <td onclick="makeChoiceTD(1,8, this)">
+                        <td onclick="makeChoiceTDRow(1,8, this)">
                             <input type="radio" name="QButton8">
                         </td>
-                        <td onclick="makeChoiceTD(2,8, this)">
+                        <td onclick="makeChoiceTDRow(2,8, this)">
                             <input type="radio" name="QButton8">
                         </td>
-                        <td onclick="makeChoiceTD(3,8, this)">
+                        <td onclick="makeChoiceTDRow(3,8, this)">
                             <input type="radio" name="QButton8">
                         </td>
-                        <td onclick="makeChoiceTD(4,8, this)">
+                        <td onclick="makeChoiceTDRow(4,8, this)">
                             <input type="radio" name="QButton8">
                         </td>
                     </tr>
                     <tr id="Question9">
                         <th class="centeredHead">The earth is like a spaceship with very limited and resources.</th>
-                        <td onclick="makeChoiceTD(0,9, this)">
+                        <td onclick="makeChoiceTDRow(0,9, this)">
                             <input type="radio" name="QButton9">
                         </td>
-                        <td onclick="makeChoiceTD(1,9, this)">
+                        <td onclick="makeChoiceTDRow(1,9, this)">
                             <input type="radio" name="QButton9">
                         </td>
-                        <td onclick="makeChoiceTD(2,9, this)">
+                        <td onclick="makeChoiceTDRow(2,9, this)">
                             <input type="radio" name="QButton9">
                         </td>
-                        <td onclick="makeChoiceTD(3,9, this)">
+                        <td onclick="makeChoiceTDRow(3,9, this)">
                             <input type="radio" name="QButton9">
                         </td>
-                        <td onclick="makeChoiceTD(4,9, this)">
+                        <td onclick="makeChoiceTDRow(4,9, this)">
                             <input type="radio" name="QButton9">
                         </td>
                     </tr>
                     <tr id="Question10">
                         <th class="centeredHead">Humans were meant to rule over the rest of nature.</th>
-                        <td onclick="makeChoiceTD(0,10, this)">
+                        <td onclick="makeChoiceTDRow(0,10, this)">
                             <input type="radio" name="QButton10">
                         </td>
-                        <td onclick="makeChoiceTD(1,10, this)">
+                        <td onclick="makeChoiceTDRow(1,10, this)">
                             <input type="radio" name="QButton10">
                         </td>
-                        <td onclick="makeChoiceTD(2,10, this)">
+                        <td onclick="makeChoiceTDRow(2,10, this)">
                             <input type="radio" name="QButton10">
                         </td>
-                        <td onclick="makeChoiceTD(3,10, this)">
+                        <td onclick="makeChoiceTDRow(3,10, this)">
                             <input type="radio" name="QButton10">
                         </td>
-                        <td onclick="makeChoiceTD(4,10, this)">
+                        <td onclick="makeChoiceTDRow(4,10, this)">
                             <input type="radio" name="QButton10">
                         </td>
                     </tr>
                     <tr id="Question11">
                         <th class="centeredHead">Humans will eventually learn enough about how nature works to be able to control it.</th>
-                        <td onclick="makeChoiceTD(0,11, this)">
+                        <td onclick="makeChoiceTDRow(0,11, this)">
                             <input type="radio" name="QButton11">
                         </td>
-                        <td onclick="makeChoiceTD(1,11, this)">
+                        <td onclick="makeChoiceTDRow(1,11, this)">
                             <input type="radio" name="QButton11">
                         </td>
-                        <td onclick="makeChoiceTD(2,11, this)">
+                        <td onclick="makeChoiceTDRow(2,11, this)">
                             <input type="radio" name="QButton11">
                         </td>
-                        <td onclick="makeChoiceTD(3,11, this)">
+                        <td onclick="makeChoiceTDRow(3,11, this)">
                             <input type="radio" name="QButton11">
                         </td>
-                        <td onclick="makeChoiceTD(4,11, this)">
+                        <td onclick="makeChoiceTDRow(4,11, this)">
                             <input type="radio" name="QButton11"
                         </td>
                     </tr>
@@ -313,55 +273,55 @@
                           If things continue on their present course, we will soon experience a
                           major ecological catastrophe.
                         </th>
-                        <td onclick="makeChoiceTD(0,12, this)">
+                        <td onclick="makeChoiceTDRow(0,12, this)">
                             <input type="radio" name="QButton12">
                         </td>
-                        <td onclick="makeChoiceTD(1,12, this)">
+                        <td onclick="makeChoiceTDRow(1,12, this)">
                             <input type="radio" name="QButton12">
                         </td>
-                        <td onclick="makeChoiceTD(2,12, this)">
+                        <td onclick="makeChoiceTDRow(2,12, this)">
                             <input type="radio" name="QButton12"
                         </td>
-                        <td onclick="makeChoiceTD(3,12, this)">
+                        <td onclick="makeChoiceTDRow(3,12, this)">
                             <input type="radio" name="QButton12">
                         </td>
-                        <td onclick="makeChoiceTD(4,12, this)">
+                        <td onclick="makeChoiceTDRow(4,12, this)">
                             <input type="radio" name="QButton12">
                         </td>
                     </tr>
                     <tr id="Question13">
                         <th class="centeredHead">Despite our special abilities humans are still subject to the laws of nature.</th>
-                        <td onclick="makeChoiceTD(0,13, this)">
+                        <td onclick="makeChoiceTDRow(0,13, this)">
                             <input type="radio" name="QButton13">
                         </td>
-                        <td onclick="makeChoiceTD(1,13, this)">
+                        <td onclick="makeChoiceTDRow(1,13, this)">
                             <input type="radio" name="QButton13">
                         </td>
-                        <td onclick="makeChoiceTD(2,13, this)">
+                        <td onclick="makeChoiceTDRow(2,13, this)">
                             <input type="radio" name="QButton13">
                         </td>
-                        <td onclick="makeChoiceTD(3,13, this)">
+                        <td onclick="makeChoiceTDRow(3,13, this)">
                             <input type="radio" name="QButton13">
                         </td>
-                        <td onclick="makeChoiceTD(4,13, this)">
+                        <td onclick="makeChoiceTDRow(4,13, this)">
                             <input type="radio" name="QButton13">
                         </td>
                     </tr>
                     <tr id="Question14">
                         <th class="centeredHead">The balance of nature is very delicate and easily upset.</th>
-                        <td onclick="makeChoiceTD(0,14, this)">
+                        <td onclick="makeChoiceTDRow(0,14, this)">
                             <input type="radio" name="QButton14">
                         </td>
-                        <td onclick="makeChoiceTD(1,14, this)">
+                        <td onclick="makeChoiceTDRow(1,14, this)">
                             <input type="radio" name="QButton14">
                         </td>
-                        <td onclick="makeChoiceTD(2,14, this)">
+                        <td onclick="makeChoiceTDRow(2,14, this)">
                             <input type="radio" name="QButton14">
                         </td>
-                        <td onclick="makeChoiceTD(3,14, this)">
+                        <td onclick="makeChoiceTDRow(3,14, this)">
                             <input type="radio" name="QButton14">
                         </td>
-                        <td onclick="makeChoiceTD(4,14, this)">
+                        <td onclick="makeChoiceTDRow(4,14, this)">
                             <input type="radio" name="QButton14">
                         </td>
                     </tr>

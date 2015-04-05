@@ -85,7 +85,13 @@ module.exports = function(gameRoom, treatmentName, settings) {
     });
 
     stager.extendStep('questionnaire', {
-        cb: cbs.questionnaire
+        cb: cbs.questionnaire,
+        globals: {
+            makeChoiceTD: cbs.makeChoiceTD,
+            makeChoiceTDRow: cbs.makeChoiceTDRow,
+            makeChoiceSPAN: cbs.makeChoiceSPAN,
+            makeChoiceSELECT: cbs.makeChoiceSELECT
+        }
     });
 
     stager.setDefaultGlobals({

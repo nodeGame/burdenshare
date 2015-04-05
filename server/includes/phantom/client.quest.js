@@ -1,6 +1,6 @@
 /**
  * # Functions used by the Client of Burden-share Game
- * Copyright(c) 2014 Stefano Balietti
+ * Copyright(c) 2015 Stefano Balietti
  * MIT Licensed
  *
  * http://www.nodegame.org
@@ -43,6 +43,41 @@ function questionnaire() {
         return;
     }
 
+    function autoPlayTD() {
+        node.timer.randomExec(function() {
+            var inputs, randnu;
+            inputs = W.getElementsByTagName('td');
+            randnu = JSUS.randomInt(-1, inputs.length-1);
+            node.game.globals.makeChoiceTD(randnu, inputs[randnu]);
+            W.getElementById('done').click();
+        }, node.game.globals.timer.randomExec);
+    }
+
+    function autoPlayTR(offsetX, offsetY) {
+        // offset allows to skip a certain number of cells from left to right.
+        // For example, the first cell could be TH, and can be skipped
+        // with offsetX = 1. The first row could be a title and can be
+        // skipped with offsetY = 1, or leaving it undefined.
+        offsetX = offsetX || 0;
+        offsetY = offsetY || 1;
+        node.timer.randomExec(function() {
+            var randnu, i, inputs, td, trChildren;
+            inputs = W.getElementsByTagName('tr');
+            // We take into account headers;
+            for (i = offsetY; i < inputs.length ; ++i) {
+                trChildren = inputs[i].children.length;
+                randnu = JSUS.randomInt((-1 + offsetX), (trChildren-1));
+                td = inputs[i].children[randnu];
+                if (td.style.display === 'none') continue;
+                node.game.globals.makeChoiceTDRow((randnu-offsetX),
+                                                  (i-offsetX),
+                                                  td);
+            }
+            W.getElementById('done').click();
+
+        }, node.game.globals.timer.randomExec);
+    }
+  
     node.timer.setTimestamp("BEGIN_QUESTIONNAIRE");
     node.game.visualRound.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
                                           'COUNT_UP_ROUNDS_TO_TOTAL']);
@@ -51,6 +86,7 @@ function questionnaire() {
     node.game.questionnaire = {
         blocks: [],
         SVOChoices: {length: 0},
+        oldSelected: null,
     };
 
     randomBlockExecutor = new RandomOrderExecutor();
@@ -112,6 +148,7 @@ function questionnaire() {
     Page.prototype.cleanUp = function() {
         node.game.questionnaire.currentAnswer = undefined;
         node.game.questionnaire.numberOfClicks = 0;
+        node.game.questionnaire.oldSelected = null;
         node.done();
     };
 
@@ -127,6 +164,11 @@ function questionnaire() {
     SVOPage.prototype = Object.create(Page.prototype);
     SVOPage.prototype.constructor = SVOPage;
 
+    SVOPage.prototype.onLoad = function() {
+        node.env('auto', autoPlayTD);        
+        Page.prototype.onLoad.call(this);
+    };
+
     SVOPage.prototype.onValidAnswer = function() {
         node.game.questionnaire.SVOChoices[this.number] =
             node.game.questionnaire.currentAnswer;
@@ -140,6 +182,14 @@ function questionnaire() {
 
     RiskPage.prototype = Object.create(Page.prototype);
     RiskPage.prototype.constructor = RiskPage;
+
+    RiskPage.prototype.onLoad = function() {
+        // gambles has own onLoad. charity has inline script.
+        if (this.name !== 'risk_charity') {
+            node.env('auto', autoPlayTD);
+        }
+        Page.prototype.onLoad.call(this);
+    };
 
     NEPPage = function(executor) {
         this.executor = executor;
@@ -163,6 +213,7 @@ function questionnaire() {
             this.order = W.shuffleElements(questionsBody);
             node.game.questionnaire.currentAnswer = {};
             node.game.questionnaire.numberOfClicks = {};
+            node.game.questionnaire.oldSelected = {};
         }
         else {
             W.shuffleElements(questionsBody, this.order);
@@ -177,6 +228,9 @@ function questionnaire() {
              i < this.numberOfQuestions; ++i) {
             questions[i].style.display = 'none';
         }
+
+        node.env('auto', autoPlayTR, window, [1]);
+
         Page.prototype.onLoad.call(this);
     };
 
@@ -236,6 +290,42 @@ function questionnaire() {
         Page.prototype.cleanUp.call(this);
     };
 
+    DemographicsPage.prototype.onLoad = function() {
+        if (this.name === 'demographics_education' ||
+            this.name === 'demographics_gender' ||
+            this.name === 'demographics_participation' ||
+            this.name === 'demographics_politics') {
+
+            node.env('auto', function() {
+                node.timer.randomExec(function() {
+                    var inputs, randnu;
+
+                    inputs = W.getElementsByTagName('span');
+                    randnu = JSUS.randomInt(-1, inputs.length-1);
+                    node.game.globals.makeChoiceSPAN(randnu, inputs[randnu]);
+                    W.getElementById('done').click();
+
+                }, node.game.globals.timer.randomExec);
+            });
+        }
+        else {
+            node.env('auto', function() {
+                node.timer.randomExec(function() {
+                    var inputs, randnu;
+                    inputs = W.getElementsByTagName('option');
+                    // We do not want the first option.
+                    var randnu = JSUS.randomInt(0, inputs.length-1);
+                    node.game.globals.makeChoiceSELECT(randnu);
+                    node.window.getElementById('done').click();
+
+                }, node.game.globals.timer.randomExec);
+            });
+        }
+        Page.prototype.onLoad.call(this);
+    };
+
+        
+
 
     // Callback for the Social Value Orientation block.
     // Loads all of the SVO questions in an random order.
@@ -266,7 +356,7 @@ function questionnaire() {
                     'socialValueOrientation/instructions.html', function() {
                         W.getElementById('done').onclick = function() {
                             randomPageExecutor.execute();
-                        };                   
+                        };
                         // AUTO-PLAY
                         node.timer.randomExec(function() {
                             W.getElementById('done').click();
@@ -293,7 +383,7 @@ function questionnaire() {
                             loadAllNEP();
                         };
 
-                        
+
                         // AUTO-PLAY
                         node.timer.randomExec(function() {
                             W.getElementById('done').click();
@@ -353,7 +443,9 @@ function questionnaire() {
         gamblesPage.onLoad = function() {
             node.game.questionnaire.currentAnswer = {};
             node.game.questionnaire.numberOfClicks = {};
-            Page.prototype.onLoad.call(this);            
+            node.game.questionnaire.oldSelected = {};
+            node.env('auto', autoPlayTR, window, [1]);
+            Page.prototype.onLoad.call(this);
         };
 
         gamblesPage.checkAnswer = function() {
@@ -419,7 +511,7 @@ function questionnaire() {
                             W.write((node.game.bonus.newAmountUSD + 1.0).toFixed(2) + ' $',
                                     W.getElementById("amountUSD")
                                    );
-       
+
                             // AUTO-PLAY
                             node.timer.randomExec(function() {
                                 W.getElementById('continue').click();
@@ -499,9 +591,9 @@ function questionnaire() {
         node.timer.randomExec(function() {
             quest2.click();
         }, 3000);
-           
+
     }
-    
+
     // Goto questionnaire.
     function questionnaire(timeout) {
         console.log("Bonus: " + node.game.bonus);
@@ -569,4 +661,3 @@ function questionnaire() {
     // Request profit. Triggers a PROFIT message.
     node.set('get_Profit', node.player.id);
 }
-
