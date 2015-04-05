@@ -382,8 +382,6 @@ function questionnaire() {
                         W.getElementById('done').onclick = function() {
                             loadAllNEP();
                         };
-
-
                         // AUTO-PLAY
                         node.timer.randomExec(function() {
                             W.getElementById('done').click();
@@ -511,7 +509,6 @@ function questionnaire() {
                             W.write((node.game.bonus.newAmountUSD + 1.0).toFixed(2) + ' $',
                                     W.getElementById("amountUSD")
                                    );
-
                             // AUTO-PLAY
                             node.timer.randomExec(function() {
                                 W.getElementById('continue').click();

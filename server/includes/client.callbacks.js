@@ -1,6 +1,6 @@
 /**
  * # Functions used by the Logic and Client of Burden-share Game
- * Copyright(c) 2014 Stefano Balietti
+ * Copyright(c) 2015 Stefano Balietti
  * MIT Licensed
  *
  * http://www.nodegame.org
