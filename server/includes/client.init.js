@@ -365,7 +365,7 @@ function init() {
         var options = {};
 
         if (node.player.stage.round !== 1) {
-            node.emit('DONE');
+            node.done();
         }
         else {
             node.game.timer.stop();
@@ -374,7 +374,7 @@ function init() {
             options.milliseconds = node.game.globals.timer.endOfPractice;
             options.timeup = function() {
                 node.game.timer.stop();
-                node.emit('DONE');
+                node.done();
             };
 
             node.game.timer.init(options);
@@ -383,7 +383,7 @@ function init() {
 
             W.loadFrame('/burdenshare/html/practiceDone.html', function() {
                 W.getElementById('continue').onclick = function() {
-                    node.emit('DONE');
+                    node.done();
                 };
             });
         }

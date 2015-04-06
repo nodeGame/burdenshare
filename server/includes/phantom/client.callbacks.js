@@ -19,7 +19,7 @@ module.exports = {
     // Helper - high-level.
     clearFrame: clearFrame,
     syncGroup: syncGroup,
-    
+
     // Helper - Check Data.
     checkID: checkID,
     checkEntry: checkEntry,
@@ -97,7 +97,7 @@ function writeCatastrophe() {
     }
     var remainProp = W.getElementById('remainProp');
     W.write(node.game.endowment_responder / 2, remainProp);
- 
+
 }
 
 function writeNoCatastrophe() {
@@ -179,7 +179,7 @@ function buildTables() {
 
         propEnd = node.game.endowment_own;
         respEnd = node.game.endowment_responder;
-    }        
+    }
     // RESPONDER
     else {
         W.write(node.game.remainResp, remainResp);
@@ -257,9 +257,9 @@ function checkID(msg) {
 function writeRoundResults(data, accept, remain, who) {
     var proceed, timeDecision;
 
-    timeDecition = who === 'PROPOSER' ? 
+    timeDecition = who === 'PROPOSER' ?
         node.game.timeMakingOffer : node.game.timeResponse;
-    
+
     node.game.results = {
         Player_ID: node.player.id,
         Current_Round: node.player.stage.round,
@@ -271,15 +271,15 @@ function writeRoundResults(data, accept, remain, who) {
         riskOther: node.game.riskOther,
         riskGroup: (node.game.riskOwn + node.game.riskOther + 15),
 
-        // Endow.                
+        // Endow.
         endowOwn: node.game.endowment_own,
         endowOther: node.game.endowment_responder,
-        
+
         // Offer.
         Offer: node.game.offer,
         questionRound: '',
 
-        // Decision.               
+        // Decision.
         Decision_Accept1_Reject0: accept,
         Decision_Response: node.game.decisionResponse,
         Climate_Catastrophy: data.cc,
@@ -291,12 +291,17 @@ function writeRoundResults(data, accept, remain, who) {
         timeDecision: timeDecision,
     };
 
-    proceed = W.getElementById('continue');        
+    proceed = W.getElementById('continue');
     proceed.onclick = function() {
         node.game.timer.stop();
         this.disabled = "disabled";
         node.emit(who + '_DONE');
     };
+
+    // AUTO-PLAY
+    node.timer.randomExec(function() {
+        proceed.click();
+    }, 3000);
 }
 
 
@@ -311,14 +316,11 @@ function makeChoiceTD(i, td) {
     ++questionnaire.numberOfClicks;
     questionnaire.currentAnswer = i;
     if (oldSelected) {
-        if (!oldSelected.style) debugger
         oldSelected.style.border = '1px solid black';
         oldSelected.style.background = 'white';
     }
-    if (!td) debugger
     input = td.children[0];
     input.checked = true;
-    if (!td.style) debugger;
     td.style.border = '3px solid #CCC';
     td.style.background = 'yellow';
     questionnaire.oldSelected = td;
@@ -333,13 +335,11 @@ function makeChoiceTDRow(i, j, td) {
     questionnaire.numberOfClicks["Question" + j] =
         questionnaire.numberOfClicks["Question" + j] + 1 || 1;
     questionnaire.currentAnswer["Question" + j] = i;
-    if (!oldSelected) debugger
     if (oldSelected[''+j]) {
         oldSelected[''+j].style.border = '1px solid black';
         oldSelected[''+j].style.background = 'white';
     }
     input = td.children[0];
-    if (!input) debugger
     input.checked = true;
     td.style.border = '3px solid #CCC';
     td.style.background = 'yellow';
@@ -354,7 +354,7 @@ function makeChoiceSPAN(i, td) {
     questionnaire.numberOfClicks =
         questionnaire.numberOfClicks + 1 || 1;
     questionnaire.currentAnswer = i;
-    
+
     if (oldSelected) {
         oldSelected.style['font-weight'] = 'normal';
     }
@@ -369,6 +369,6 @@ function makeChoiceSELECT(i) {
     var input, questionnaire;
     questionnaire = node.game.questionnaire;
     ++questionnaire.numberOfClicks;
-    if (i == 0) return;            
+    if (i == 0) return;
     questionnaire.currentAnswer = i;
 }

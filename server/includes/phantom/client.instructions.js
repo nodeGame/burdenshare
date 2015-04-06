@@ -398,7 +398,7 @@ function instructions() {
         node.game.endowment_own += endowment_assigned;
         initEndow.addEndow.Climate_Risk = node.game.risk;
         node.set('initEndow', initEndow);
-        node.emit('DONE');
+        node.done();
     }
 
     return true;

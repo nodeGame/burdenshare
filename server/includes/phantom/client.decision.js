@@ -85,7 +85,6 @@ function decision() {
                 node.emit('BID_DONE', offer, node.game.otherID);
             };
 
-
             // AUTO-PLAY
             node.timer.randomExec(function() {
                 var offerInput = W.getElementById('offer');

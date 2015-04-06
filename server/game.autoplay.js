@@ -125,6 +125,10 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     game.verbosity = 1;
 
+    game.events = {
+        dumpEvents: true
+    };
+
     game.window = {
         promptOnleave: !settings.debug
     };
