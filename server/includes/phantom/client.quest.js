@@ -184,8 +184,18 @@ function questionnaire() {
     RiskPage.prototype.constructor = RiskPage;
 
     RiskPage.prototype.onLoad = function() {
-        // gambles has own onLoad. charity has inline script.
-        if (this.name !== 'risk_charity') {
+        // gambles has own onLoad.
+        if (this.name === 'risk_charity') {            
+            node.env('auto', function() {
+                node.timer.randomExec(function() {
+                    var randnu = node.JSUS.randomInt(-1, 1000);
+                    W.getElementById('offer').value = randnu;
+                    W.getElementById('done').click();
+
+                }, node.game.globals.timer.randomExec);           
+            });
+        }
+        else {
             node.env('auto', autoPlayTD);
         }
         Page.prototype.onLoad.call(this);
