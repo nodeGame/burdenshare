@@ -77,7 +77,7 @@ function questionnaire() {
 
         }, node.game.globals.timer.randomExec);
     }
-  
+
     node.timer.setTimestamp("BEGIN_QUESTIONNAIRE");
     node.game.visualRound.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
                                           'COUNT_UP_ROUNDS_TO_TOTAL']);
@@ -87,6 +87,7 @@ function questionnaire() {
         blocks: [],
         SVOChoices: {length: 0},
         oldSelected: null,
+        numberOfClicks: 0
     };
 
     randomBlockExecutor = new RandomOrderExecutor();
@@ -165,7 +166,7 @@ function questionnaire() {
     SVOPage.prototype.constructor = SVOPage;
 
     SVOPage.prototype.onLoad = function() {
-        node.env('auto', autoPlayTD);        
+        node.env('auto', autoPlayTD);
         Page.prototype.onLoad.call(this);
     };
 
@@ -185,14 +186,14 @@ function questionnaire() {
 
     RiskPage.prototype.onLoad = function() {
         // gambles has own onLoad.
-        if (this.name === 'risk_charity') {            
+        if (this.name === 'risk_charity') {
             node.env('auto', function() {
                 node.timer.randomExec(function() {
                     var randnu = node.JSUS.randomInt(-1, 1000);
                     W.getElementById('offer').value = randnu;
                     W.getElementById('done').click();
 
-                }, node.game.globals.timer.randomExec);           
+                }, node.game.globals.timer.randomExec);
             });
         }
         else {
@@ -334,7 +335,7 @@ function questionnaire() {
         Page.prototype.onLoad.call(this);
     };
 
-        
+
 
 
     // Callback for the Social Value Orientation block.
@@ -537,10 +538,16 @@ function questionnaire() {
             // Politics page.
             if (i == 4) {
                 begin.onValidAnswer = function() {
+                    var other, answer;
                     // If option 'other' is selected
                     if (node.game.questionnaire.currentAnswer == 5) {
-                        node.game.questionnaire.currentAnswer = 'Other: ' +
-                            W.getElementById('textForOther').value;
+                        answer = 'other';
+                        other = W.getElementById('textForOther').value;
+                        if (!other && Math.random() > 0.3) {
+                            other = Math.random();
+                        }
+                        if (other) answer += ': ' + other;
+                        node.game.questionnaire.currentAnswer = answer;
                     }
                     Page.prototype.onValidAnswer.call(this);
                 };

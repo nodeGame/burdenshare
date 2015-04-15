@@ -29,7 +29,7 @@ function questionnaire() {
 
     var gameName = node.game.globals.gameName;
     var chosenTreatment = node.game.globals.chosenTreatment;
-    // var randomBlockExecutor;
+    var randomBlockExecutor;
     // var socialValueOrientation, newEcologicalParadigm, risk;
     // var makePageLoad, makeBlockArray;
     // var Page, SVOPage, RiskPage, NEPPage, DemographicsPage;
@@ -53,6 +53,7 @@ function questionnaire() {
         blocks: [],
         SVOChoices: {length: 0},
         oldSelected: null,
+        numberOfClicks: 0
     };
 
     randomBlockExecutor = new RandomOrderExecutor();
@@ -101,12 +102,14 @@ function questionnaire() {
     };
 
     Page.prototype.onValidAnswer = function() {
+        var q = node.game.questionnaire;
         node.set('bsc_quest', {
             player:         node.player.id,
             question:       this.name,
-            answer:         node.game.questionnaire.currentAnswer,
+            answer:         q.currentAnswer,
             timeElapsed:    node.timer.getTimeSince(this.name),
-            clicks:         node.game.questionnaire.numberOfClicks
+            clicks:         q.numberOfClicks,
+            pageOrder:      q.pageExecutor.index
         });
         this.cleanUp();
     };
@@ -431,10 +434,13 @@ function questionnaire() {
             // Politics page.
             if (i == 4) {
                 begin.onValidAnswer = function() {
+                    var other, answer;
                     // If option 'other' is selected
                     if (node.game.questionnaire.currentAnswer == 5) {
-                        node.game.questionnaire.currentAnswer = 'Other: ' +
-                            W.getElementById('textForOther').value;
+                        answer = 'other';
+                        other = W.getElementById('textForOther').value;
+                        if (other) answer += ': ' + other;
+                        node.game.questionnaire.currentAnswer = answer;
                     }
                     Page.prototype.onValidAnswer.call(this);
                 };

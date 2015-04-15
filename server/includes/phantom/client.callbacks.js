@@ -257,7 +257,7 @@ function checkID(msg) {
 function writeRoundResults(data, accept, remain, who) {
     var proceed, timeDecision;
 
-    timeDecition = who === 'PROPOSER' ?
+    timeDecision = who === 'PROPOSER' ?
         node.game.timeMakingOffer : node.game.timeResponse;
 
     node.game.results = {
@@ -332,9 +332,14 @@ function makeChoiceTDRow(i, j, td) {
     questionnaire = node.game.questionnaire;
     oldSelected = questionnaire.oldSelected;
 
-    questionnaire.numberOfClicks["Question" + j] =
-        questionnaire.numberOfClicks["Question" + j] + 1 || 1;
+    if ('undefined' === typeof questionnaire.numberOfClicks['Question' + j]) {
+        questionnaire.numberOfClicks["Question" + j] = 1;
+    }
+    else {
+        questionnaire.numberOfClicks["Question" + j] += 1;
+    }
     questionnaire.currentAnswer["Question" + j] = i;
+
     if (oldSelected[''+j]) {
         oldSelected[''+j].style.border = '1px solid black';
         oldSelected[''+j].style.background = 'white';
