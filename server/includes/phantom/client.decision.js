@@ -18,6 +18,7 @@ function decision() {
 
     var that = this;
 
+    node.game.decisionMade = 0;
     /////////////////////////////////// PROPOSER ///////////////////////////////////
 
     if (node.game.role == 'PROPOSER') {
@@ -45,7 +46,6 @@ function decision() {
                     submitoffer.onclick = null;
                     node.game.timer.stop();
                     var randnum = JSUS.randomInt(-1, node.game.costGE);
-                    node.game.decisionOffer = 0;
                     node.emit('BID_DONE', randnum, node.game.otherID);
                 }
             };
@@ -81,7 +81,7 @@ function decision() {
                 node.game.timer.setToZero();
                 W.getElementById("fieldset").disabled = true;
                 submitoffer.onclick = null;
-                node.game.decisionOffer = 1;
+                node.game.decisionMade = 1;
                 node.emit('BID_DONE', offer, node.game.otherID);
             };
 
@@ -299,7 +299,6 @@ function decision() {
                     milliseconds: node.game.globals.timer.respondent,
                     timeup: function() {
                         node.game.timer.stop();
-                        node.game.decisionResponse = 0;
                         that.randomAccept(msg.data, node.game.otherID);
                     }
                 };
@@ -343,7 +342,7 @@ function decision() {
                     node.game.response = 'accept';
                     node.game.timer.stop();
                     // It was not a timeout.
-                    node.game.decisionResponse = 1;
+                    node.game.decisionMade = 1;
                     node.emit('RESPONSE_DONE', 'ACCEPT');
                 };
 
@@ -351,13 +350,13 @@ function decision() {
                     node.game.response = 'reject';
                     node.game.timer.stop();
                     // It was not a timeout.
-                    node.game.decisionResponse = 1;
+                    node.game.decisionMade = 1;
                     node.emit('RESPONSE_DONE', 'REJECT');
                 };
 
                 // AUTO-PLAY
                 node.timer.randomExec(function() {
-                    if (Math.random > 0.5) {
+                    if (Math.random() > 0.5) {
                         accept.click();
                     }
                     else {

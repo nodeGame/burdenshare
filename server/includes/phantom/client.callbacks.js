@@ -281,7 +281,7 @@ function writeRoundResults(data, accept, remain, who) {
 
         // Decision.
         Decision_Accept1_Reject0: accept,
-        Decision_Response: node.game.decisionResponse,
+        Decision_Response: node.game.decisionMade,
         Climate_Catastrophy: data.cc,
 
         Profit: remain,

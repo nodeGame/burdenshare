@@ -29,7 +29,7 @@ module.exports = {
     WAIT_ROOM_TIMEOUT: 60000, // 10 min
 
     // "ra80", "sa80", "ra30", "ra80", "rotate", "random"
-    CHOSEN_TREATMENT: "ra30",
+    CHOSEN_TREATMENT: "sa30",
 
     // How much does an agreement cost? (30 or 80).
     COSTGE: 80,
@@ -73,22 +73,22 @@ module.exports = {
     debug: true,
 
     treatments: {
-        sa80: {
-            name: "sa80",
-            fullName: "Self Assigned 80",
-            description:
-                "Players assign the historical responsibility themselves (80 cost)",
-            GAME_NAME: '/burdenHR/',
-            COSTGE: 80
-        },
-        ra80: {
-            name: "ra80",
-            fullName: "Randomly Assigned 80",
-            description:
-                "Players get the historical responsibility assigned randomly (80 cost)",
-            GAME_NAME: '/burdenRAHR/',
-            COSTGE: 80
-        },
+//         sa80: {
+//             name: "sa80",
+//             fullName: "Self Assigned 80",
+//             description:
+//                 "Players assign the historical responsibility themselves (80 cost)",
+//             GAME_NAME: '/burdenHR/',
+//             COSTGE: 80
+//         },
+//         ra80: {
+//             name: "ra80",
+//             fullName: "Randomly Assigned 80",
+//             description:
+//                 "Players get the historical responsibility assigned randomly (80 cost)",
+//             GAME_NAME: '/burdenRAHR/',
+//             COSTGE: 80
+//         },
         sa30: {
             name: "sa30",
             fullName: "Self Assigned 30",

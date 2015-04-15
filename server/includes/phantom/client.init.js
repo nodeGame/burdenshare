@@ -87,6 +87,7 @@ function init() {
                 node.set('delete_data', dataExist);
                 console.log('Player already finished this round.');
             }
+            if (node.game.results.Decision_Response === 0) debugger
             node.set('bsc_data', node.game.results);
             that.endOfQuestionsround();
         });
@@ -108,10 +109,8 @@ function init() {
     node.game.ownID = node.player.id;
     // player id opponent
     node.game.otherID = node.game.pl.db[0].id;
-    // offer made by person = 1, offer made by computer due to time out = 0
-    node.game.decisionOffer = 0;
-    // response made by person = 1, response made by computer due to time out = 0
-    node.game.decisionResponse = 0;
+    // decision taken by person = 1, decision taken by computer due to time out = 0
+    node.game.decisionMade = 0;
 
     if (chosenTreatment === 'sa') {
         // counter: number of rounds during the self selection of risk and economic growth in the first part
@@ -224,7 +223,7 @@ function init() {
 
             // Short question at the end of each round
             quest = W.getElementById("quest");
-            if (node.game.decisionOffer === 1) {
+            if (node.game.decisionMade === 1) {
                 string = 'Why did you propose ' + node.game.offer + ' ECU ?';
                 W.write(string, quest);
             }
@@ -278,7 +277,7 @@ function init() {
 
             // Short question at the end of each round
             quest = W.getElementById("quest");
-            if (node.game.decisionResponse === 1) {
+            if (node.game.decisionMade === 1) {
                 string = 'Why did you ' + node.game.response + ' the proposal ?';
                 W.write(string, quest);
             }

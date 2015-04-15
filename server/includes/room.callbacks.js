@@ -67,14 +67,16 @@ function clearTimeOut(playerID) {
     delete timeOuts[playerID];
 }
 
-var treatments = ['ra80','sa30','ra30','sa80'];
+
+var treatments = Object.keys(settings.treatments);
+var tLen = treatments.length;
 
 function decideTreatment(t) {
     if (t === "rotate") {
-        return treatmentName = treatments[(counter-1) % 4]; 
+        return treatmentName = treatments[(counter-1) % tLen]; 
     }
     if (t === "random") {
-        return treatmentName = treatments[J.randomInt(0,3)];
+        return treatmentName = treatments[J.randomInt(-1,tLen-1)];
     }
     return t;
 }

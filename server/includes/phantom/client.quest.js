@@ -61,16 +61,29 @@ function questionnaire() {
         offsetX = offsetX || 0;
         offsetY = offsetY || 1;
         node.timer.randomExec(function() {
-            var randnu, i, inputs, td, trChildren;
+            var randnu, i, inputs, td, trChildren, qID, curBlock;
+
+            curBlock = node.game.questionnaire.blocks[
+                node.game.questionnaire.blocks.length-1];
+
             inputs = W.getElementsByTagName('tr');
             // We take into account headers;
             for (i = offsetY; i < inputs.length ; ++i) {
+                if (inputs[i].style.display === 'none') continue;
                 trChildren = inputs[i].children.length;
                 randnu = JSUS.randomInt((-1 + offsetX), (trChildren-1));
                 td = inputs[i].children[randnu];
-                if (td.style.display === 'none') continue;
+
+                // Ugly condition..                    
+                if (curBlock === 'newEcologicalParadigm') {                
+                    qID = inputs[i].id.split('Question')[1];
+                }
+                else {
+                    qID = i - offsetX;
+                }
+
                 node.game.globals.makeChoiceTDRow((randnu-offsetX),
-                                                  (i-offsetX),
+                                                  qID,
                                                   td);
             }
             W.getElementById('done').click();
@@ -136,12 +149,14 @@ function questionnaire() {
     };
 
     Page.prototype.onValidAnswer = function() {
+        var q = node.game.questionnaire;
         node.set('bsc_quest', {
             player:         node.player.id,
             question:       this.name,
-            answer:         node.game.questionnaire.currentAnswer,
+            answer:         q.currentAnswer,
             timeElapsed:    node.timer.getTimeSince(this.name),
-            clicks:         node.game.questionnaire.numberOfClicks
+            clicks:         q.numberOfClicks,
+            pageOrder:      q.pageExecutor.index
         });
         this.cleanUp();
     };
@@ -251,7 +266,7 @@ function questionnaire() {
         for (i = 0; i < this.questionsPerPage; ++i) {
             if ('undefined' ===
                 typeof currentAnswer[this.order[i + this.questionsDone]]) {
-
+debugger
                 return false;
             }
         }
@@ -260,7 +275,7 @@ function questionnaire() {
 
     NEPPage.prototype.onValidAnswer = function() {
         this.questionsDone += this.questionsPerPage;
-        if (this.questionsDone >= this.numberOfQuestions) {
+        if (this.questionsDone >= this.numberOfQuestions) {            
             node.set('bsc_quest',{
                 player: node.player.id,
                 question: this.name,
@@ -334,9 +349,6 @@ function questionnaire() {
         }
         Page.prototype.onLoad.call(this);
     };
-
-
-
 
     // Callback for the Social Value Orientation block.
     // Loads all of the SVO questions in an random order.

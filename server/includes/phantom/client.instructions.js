@@ -38,7 +38,6 @@ function instructions() {
         node.game.timer.updateDisplay();
         node.game.timer.start(options);
 
-        console.log('burdenSharingControl');
         W.getElementById("cost").innerHTML = node.game.costGE;
 
         var next;
@@ -112,7 +111,7 @@ function instructions() {
             node.game.timer.init(options);
             node.game.timer.updateDisplay();
             node.game.timer.start(options);
-            console.log('Instructions Page 2');
+            console.log('Instructions Page 3');
             if (chosenTreatment === 'sa') {
                 W.getElementById("cost").innerHTML = node.game.costGE;
             }
@@ -155,13 +154,13 @@ function instructions() {
             var next;
             next = W.getElementById("continue");
             next.onclick = initEndowFunc;
+            
+            // AUTO-PLAY
+            node.timer.randomExec(function() {
+                next.click();
+            }, 3000);
+
         });
-
-        // AUTO-PLAY
-        node.timer.randomExec(function() {
-            next.click();
-        }, 3000);
-
     }
 
     function initEndowFunc() {
@@ -264,7 +263,6 @@ function instructions() {
             next = W.getElementById("submitGrowth");
             next.onclick = function() {
                 var found;
-                console.log("Page Counter: ---------- " + node.game.pgCounter);
                 found = checkSelfGrowth();
 
                 if (found) {
@@ -281,16 +279,9 @@ function instructions() {
             // AUTO-PLAY
             node.timer.randomExec(function() {
                 var randnum = Math.floor(1+(Math.random()*3));
-                // Random Growth.
-                node.game.EGRnd[node.game.pgCounter] = randnum;
-                switch(randnum) {
-                case 1: node.game.risk = node.game.risk + 0; break;
-                case 2: node.game.risk = node.game.risk + 2.5; break;
-                case 3: node.game.risk = node.game.risk + 5; break;
-                }
+                W.getElementById("pg" + randnum).checked = true;
                 next.click();
             }, 3000);
-
 
         });
     }
@@ -330,8 +321,6 @@ function instructions() {
         var rnd = Math.floor((Math.random()*node.game.growth[ind].length)+1) - 1;
 
         node.game.endowment_own = node.game.endowment_own + node.game.growth[ind][rnd];
-
-        console.log("Growth Endowment = " + node.game.growth[ind][rnd]);
 
         var setDBEconGrowth = {
             playerID : { Player_ID: node.player.id }, 
