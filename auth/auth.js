@@ -125,12 +125,18 @@ module.exports = function(auth) {
             }
         }
     }
+
+    function decorateClientObj(co, info) {
+        if (info.headers) co.userAgent = info.headers['user-agent'];
+    }
+
     /////////////////////////////// MTurk Version ///////////////////////////
 
 
     // Assigning the auth callbacks to the player server.
     auth.authorization('burdenshare', 'player', authPlayers);
     auth.clientIdGenerator('burdenshare', 'player', idGen);
+    auth.clientObjDecorator('burdenshare', 'player', decorateClientObj);
 
 
     var a = 0;
