@@ -2,7 +2,7 @@
   "name": "burdenshare",
   "description": "Pairs players and let them exchange messages",
   "version": "0.0.1",
-  "alias": "experiment2",
+  "alias": "experiment",
   "author": {
     "name": "Stefano Balietti",
     "email": "sbalietti@ethz.ch",
