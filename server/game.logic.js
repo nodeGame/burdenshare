@@ -325,11 +325,13 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
         // Write players data.
         (function writePlayerData() {
-            var i, idData, IDPlauyer;
-            IDPlayer = node.game.pl.id.getAllKeys();
-            for (i = 0; i < IDPlayer.length; i++) {
+            var i, len, idData, db;
+            db = node.game.pl.db;
+            i = -1, len = db.length;
+            for ( ; ++i < len ; ) {
                 idData = {
-                    Player_ID: IDPlayer[i],
+                    Player_ID: db[i].id,
+                    userAgent: db[i].userAgent,
                     Session_ID: gameRoom.name,
                     treatment: treatmentName,
                     costGE: settings.COSTGE
