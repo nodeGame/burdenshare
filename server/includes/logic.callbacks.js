@@ -18,6 +18,7 @@ var gameRoom = module.parent.exports.gameRoom;
 var settings = module.parent.exports.settings;
 var dk = module.parent.exports.dk;
 var client = module.parent.exports.client;
+var autoplay = module.parent.exports.autoplay;
 var ngc = module.parent.exports.ngc;
 
 function playerReconnects(p) {
@@ -54,7 +55,7 @@ function playerReconnects(p) {
     node.game.pl.each(function(player) {
         node.socket.send(node.msg.create({
             target: 'PCONNECT',
-            data: p,
+            data: { id: p.id },
             to: player.id
         }));
     });
@@ -62,7 +63,7 @@ function playerReconnects(p) {
     // Send currently connected players to reconnecting one.
     node.socket.send(node.msg.create({
         target: 'PLIST',
-        // data: node.game.pl.fetchSubObj('id'),
+         // TODO: this sends a bit too much.
         data: node.game.pl.db,
         to: p.id
     }));
@@ -71,10 +72,21 @@ function playerReconnects(p) {
     // however here we resend all the stages, and move their game plot.
     console.log('** Player reconnected: ' + p.id + ' **');
     // Setting metadata, settings, and plot.
-    node.remoteSetup('game_metadata',  p.id, client.metadata);
-    node.remoteSetup('game_settings', p.id, client.settings);
-    node.remoteSetup('plot', p.id, client.plot);
-    node.remoteSetup('env', p.id, client.env);
+
+    // TODO: better way of recovering the client type settings.
+    if (p.clientType === 'autoplay') {
+        node.remoteSetup('game_metadata',  p.id, autoplay.metadata);
+        node.remoteSetup('game_settings', p.id, autoplay.settings);
+        node.remoteSetup('plot', p.id, autoplay.plot);
+        node.remoteSetup('env', p.id, autoplay.env);
+    }
+    else {
+        node.remoteSetup('game_metadata',  p.id, client.metadata);
+        node.remoteSetup('game_settings', p.id, client.settings);
+        node.remoteSetup('plot', p.id, client.plot);
+        node.remoteSetup('env', p.id, client.env);
+    }
+        
 
     var RECON_STAGE = node.player.stage;
 
@@ -110,7 +122,7 @@ function playerReconnects(p) {
     if (!GameStage.compare(node.player.stage, '3.1.1')) {
         node.remoteCommand('goto_step', p.id, RECON_STAGE);
 
-        // IF ALREADY CHECKOUT
+        // IF ALREADY CHECKOUT.
         if (code.checkout) {
             node.say("win", p.id, code.ExitCode);
         }

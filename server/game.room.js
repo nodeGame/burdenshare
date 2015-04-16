@@ -61,13 +61,20 @@ module.exports = function(node, channel, gameRoom) {
             // both in the alias and the real event handler
             // TODO: Cannot use to: ALL, because this includes the reconnecting
             // player.
-            node.game.pl.each(function(p) {
+            node.game.pl.each(function(player) {
                 node.socket.send(node.msg.create({
                     target: 'PCONNECT',
                     data: p,
-                    to: p.id
+                    to: player.id
                 }));
             });
+            // Send currently connected players to reconnecting one.
+            node.socket.send(node.msg.create({
+                target: 'PLIST',
+                // TODO: this sends a bit too much.
+                data: node.game.pl.db,
+                to: p.id
+            }));
             node.game.pl.add(p);
             cbs.connectingPlayer(p);
         });

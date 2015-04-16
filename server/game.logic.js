@@ -25,6 +25,10 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                                                     treatmentName,
                                                     settings);
 
+    var autoplay = require(gameRoom.gamePaths.autoplay)(gameRoom,
+                                                        treatmentName,
+                                                        settings);
+
     // Reads in descil-mturk configuration.
     var dk = require('descil-mturk')();
 
@@ -32,6 +36,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     var cbs = channel.require(__dirname + '/includes/logic.callbacks.js', {
         ngc: ngc,
         client: client,
+        autoplay: autoplay,
         dk: dk,
         settings: settings,
         gameRoom: gameRoom,
@@ -182,6 +187,11 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         node.on.preconnect(cbs.playerReconnects);
 
         node.on.data('add_questionnaire_bonus', function(msg) {
+            var code = dk.codes.id.get(msg.from);
+            if (checkoutFlag || code.checkout) {
+                console.log('Already checked-out, **not** adding quest bonus.');
+                return;
+            }
             console.log('Adding questionnaire bonus.');
             addQuestionnaireBonus(msg);
         });
@@ -192,7 +202,11 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         });
 
         node.on.data('bsc_quest', function(msg) {
-            var i, len;
+            var code = dk.codes.id.get(msg.from);
+            if (checkoutFlag || code.checkout) {
+                console.log('Already checked-out, **not** adding quest data.');
+                return;
+            }
             // console.log('Writing Questionnaire Data!!!');
             dbs.mdbWrite_quest.store(msg.data);            
         });
