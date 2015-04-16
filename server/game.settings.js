@@ -37,33 +37,33 @@ module.exports = {
     timer: {
 
         // Instructions.
-        instructions1: 20000, // 2.5 minutes
-        instructions2: 20000, // 2.5 minutes
-        instructions3: 20000, // 2.5 minutes
-        instructions4: 20000, // 2.5 minutes
+        instructions1: 180000, // 3 minutes
+        instructions2: 180000, // 3 minutes
+        instructions3: 180000, // 3 minutes
+        instructions4: 180000, // 3 minutes
 
         // Game.
         initialSituation: function() {
-            return 20000; // 5 minutes
+            return 120000; // 2 minutes
             //if (node.game.globals.chosenTreatment === "sa") return 36000;
             //return 18000;
         },
 
-        endOfPractice: 20000, // 10 seconds
+        endOfPractice: 10000, // 10 seconds
         econGrowth: 60000, // 1 minute
-        proposer: 200000, // 2 minutes
-        reply2Prop: 20000, // 2 minutes
-        respondent: 400000, // 2 minutes
-        proposerDone: 400000, //2 minutes
-        respondentDone: 400000, // 2 minutes
+        proposer: 120000, // 2 minutes
+        reply2Prop: 120000, // 2 minutes
+        respondent: 120000, // 2 minutes
+        proposerDone: 120000, //2 minutes
+        respondentDone: 120000, // 2 minutes
         responseDone: 400000, // 5 minutes
 
         // Questionnaire.
-        questionnaire: 2000000, // 15 minutes.
-        questProfit: 200000, // 2.5 minutes
+        questionnaire: 900000, // 15 minutes.
+        questProfit: 120000, // 2.5 minutes
 
         // Logic.
-        notEnoughPlayers: 6000,
+        notEnoughPlayers: 60000,
 
         // AutoPlay: time before an automatic decision is made.
         randomExec: 3000
@@ -93,7 +93,7 @@ module.exports = {
             name: "sa30",
             fullName: "Self Assigned 30",
             description:
-                "Players assign the historical responsibility themselves (80 cost)",
+                "Players assign the historical responsibility themselves",
             GAME_NAME: '/burdenHR/',
             COSTGE: 30
         },
@@ -101,7 +101,7 @@ module.exports = {
             name: "ra30",
             fullName: "Randomly Assigned 30",
             description:
-                "Players get the historical responsibility assigned randomly (80 cost)",
+                "Players get the historical responsibility assigned randomly",
             GAME_NAME: '/burdenRAHR/',
             COSTGE: 30
         },
