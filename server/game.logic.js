@@ -631,7 +631,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                 questTimer = node.timer.createTimer({
                     milliseconds: settings.timer.questionnaire +
                         settings.timer.questProfit + 10000,
-                    timeup: adjustPayoffAndCheckout,
+                    timeup: adjustPayoffAndCheckout
                 });
 
                 questTimer.start();

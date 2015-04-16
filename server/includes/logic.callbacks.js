@@ -22,7 +22,7 @@ var autoplay = module.parent.exports.autoplay;
 var ngc = module.parent.exports.ngc;
 
 function playerReconnects(p) {
-    var code;
+    var code, isQuest;
     var GameStage = ngc.GameStage;
 
     console.log('Oh...somebody reconnected!', p);
@@ -40,14 +40,17 @@ function playerReconnects(p) {
         return;
     }
 
+    isQuest = node.game.getCurrentStepObj().id === 'questionnaire';
+
     // Mark code as connected.
     code.disconnected = false;
 
-    // Delete countdown to terminate the game.
-    clearTimeout(this.countdown);
-
-    // Clear any message in the buffer from.
-    node.remoteCommand('erase_buffer', 'ROOM');
+    if (!isQuest) {
+        // Delete countdown to terminate the game.
+        clearTimeout(this.countdown);
+        // Clear any message in the buffer from.
+        node.remoteCommand('erase_buffer', 'ROOM');
+    }
 
     // Notify other player he is back.
     // TODO: add it automatically if we return TRUE? It must be done
@@ -63,10 +66,11 @@ function playerReconnects(p) {
     // Send currently connected players to reconnecting one.
     node.socket.send(node.msg.create({
         target: 'PLIST',
-         // TODO: this sends a bit too much.
+        // TODO: this sends a bit too much.
         data: node.game.pl.db,
         to: p.id
     }));
+    
 
     // We could slice the game plot, and send just what we need
     // however here we resend all the stages, and move their game plot.
@@ -86,22 +90,6 @@ function playerReconnects(p) {
         node.remoteSetup('plot', p.id, client.plot);
         node.remoteSetup('env', p.id, client.env);
     }
-        
-
-    var RECON_STAGE = node.player.stage;
-
-    if (!GameStage.compare(node.player.stage, '2.2.1') ||
-        !GameStage.compare(node.player.stage, '2.2.2') ||
-        !GameStage.compare(node.player.stage, '2.2.3')) {
-
-        RECON_STAGE = node.game.plot.previous(RECON_STAGE);
-    }
-    else if (!GameStage.compare(node.player.stage, '2.3.1') ||
-             !GameStage.compare(node.player.stage, '2.3.2') ||
-             !GameStage.compare(node.player.stage, '2.3.3')) {
-
-        RECON_STAGE = node.game.plot.jump(RECON_STAGE, -2);
-    }
 
     // Start the game on the reconnecting client.
     node.remoteCommand('start', p.id, { step: false });
@@ -111,40 +99,61 @@ function playerReconnects(p) {
     // both in the alias and the real event handler
     node.game.pl.add(p);
 
-    if (!node.game.checkPlistSize()) {
-        console.log('Player reconnected, but not yet enough players');
-        return;
-    }
+    var RECON_STAGE = node.player.stage;
 
-    if (!GameStage.compare(node.player.stage, '3.1.1')) {
-        node.remoteCommand('goto_step', p.id, RECON_STAGE);
+    // If logic is in questionnaire send WIN message and exit.
+    if (isQuest) {
 
         // IF ALREADY CHECKOUT.
         if (code.checkout) {
-            node.say("win", p.id, code.ExitCode);
+            node.remoteAlert('Hi! It looks like you have already completed ' +
+                             'this game. This is your Exit code: ' + 
+                             code.ExitCode, p.id);
+//            setTimeout(function() {
+//                node.say("win", p.id, code.ExitCode);
+//            }, 1000);
         }
+        else {            
+            node.remoteCommand('goto_step', p.id, RECON_STAGE);
+        }
+
     }
 
     else {
-        // Will send all the players to current stage
-        // (also those who were there already).
-        // setTimeout(function() {
-            // Unpause ALL players.
-            node.game.pl.each(function(player) {
-                node.remoteCommand('goto_step', player.id, RECON_STAGE);
-                if (player.id !== p.id) {
-                    node.remoteCommand('resume', player.id);
-                }
-            });
+   
+        if (!node.game.checkPlistSize()) {
+            console.log('Player reconnected, but not yet enough players');
+            return;
+        }
+        
+
+        if (!GameStage.compare(node.player.stage, '2.2.1') ||
+            !GameStage.compare(node.player.stage, '2.2.2') ||
+            !GameStage.compare(node.player.stage, '2.2.3')) {
+
+            RECON_STAGE = node.game.plot.previous(RECON_STAGE);
+        }
+        else if (!GameStage.compare(node.player.stage, '2.3.1') ||
+                 !GameStage.compare(node.player.stage, '2.3.2') ||
+                 !GameStage.compare(node.player.stage, '2.3.3')) {
+
+            RECON_STAGE = node.game.plot.jump(RECON_STAGE, -2);
+        }
+
+
+        // Unpause ALL players.
+        node.game.pl.each(function(player) {
+            node.remoteCommand('goto_step', player.id, RECON_STAGE);
+            if (player.id !== p.id) {
+                node.remoteCommand('resume', player.id);
+            }
+        });
 
         // TODO: When moving the logic depends on whether the logic
         // handles the synchronization or not. If so, it should maybe 
         // be recovered before
         // Move logic to previous stage.
         node.game.gotoStep(RECON_STAGE);
-
-        // }, 1000);
-
     }
 }
 
