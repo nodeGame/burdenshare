@@ -125,7 +125,7 @@ function init() {
     // own player id
     node.game.ownID = node.player.id;
     // player id opponent
-    node.game.otherID = node.game.pl.db[0].id;
+    node.game.otherID = null; // Ste: it was: node.game.pl.db[0].id;
     // decision taken by person = 1, offer taken by computer due to time out = 0
     node.game.decisionMade = 0;
 

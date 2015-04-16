@@ -116,9 +116,6 @@ function playerReconnects(p) {
         return;
     }
 
-    // Move logic to previous stage.
-    node.game.gotoStep(RECON_STAGE);
-
     if (!GameStage.compare(node.player.stage, '3.1.1')) {
         node.remoteCommand('goto_step', p.id, RECON_STAGE);
 
@@ -131,7 +128,7 @@ function playerReconnects(p) {
     else {
         // Will send all the players to current stage
         // (also those who were there already).
-        setTimeout(function() {
+        // setTimeout(function() {
             // Unpause ALL players.
             node.game.pl.each(function(player) {
                 node.remoteCommand('goto_step', player.id, RECON_STAGE);
@@ -139,7 +136,15 @@ function playerReconnects(p) {
                     node.remoteCommand('resume', player.id);
                 }
             });
-        }, 1000);
+
+        // TODO: When moving the logic depends on whether the logic
+        // handles the synchronization or not. If so, it should maybe 
+        // be recovered before
+        // Move logic to previous stage.
+        node.game.gotoStep(RECON_STAGE);
+
+        // }, 1000);
+
     }
 }
 
