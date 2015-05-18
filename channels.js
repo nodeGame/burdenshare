@@ -31,7 +31,7 @@ module.exports = [
         // Channel Waiting Room configuration.
         waitingRoom: {
             // Relative path from server/ directory.
-            logicPath:  'game.room.js',
+            // logicPath:  'game.room.js',
             name:       'waitRoom'
         },
         notify: {

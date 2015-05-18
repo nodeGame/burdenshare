@@ -358,7 +358,7 @@ function decision() {
                 };
 
                 // Sometimes the timer expires...
-                // if (Math.random() > 0.5) {
+                if (Math.random() > 0.5) {
                     // AUTO-PLAY
                     node.timer.randomExec(function() {
                         if (Math.random() > 0.5) {
@@ -368,7 +368,7 @@ function decision() {
                             reject.click();
                         }
                     }, 3000);
-                // }
+                }
 
             });
         });

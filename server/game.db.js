@@ -22,7 +22,6 @@ mdbCheckProfit, mdbgetInitEndow, mdbInstrTime;
 // 1. Setting up database connection.
 ngdb = new Database(node);
 
-
 // Open the collection where the categories will be stored.
 mdbWrite_idData = ngdb.getLayer('MongoDB', {
     dbName: 'burden_sharing',

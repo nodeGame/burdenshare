@@ -18,6 +18,10 @@ var DUMP_DIR = path.resolve(__dirname, '..', '/data');
 // - gameRoom: the GameRoom object in which this logic will be running.
 module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
+    // DBS functions. Open Connections.
+    // Objects are cached for further use by require.
+    channel.require(__dirname + '/game.db.js', { node : node });
+
     var REPEAT, MIN_PLAYERS;
 
     // Client game to send to reconnecting players.
@@ -275,6 +279,10 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                             payoutRound = J.randomInt(1, (nbrRounds+1));
                             profitRound = profit[payoutRound-1].Profit;
 
+                            if ('undefined' === typeof profitRound) {
+                                console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
+                            }
+
                             J.mixin(write_profit, {
                                 Payout_Round: payoutRound,
                                 Amount_UCE: profitRound,
@@ -337,23 +345,26 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             });
         });
 
-        // Write players data.
-        (function writePlayerData() {
-            var i, len, idData, db;
-            db = node.game.pl.db;
-            i = -1, len = db.length;
-            for ( ; ++i < len ; ) {
-                idData = {
-                    Player_ID: db[i].id,
-                    userAgent: db[i].userAgent,
-                    Session_ID: gameRoom.name,
-                    treatment: treatmentName,
-                    costGE: settings.COSTGE
-                };
-                dbs.mdbWrite_idData.store(idData);
-            }
-        })();
+        setTimeout(function() {
 
+            // Write players data.
+            (function writePlayerData() {
+                var i, len, idData, db;
+                db = node.game.pl.db;
+                i = -1, len = db.length;
+                for ( ; ++i < len ; ) {
+                    idData = {
+                        Player_ID: db[i].id,
+                        userAgent: db[i].userAgent,
+                        Session_ID: gameRoom.name,
+                        treatment: treatmentName,
+                        costGE: settings.COSTGE
+                    };
+                    dbs.mdbWrite_idData.store(idData);
+                }
+            })();
+
+        }, 2000);
     });
 
     function notEnoughPlayers() {
