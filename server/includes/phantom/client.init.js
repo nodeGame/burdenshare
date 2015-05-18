@@ -105,7 +105,7 @@ function init() {
                 node.set('delete_data', dataExist);
                 console.log('Player already finished this round.');
             }
-            if (node.game.results.Decision_Response === 0) debugger
+            // if (node.game.results.Decision_Response === 0) debugger
             node.set('bsc_data', node.game.results);
             that.endOfQuestionsround();
         });

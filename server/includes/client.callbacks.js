@@ -311,14 +311,14 @@ function makeChoiceTD(i, td) {
     ++questionnaire.numberOfClicks;
     questionnaire.currentAnswer = i;
     if (oldSelected) {
-        if (!oldSelected.style) debugger
+        // if (!oldSelected.style) debugger
         oldSelected.style.border = '1px solid black';
         oldSelected.style.background = 'white';
     }
-    if (!td) debugger
+    // if (!td) debugger
     input = td.children[0];
     input.checked = true;
-    if (!td.style) debugger;
+    // if (!td.style) debugger;
     td.style.border = '3px solid #CCC';
     td.style.background = 'yellow';
     questionnaire.oldSelected = td;

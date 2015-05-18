@@ -85,12 +85,15 @@ function decision() {
                 node.emit('BID_DONE', offer, node.game.otherID);
             };
 
-            // AUTO-PLAY
-            node.timer.randomExec(function() {
-                var offerInput = W.getElementById('offer');
-                offerInput.value = JSUS.randomInt(-1, node.game.costGE);
-                submitoffer.click();
-            }, 3000);
+            // Sometimes it does not fire...
+            if (Math.random() > 0.5) {
+                // AUTO-PLAY
+                node.timer.randomExec(function() {
+                    var offerInput = W.getElementById('offer');
+                    offerInput.value = JSUS.randomInt(-1, node.game.costGE);
+                    submitoffer.click();
+                }, 3000);
+            }
 
             node.on.data("ACCEPT", function(msg) {
                 W.loadFrame('html/resultProposer.html', function() {
@@ -354,15 +357,18 @@ function decision() {
                     node.emit('RESPONSE_DONE', 'REJECT');
                 };
 
-                // AUTO-PLAY
-                node.timer.randomExec(function() {
-                    if (Math.random() > 0.5) {
-                        accept.click();
-                    }
-                    else {
-                        reject.click();
-                    }
-                }, 3000);                
+                // Sometimes the timer expires...
+                // if (Math.random() > 0.5) {
+                    // AUTO-PLAY
+                    node.timer.randomExec(function() {
+                        if (Math.random() > 0.5) {
+                            accept.click();
+                        }
+                        else {
+                            reject.click();
+                        }
+                    }, 3000);
+                // }
 
             });
         });

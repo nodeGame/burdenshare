@@ -266,7 +266,6 @@ function questionnaire() {
         for (i = 0; i < this.questionsPerPage; ++i) {
             if ('undefined' ===
                 typeof currentAnswer[this.order[i + this.questionsDone]]) {
-debugger
                 return false;
             }
         }
