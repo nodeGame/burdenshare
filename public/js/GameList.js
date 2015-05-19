@@ -169,6 +169,7 @@
         var selGame;
         var treatment, treatmentList, elem;
         var firstElem;
+        var aliases;
         var that;
 
         that = this;
@@ -179,7 +180,15 @@
         if (!selGame) return;
 
         this.detailTable.addRow([selGame.info.name]);
-        this.detailTable.addRow([selGame.info.alias.join(', ')]);
+        
+        if (JSUS.isArray(selGame.info.alias)) {
+            aliases = [selGame.info.alias.join(', ')]
+        }
+        else {
+            aliases = [selGame.info.alias];
+        }
+
+        this.detailTable.addRow(aliases);
         this.detailTable.addRow([selGame.info.descr]);
 
         treatmentList = document.createElement('span');

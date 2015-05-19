@@ -21,13 +21,13 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     var REPEAT, MIN_PLAYERS;
 
     // Client game to send to reconnecting players.
-    var client = require(gameRoom.gamePaths.player)(gameRoom,
-                                                    treatmentName,
-                                                    settings);
-
-    var autoplay = require(gameRoom.gamePaths.autoplay)(gameRoom,
-                                                        treatmentName,
-                                                        settings);
+    var client = gameRoom.clientTypes.player(gameRoom,
+                                             treatmentName,
+                                             settings);
+    
+    var autoplay = gameRoom.clientTypes.autoplay(gameRoom, 
+                                                 treatmentName,
+                                                 settings);
 
     // Reads in descil-mturk configuration.
     var dk = require('descil-mturk')();
