@@ -6,14 +6,16 @@
  * Sets authorizations for accessing the Burden-share channels.
  * ---
  */
-module.exports = function(auth) {
+module.exports = function(auth, treatments) {
+
+    // TODO. Change.
+    var settings = {};
 
     var path = require('path');
 
     // Reads in descil-mturk configuration.
     var confPath = path.resolve(__dirname, 'descil.conf.js');
     var dk = require('descil-mturk')();
-    var settings = require(path.resolve(__dirname, '../server/game.settings.js'));
 
     dk.readConfiguration(confPath);
 
