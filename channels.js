@@ -27,13 +27,7 @@ module.exports = [
         // Unauthorized clients will be redirected here.
         // (defaults: "/pages/accessdenied.htm")
         accessDeniedUrl: '/burdenshare/unauth.htm',
-
-        // Channel Waiting Room configuration.
-        waitingRoom: {
-            // Relative path from server/ directory.
-            // logicPath:  'game.room.js',
-            name:       'waitRoom'
-        },
+       
         notify: {
             onStageUpdate: true,
 

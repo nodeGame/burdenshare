@@ -134,9 +134,9 @@ module.exports = function(auth) {
 
 
     // Assigning the auth callbacks to the player server.
-    auth.authorization('burdenshare', 'player', authPlayers);
-    auth.clientIdGenerator('burdenshare', 'player', idGen);
-    auth.clientObjDecorator('burdenshare', 'player', decorateClientObj);
+    // auth.authorization('burdenshare', 'player', authPlayers);
+    // auth.clientIdGenerator('burdenshare', 'player', idGen);
+    // auth.clientObjDecorator('burdenshare', 'player', decorateClientObj);
 
 
     var a = 0;
