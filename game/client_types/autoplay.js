@@ -18,7 +18,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
     var gameSequence, stager;
 
     // Import the stager.
-    gameSequence = require(__dirname + '/game.stages.js')(settings);
+    gameSequence = require(__dirname + '/../game.stages.js')(settings);
     stager = ngc.getStager(gameSequence);
 
     var game = {};

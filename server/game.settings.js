@@ -10,12 +10,12 @@
 module.exports = {
 
     // Files
-    gamePaths: {
-        logic:    "game.logic.js",
-        player:   "game.client.js",
-        // bot:      "game.bot.js",
-        autoplay: "game.autoplay.js",
-    },
+//     gamePaths: {
+//         logic:    "game.logic.js",
+//         player:   "game.client.js",
+//         // bot:      "game.bot.js",
+//         autoplay: "game.autoplay.js",
+//     },
 
     REPEAT: 4,
 

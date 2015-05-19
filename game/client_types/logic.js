@@ -18,10 +18,6 @@ var DUMP_DIR = path.resolve(__dirname, '..', '/data');
 // - gameRoom: the GameRoom object in which this logic will be running.
 module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
-    // DBS functions. Open Connections.
-    // Objects are cached for further use by require.
-    channel.require(__dirname + '/game.db.js', { node : node });
-
     var REPEAT, MIN_PLAYERS;
 
     // Client game to send to reconnecting players.
@@ -47,14 +43,15 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         node: node
     }, true);
 
-
     // Import the stager.
-    var gameSequence = require(__dirname + '/game.stages.js')(settings);
+    var gameSequence = require(__dirname + '/../game.stages.js')(settings);
     var stager = ngc.getStager(gameSequence);
 
-    // DBS functions.
+    // DBS functions. Open Connections.
+    // Objects are cached for further use by require.
+    channel.require(__dirname + '/includes/game.db.js', { node : node });
     // Objects were created and cached in previous call in game.room.
-    var dbs = require(__dirname + '/game.db.js');
+    var dbs = require(__dirname + '/includes/game.db.js');
 
     // Settings variables.
 
