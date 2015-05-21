@@ -4,19 +4,15 @@
  * They will be extended in game.logic, and game.client.
  *
  */
-var ngc = require('nodegame-client');
 
-module.exports = function(settings) {
-    var stager = ngc.getStager();
+module.exports = function(stager, settings) {
 
     stager.init()
-    .next('instructions')
-    .repeat('burdenSharingControl', settings.REPEAT)
-    .repeat('questionnaire', 23);
+        .next('instructions')
+        .repeat('burdenSharingControl', settings.REPEAT)
+        .repeat('questionnaire', 23);
 
-    // Modifty the stager to skip one stage.
+    // Modify the stager to skip one stage.
     // stager.skip('instructions');
     // stager.skip('burdenSharingControl');
-
-    return stager.getState();
 };

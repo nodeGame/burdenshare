@@ -16,18 +16,28 @@ var DUMP_DIR = path.resolve(__dirname, '..', '/data');
 // - node: the NodeGameClient object.
 // - channel: the ServerChannel object in which this logic will be running.
 // - gameRoom: the GameRoom object in which this logic will be running.
-module.exports = function(node, channel, gameRoom, treatmentName, settings) {
+module.exports = function(treatmentName, treatment, stager, setup,
+                          node, gameRoom) {
 
     var REPEAT, MIN_PLAYERS;
 
-    // Client game to send to reconnecting players.
-    var client = gameRoom.clientTypes.player(gameRoom,
-                                             treatmentName,
-                                             settings);
+    var settings = treatment;
+
+    var client = gameRoom.getClientType('player');
     
-    var autoplay = gameRoom.clientTypes.autoplay(gameRoom, 
-                                                 treatmentName,
-                                                 settings);
+    var autoplay = gameRoom.getClientType('autoplay');
+
+
+    var channel = gameRoom.channel;    
+
+//     // Client game to send to reconnecting players.
+//     var client = gameRoom.clientTypes.player(gameRoom,
+//                                              treatmentName,
+//                                              settings);
+//     
+//     var autoplay = gameRoom.clientTypes.autoplay(gameRoom, 
+//                                                  treatmentName,
+//                                                  settings);
 
     // Reads in descil-mturk configuration.
     var dk = require('descil-mturk')();
@@ -44,8 +54,9 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     }, true);
 
     // Import the stager.
-    var gameSequence = require(__dirname + '/../game.stages.js')(settings);
-    var stager = ngc.getStager(gameSequence);
+    //var gameSequence = require(__dirname + '/../game.stages.js')(settings);
+    
+    var stager = ngc.getStager(stager.getState());
 
     // DBS functions. Open Connections.
     // Objects are cached for further use by require.
@@ -673,9 +684,15 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                 adjustPayoffAndCheckout();
             });
             console.log('********************** Questionaire - SessionID: ' +
-                            gameRoom.name);
+                        gameRoom.name);
         }
     });
+
+
+    // Ste: TODO: use setup.
+
+    
+
 
     return {
         nodename: 'lgc' + counter,
@@ -690,4 +707,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         plot: stager.getState(),
         verbosity: 0
     };
+
+
 };

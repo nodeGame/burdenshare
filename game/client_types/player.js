@@ -14,12 +14,14 @@ var constants = ngc.constants;
 
 // Export the game-creating function. It needs the name of the treatment and
 // its options.
-module.exports = function(gameRoom, treatmentName, settings) {
+module.exports = function(treatmentName, treatment, stager, setup) {
     var gameSequence, stager;
 
+    var settings = treatment;
+
     // Import the stager.
-    gameSequence = require(__dirname + '/../game.stages.js')(settings);
-    stager = ngc.getStager(gameSequence);
+    // gameSequence = require(__dirname + '/../game.stages.js')(settings);
+    stager = ngc.getStager(stager.getState());
 
     var game = {};
     var cbs = require(__dirname + '/includes/client.callbacks.js');
@@ -112,6 +114,9 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     //We serialize the game sequence before sending it
     game.plot = stager.getState();
+
+
+    // TODO: use setup.
 
     //Let's add the metadata information
     game.metadata = {

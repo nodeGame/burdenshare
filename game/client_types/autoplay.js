@@ -14,12 +14,16 @@ var constants = ngc.constants;
 
 // Export the game-creating function. It needs the name of the treatment and
 // its options.
-module.exports = function(gameRoom, treatmentName, settings) {
+module.exports = function(treatmentName, treatment, stager, setup,
+                          node, gameRoom) {
+
     var gameSequence, stager;
 
+    var settings = treatment;
+
     // Import the stager.
-    gameSequence = require(__dirname + '/../game.stages.js')(settings);
-    stager = ngc.getStager(gameSequence);
+    // gameSequence = require(__dirname + '/../game.stages.js')(settings);
+    stager = ngc.getStager(stager.getState());
 
     var game = {};
     var cbs = require(__dirname + '/includes/phantom/client.callbacks.js');
