@@ -7,13 +7,17 @@
  * check browser requirements, and collect feedbacks.
  * ---
  */
-module.exports = function(settings, node, channel, room) {
+module.exports = function(settings, room, runtimeConf) {
+
+    var node = room.node;
+    var channel = room.channel;
 
     // Reads in descil-mturk configuration.
     var basedir = channel.resolveGameDir('burdenshare');
     var confPath = basedir + '/auth/descil.conf.js';
 
     var dk = require('descil-mturk')();
+
 
     // Creates a stager object to define the game stages.
     var stager = new node.Stager();

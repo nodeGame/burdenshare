@@ -17,10 +17,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     var REPEAT, MIN_PLAYERS;
 
-    var channel = gameRoom.channel;    
+    var channel = gameRoom.channel;
     var node = gameRoom.node;
 
-    var client = gameRoom.getClientType('player');    
+    var client = gameRoom.getClientType('player');
     var autoplay = gameRoom.getClientType('autoplay');
 
     // Reads in descil-mturk configuration.
@@ -199,7 +199,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 return;
             }
             // console.log('Writing Questionnaire Data!!!');
-            dbs.mdbWrite_quest.store(msg.data);            
+            dbs.mdbWrite_quest.store(msg.data);
         });
 
         node.on.data('check_Data', function(msg) {
