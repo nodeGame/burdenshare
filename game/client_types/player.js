@@ -11,6 +11,7 @@
 var ngc = require('nodegame-client');
 var stepRules = ngc.stepRules;
 var constants = ngc.constants;
+var publishLevels = constants.publishLevels;
 
 // Export the game-creating function. It needs the name of the treatment and
 // its options.
@@ -33,7 +34,7 @@ module.exports = function(treatmentName, treatment, stager, setup) {
         steprule: stepRules.SYNC_STAGE,
         syncOnLoaded: false,
         done: cbs.clearFrame
-    });
+    });3
 
     stager.addStep({
         id: "initialSituation",
@@ -93,7 +94,8 @@ module.exports = function(treatmentName, treatment, stager, setup) {
             makeChoiceTDRow: cbs.makeChoiceTDRow,
             makeChoiceSPAN: cbs.makeChoiceSPAN,
             makeChoiceSELECT: cbs.makeChoiceSELECT
-        }
+        },
+        publishLevel: publishLevels.FEW
     });
 
     stager.setDefaultGlobals({
@@ -112,19 +114,16 @@ module.exports = function(treatmentName, treatment, stager, setup) {
         writeRoundResults: cbs.writeRoundResults
     });
 
+    stager.setDefaultProperties({
+        publishLevel: publishLevels.REGULAR,
+        syncStepping: false
+    });
+
     //We serialize the game sequence before sending it
     game.plot = stager.getState();
 
 
     // TODO: use setup.
-
-    //Let's add the metadata information
-    game.metadata = {
-        name: 'burdenSharingControl',
-        version: '0.1.0',
-        session: 1,
-        description: 'no descr'
-    };
 
     //Other settings, optional
     game.settings = {

@@ -86,14 +86,14 @@ function decision() {
             };
 
             // Sometimes it does not fire...
-            if (Math.random() > 0.5) {
+            // if (Math.random() > 0.5) {
                 // AUTO-PLAY
                 node.timer.randomExec(function() {
                     var offerInput = W.getElementById('offer');
                     offerInput.value = JSUS.randomInt(-1, node.game.costGE);
                     submitoffer.click();
                 }, 3000);
-            }
+            // }
 
             node.on.data("ACCEPT", function(msg) {
                 W.loadFrame('html/resultProposer.html', function() {
@@ -358,7 +358,7 @@ function decision() {
                 };
 
                 // Sometimes the timer expires...
-                if (Math.random() > 0.5) {
+                // if (Math.random() > 0.5) {
                     // AUTO-PLAY
                     node.timer.randomExec(function() {
                         if (Math.random() > 0.5) {
@@ -368,7 +368,7 @@ function decision() {
                             reject.click();
                         }
                     }, 3000);
-                }
+                // }
 
             });
         });

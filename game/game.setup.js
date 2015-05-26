@@ -11,12 +11,12 @@ module.exports = function(settings) {
     
     var game = {};
 
-    //Let's add the metadata information
-    game.metadata = {
-        name: 'burdenSharingControl',
-        version: '0.1.0',
-        description: 'no descr'
-    };
+    // Metadata. Taken from package.json. Can be overwritten.    
+    // game.metadata = {
+    //    name: 'burdenSharingControl',
+    //    version: '0.1.0',
+    //    description: 'no descr'
+    // };
 
     //Other settings, optional
     game.settings = {

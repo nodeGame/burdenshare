@@ -118,7 +118,7 @@ module.exports = function(node, channel, gameRoom) {
 
     return {
         nodename: 'wroom',
-        game_metadata: {
+        metadata: {
             name: 'wroom',
             version: '0.1.0'
         },

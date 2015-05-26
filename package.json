@@ -1,8 +1,7 @@
 {
   "name": "burdenshare",
-  "description": "Pairs players and let them exchange messages",
-  "version": "0.0.1",
-  "alias": "experiment",
+  "description": "Climate negotiation game",
+  "version": "0.5.0",
   "author": {
     "name": "Stefano Balietti",
     "email": "sbalietti@ethz.ch",

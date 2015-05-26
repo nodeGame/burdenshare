@@ -79,13 +79,13 @@ function playerReconnects(p) {
 
     // TODO: better way of recovering the client type settings.
     if (p.clientType === 'autoplay') {
-        node.remoteSetup('game_metadata',  p.id, autoplay.metadata);
+        node.remoteSetup('metadata',  p.id, autoplay.metadata);
         node.remoteSetup('game_settings', p.id, autoplay.settings);
         node.remoteSetup('plot', p.id, autoplay.plot);
         node.remoteSetup('env', p.id, autoplay.env);
     }
     else {
-        node.remoteSetup('game_metadata',  p.id, client.metadata);
+        node.remoteSetup('metadata',  p.id, client.metadata);
         node.remoteSetup('game_settings', p.id, client.settings);
         node.remoteSetup('plot', p.id, client.plot);
         node.remoteSetup('env', p.id, client.env);

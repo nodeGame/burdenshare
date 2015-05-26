@@ -26,18 +26,7 @@ module.exports = function(treatmentName, treatment, stager, setup,
     var client = gameRoom.getClientType('player');
     
     var autoplay = gameRoom.getClientType('autoplay');
-
-
     var channel = gameRoom.channel;    
-
-//     // Client game to send to reconnecting players.
-//     var client = gameRoom.clientTypes.player(gameRoom,
-//                                              treatmentName,
-//                                              settings);
-//     
-//     var autoplay = gameRoom.clientTypes.autoplay(gameRoom, 
-//                                                  treatmentName,
-//                                                  settings);
 
     // Reads in descil-mturk configuration.
     var dk = require('descil-mturk')();
@@ -524,6 +513,11 @@ module.exports = function(treatmentName, treatment, stager, setup,
     // Set default step rule.
     stager.setDefaultStepRule(stepRules.OTHERS_SYNC_STEP);
 
+    stager.setDefaultProperties({
+        publishLevel: 0,
+        syncStepping: false
+    });
+
     stager.extendStep('instructions', {
         cb: function() {
             console.log('********************** Instructions - SessionID: ' +
@@ -691,19 +685,8 @@ module.exports = function(treatmentName, treatment, stager, setup,
 
     // Ste: TODO: use setup.
 
-    
-
-
     return {
         nodename: 'lgc' + counter,
-        game_metadata: {
-            name: 'burdenSharingControl',
-            version: '0.2.0'
-        },
-        game_settings: {
-            publishLevel: 0,
-            syncStepping: false
-        },
         plot: stager.getState(),
         verbosity: 0
     };

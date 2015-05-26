@@ -174,7 +174,7 @@ function Requirements() {
 	            type: 'SocketIo', // for remote connections
 	            reconnect: false
 	        },
-                game_metadata: game.metadata,
+                metadata: game.metadata,
                 plot: game.plot,
                 verbosity: 10
             });

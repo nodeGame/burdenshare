@@ -86,7 +86,7 @@ function Monitor(node) {
         events: {
             dumpEvents: true
         },
-        game_metadata: {
+        metadata: {
             name: 'Monitor Screen',
             description: 'No Description',
             version: '0.3'
