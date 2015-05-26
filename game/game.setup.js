@@ -18,22 +18,17 @@ module.exports = function(settings) {
     //    description: 'no descr'
     // };
 
-    //Other settings, optional
-    game.settings = {
-        publishLevel: 2
-    };
-
     //auto: true = automatic run, auto: false = user input
     game.env = {
         auto: false
     };
 
-    game.debug = settings.debug;
+    game.debug = true;
 
     game.verbosity = 1;
 
     game.window = {
-        promptOnleave: !settings.debug
+        promptOnleave: !game.debug
     }
 
     return game;

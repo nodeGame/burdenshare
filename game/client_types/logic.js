@@ -12,21 +12,16 @@ var PLAYING_STAGE = 1;
 
 var DUMP_DIR = path.resolve(__dirname, '..', '/data');
 
-// Here we export the logic function. Receives three parameters:
-// - node: the NodeGameClient object.
-// - channel: the ServerChannel object in which this logic will be running.
-// - gameRoom: the GameRoom object in which this logic will be running.
-module.exports = function(treatmentName, treatment, stager, setup,
-                          node, gameRoom) {
+// Here we export the logic function.
+module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     var REPEAT, MIN_PLAYERS;
 
-    var settings = treatment;
-
-    var client = gameRoom.getClientType('player');
-    
-    var autoplay = gameRoom.getClientType('autoplay');
     var channel = gameRoom.channel;    
+    var node = gameRoom.node;
+
+    var client = gameRoom.getClientType('player');    
+    var autoplay = gameRoom.getClientType('autoplay');
 
     // Reads in descil-mturk configuration.
     var dk = require('descil-mturk')();
@@ -41,11 +36,6 @@ module.exports = function(treatmentName, treatment, stager, setup,
         gameRoom: gameRoom,
         node: node
     }, true);
-
-    // Import the stager.
-    //var gameSequence = require(__dirname + '/../game.stages.js')(settings);
-    
-    var stager = ngc.getStager(stager.getState());
 
     // DBS functions. Open Connections.
     // Objects are cached for further use by require.

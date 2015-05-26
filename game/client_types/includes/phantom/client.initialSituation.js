@@ -10,8 +10,8 @@ module.exports = initialSituation;
 
 function initialSituation() {
 
-    var gameName = node.game.globals.gameName;
-    var chosenTreatment = node.game.globals.chosenTreatment;
+    var gameName = node.game.settings.gameName;
+    var chosenTreatment = node.game.settings.treatmentName;
 
     var IDs = {
         ownPlayerId: node.game.ownID,

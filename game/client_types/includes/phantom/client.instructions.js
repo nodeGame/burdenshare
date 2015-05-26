@@ -11,8 +11,8 @@ module.exports = instructions;
 function instructions() {
     node.game.visualRound.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL']);
 
-    var gameName = node.game.globals.gameName;
-    var chosenTreatment = node.game.globals.chosenTreatment;
+    var gameName = node.game.settings.gameName;
+    var chosenTreatment = node.game.settings.treatmentName;
 
     console.log('instructions');
 
@@ -100,10 +100,10 @@ function instructions() {
                 milliseconds: node.game.globals.timer.instructions3,
                 timeup: function() {
                     sendTimeInstr(3);
-                    if (node.game.globals.chosenTreatment === 'ra') {
+                    if (chosenTreatment === 'ra') {
                         EconGrowthAndRisk();
                     }
-                    else if (node.game.globals.chosenTreatment === 'sa') {
+                    else if (chosenTreatment === 'sa') {
                         instructions4();
                     }
                 }

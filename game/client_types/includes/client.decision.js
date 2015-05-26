@@ -13,8 +13,8 @@ function decision() {
     node.game.visualRound.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
                                           'COUNT_UP_ROUNDS_TO_TOTAL']);
 
-    var gameName = node.game.globals.gameName;
-    var chosenTreatment = node.game.globals.chosenTreatment;
+    var gameName = node.game.settings.gameName;
+    var chosenTreatment = node.game.settings.treatmentName;
 
     var that = this;
 

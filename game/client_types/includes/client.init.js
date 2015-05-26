@@ -67,8 +67,8 @@ function init() {
     var waitingForPlayers = W.getElementById('waitingForPlayers');
     var that = this;
 
-    var gameName = node.game.globals.gameName;
-    var chosenTreatment = node.game.globals.chosenTreatment;
+    var gameName = node.game.settings.gameName;
+    var chosenTreatment = node.game.settings.treatmentName;
 
     // Hide unused div from waiting room.
     if (waitingForPlayers) {
@@ -117,7 +117,7 @@ function init() {
     node.game.endowment_proposer = 0;
 
     // cost green house gas emmisions, two Versions: 30 or 80 ECU
-    node.game.costGE = node.game.globals.costGE;
+    node.game.costGE = node.game.settings.COSTGE;
     // number of rounds including the test round
     node.game.nbrRounds = 4;
     // initialization first round

@@ -13,20 +13,11 @@ var stepRules = ngc.stepRules;
 var constants = ngc.constants;
 var publishLevels = constants.publishLevels;
 
-// Export the game-creating function. It needs the name of the treatment and
-// its options.
-module.exports = function(treatmentName, treatment, stager, setup,
-                          node, gameRoom) {
+// Export the game-creating function.
+module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
-    var gameSequence, stager;
+    var game = setup;
 
-    var settings = treatment;
-
-    // Import the stager.
-    // gameSequence = require(__dirname + '/../game.stages.js')(settings);
-    stager = ngc.getStager(stager.getState());
-
-    var game = {};
     var cbs = require(__dirname + '/includes/phantom/client.callbacks.js');
 
     stager.setOnInit(cbs.init);
@@ -102,9 +93,6 @@ module.exports = function(treatmentName, treatment, stager, setup,
 
     stager.setDefaultGlobals({
         round: cbs.round,
-        gameName: settings.GAME_NAME,
-        chosenTreatment: treatmentName.substring(0,2),
-        costGE: settings.COSTGE,
         timer: settings.timer,
         buildTables: cbs.buildTables,
         checkID: cbs.checkID,
@@ -121,23 +109,11 @@ module.exports = function(treatmentName, treatment, stager, setup,
         syncStepping: false
     });
 
+    // Set auto = true;
+    game.env.auto = true;
+
     //We serialize the game sequence before sending it
     game.plot = stager.getState();
-
-    //auto: true = automatic run, auto: false = user input
-    game.env = { auto: true };
-
-    game.debug = settings.debug;
-
-    game.verbosity = 1;
-
-    game.events = {
-        dumpEvents: true
-    };
-
-    game.window = {
-        promptOnleave: !settings.debug
-    };
 
     return game;
 };

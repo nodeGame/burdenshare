@@ -27,8 +27,8 @@ function questionnaire() {
         });
     });
 
-    var gameName = node.game.globals.gameName;
-    var chosenTreatment = node.game.globals.chosenTreatment;
+    var gameName = node.game.settings.gameName;
+    var chosenTreatment = node.game.settings.treatmentName;
     var randomBlockExecutor;
     var socialValueOrientation, newEcologicalParadigm, risk;
     var makePageLoad, makeBlockArray;
