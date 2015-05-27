@@ -128,7 +128,11 @@ window.onload = function() {
 
     // Start waiting time timer.
     node.on.data('WAITTIME', function(msg) {
-        
+
+        // Avoid running multiple timers.
+        if (timeCheck) clearInterval(timeCheck);
+        document.getElementById('connectionStatus').innerHTML = '';
+
         // Update the number of minutes to wait and start timer.
         waitTime = msg.data;
 
@@ -152,5 +156,21 @@ window.onload = function() {
             }
 
         }, 1000);
+    });
+
+    node.on('SOCKET_DISCONNECT', function() {
+
+        // Terminate countdown.
+        clearInterval(timeCheck);
+        // Write about disconnection in page.
+        document.getElementById('connectionStatus').innerHTML = 
+            '<span style="color: red">You have been ' +
+            '<strong>disconnected</strong>. Please try again later.' +
+            '</span><br><br>';
+
+        // Enough to not display it in case of page refresh.
+        setTimeout(function() {
+            alert('Disconnection from server detected!');
+        }, 200);
     });
 };

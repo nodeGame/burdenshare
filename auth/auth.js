@@ -56,19 +56,11 @@ module.exports = function(auth, settings) {
         var cookies;
         var ids;
 
-        if (settings.AUTH === 'none' || settings.AUTH === 'NO') {
-            // If no auth, add the new code to the db.
-            dk.codes.insert({
-                AccessCode: cid,
-                ExitCode: cid + '_exit'
-            });
-            return cid;
-        }
 
         // Return the id only if token was validated.
         // More checks could be done here to ensure that token is unique in ids.
         ids = channel.registry.getIds();
-        cookies  = info.cookies;
+        cookies = info.cookies;
         if (cookies.token) {
 
             if (!ids[cookies.token] || ids[cookies.token].disconnected) {

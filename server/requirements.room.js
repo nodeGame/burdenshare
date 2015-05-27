@@ -12,11 +12,7 @@ module.exports = function(settings, room, runtimeConf) {
     var node = room.node;
     var channel = room.channel;
 
-    // Reads in descil-mturk configuration.
-    var basedir = channel.resolveGameDir('burdenshare');
-    var confPath = basedir + '/auth/descil.conf.js';
-
-    var dk = require('descil-mturk')();
+    var registry = room.channel.servernode.channels.burdenshare.registry;
 
     // Creates a stager object to define the game stages.
     var stager = new node.Stager();
@@ -95,15 +91,6 @@ module.exports = function(settings, room, runtimeConf) {
                 node.timer.setTimestamp(pingId);
                 ping();
 
-                // if (settings.AUTH === 'none') {
-                if (true) {
-                    return {
-                        success: true,
-                        msg: 'Code validated.',
-                        gameLink: '/burdenshare/html/informedConsent.html'
-                    };
-                }
-
                 // M-Turk id
                 mtid = msg.data;
 
@@ -114,7 +101,7 @@ module.exports = function(settings, room, runtimeConf) {
                     };
                 }
 
-                code = dk.codeExists(mtid);
+                code = registry.lookupClient(mtid);
 
                 if (!code) {
                     // errUri = '/ultimatum/unauth.html?id=' + mtid + '&err0=1';
@@ -125,8 +112,10 @@ module.exports = function(settings, room, runtimeConf) {
                     };
                 }
 
+                code = registry.getClient(mtid);
+debugger
                 // usage is for LOCAL check, IsUsed for MTURK
-                if ((code.usage || code.IsUsed) && !code.disconnected) {
+                if ((code.valid === false) && !code.disconnected) {
                     return {
                         success: false,
                         msg: 'Code already in use: ' + mtid

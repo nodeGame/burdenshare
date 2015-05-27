@@ -137,7 +137,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
         // Mark code as used.
         channel.registry.markInvalid(p.id);
-  
+
         // Send the number of minutes to wait.
         node.say('WAITTIME', p.id, MAX_WAIT_TIME);
 
