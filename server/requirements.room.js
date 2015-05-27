@@ -18,7 +18,6 @@ module.exports = function(settings, room, runtimeConf) {
 
     var dk = require('descil-mturk')();
 
-
     // Creates a stager object to define the game stages.
     var stager = new node.Stager();
 
@@ -62,6 +61,7 @@ module.exports = function(settings, room, runtimeConf) {
     stager.addStage({
         id: 'requirements',
         cb: function() {
+
             node.on('get.MTID', function(msg) {
                 var mtid, errUri, code;
 
@@ -95,8 +95,8 @@ module.exports = function(settings, room, runtimeConf) {
                 node.timer.setTimestamp(pingId);
                 ping();
 
-                if (settings.AUTH === 'none') {
-
+                // if (settings.AUTH === 'none') {
+                if (true) {
                     return {
                         success: true,
                         msg: 'Code validated.',

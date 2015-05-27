@@ -1,11 +1,22 @@
+/**
+ * # Auth settings: Burdenshare
+ * Copyright(c) 2015 Stefano Balietti
+ * MIT Licensed
+ *
+ * http://www.nodegame.org
+ * ---
+ */
 
 module.exports = {
 
-    auth: 'on', // 'off'
+    enabled: true, // [false] Default: TRUE.
 
-    auth_codes_file: 'mycodes.json', // mycodes.js returns a function that can be executed. default codes.json
+    mode: 'auto', // 'remote', 'local'
+
+    // Must export a function that returns an array of codes synchronously
+    // or asynchronously. Default: 'auth.codes.js'
+    codes: 'auth.codes.js', 
 
     login_page: 'login.htm',
 
-
-}
+};

@@ -1,6 +1,6 @@
 /**
  * # Game settings: Burdenshare
- * Copyright(c) 2014 Stefano Balietti
+ * Copyright(c) 2015 Stefano Balietti
  * MIT Licensed
  *
  * http://www.nodegame.org
@@ -11,11 +11,6 @@ module.exports = {
 
     REPEAT: 4,
     N_PLAYERS: 4, // min players.
-
-    // AUTH: 'local',
-    // AUTH: 'remote',
-    // AUTH: 'none',
-    AUTH: 'none',
 
     // How much does an agreement cost? (30 or 80).
     COSTGE: 30,

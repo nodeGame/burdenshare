@@ -9,7 +9,7 @@
 module.exports = function(settings, waitRoom, runtimeConf) {
 
     // Load the code database.
-    var dk = require('descil-mturk')();
+    // var dk = require('descil-mturk')();
     var J = require('JSUS').JSUS;
 
     var node = waitRoom.node;
@@ -27,8 +27,6 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
     var stager = new node.Stager();
 
-    var ngc = require('nodegame-client');
-
     // decideTreatment: check if string, or use it.
     function decideTreatment(t) {
         if (t === "treatment_rotate") {
@@ -42,16 +40,17 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
     function makeTimeOut(playerID) {
 
-        // var code = dk.codes.id.get(playerID);
-
-        var timeOutData = {
-            over: "Time elapsed!!!",
-            exit: 'AAA' // code.ExitCode
-        };
-
-        timeOuts[playerID] = setTimeout(function() {
+        timeOuts[playerID] = setTimeout(function() {            
+            var timeOutData, clientObj;
 
             channel.sysLogger.log("Timeout has not been cleared!!!");
+
+            clientObj = channel.registry.getClient(playerID);
+
+            timeOutData = {
+                over: "Time elapsed!!!",
+                exit: clientObj.exitCode
+            };
 
             // dk.checkOut(code.AccessCode, code.ExitCode, 0.0, function(
             // err, response, body) {
@@ -80,7 +79,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
             //     }
             // }
 
-        }, settings.MAX_WAIT_TIME);
+        }, MAX_WAIT_TIME);
 
     }
 
@@ -120,41 +119,37 @@ module.exports = function(settings, waitRoom, runtimeConf) {
         // Client really disconnected (not moved into another game room).
         if (channel.registry.clients.disconnected.get(p.id)) {
             // Free up the code.
-            // dk.markValid(p.id);
+            channel.registry.markValid(p.id);
         }
-        wRoom = channel.waitingRoom.clients.player;
+        wRoom = waitRoom.clients.player;
         for (i = 0; i < wRoom.size(); i++) {
             node.say("PLAYERSCONNECTED", wRoom.db[i].id, wRoom.size());
         }
     }
 
     function clientConnects(p) {
-        var room, wRoom;
+        var gameRoom, pList;
         var NPLAYERS;
-        var code;
         var i;
         var timeOutData;
         var treatmentName;
         var nPlayers;
 
-        // Check-in.
-        // code = dk.codes.id.get(p.id);
-        // dk.checkIn(code.AccessCode);
-        // dk.markInvalid(p.id);
-
-        // channel.sysLogger.log('-----------Player connected ' + p.id);
-
-        wRoom = channel.waitingRoom.clients.player;
-
+        // Mark code as used.
+        channel.registry.markInvalid(p.id);
+  
         // Send the number of minutes to wait.
         node.say('WAITTIME', p.id, MAX_WAIT_TIME);
 
-        nPlayers = wRoom.size();
+        pList = waitRoom.clients.player;
+        nPlayers = pList.size();
 
+        // Notify other players of new connection.
         for (i = 0; i < nPlayers; i++) {
-            node.say("PLAYERSCONNECTED", wRoom.db[i].id, nPlayers);
+            node.say("PLAYERSCONNECTED", pList.db[i].id, nPlayers);
         }
 
+        // Start counting a timeout for max stay in waiting room.
         makeTimeOut(p.id);
 
         // Wait for all players to connect.
@@ -166,31 +161,29 @@ module.exports = function(settings, waitRoom, runtimeConf) {
                 exit: 0
             };
 
-            node.say("TIME", wRoom.db[i].id, timeOutData);
+            node.say("TIME", pList.db[i].id, timeOutData);
 
             // Clear timeout for players.
             clearTimeout(timeOuts[i]);
         }
 
-        channel.sysLogger.log('----------- Game Room ' + channel.autoRoomNo + 
-                              ': ' + nPlayers + ' connected.');
-
-        tmpPlayerList = wRoom.shuffle().limit(GROUP_SIZE);
+        // Select a subset of players from pool.
+        tmpPlayerList = pList.shuffle().limit(GROUP_SIZE);
 
         // Decide treatment.
         treatmentName = decideTreatment(settings.CHOSEN_TREATMENT);
-
-        channel.sysLogger.log('Chosen treatment: ' + treatmentName);
-
-        room = channel.createGameRoom({
+        
+        // Create new game room.
+        gameRoom = channel.createGameRoom({
             group: 'burdenshare',
             clients: tmpPlayerList,
             gameName: 'burdenshare',
             treatmentName: treatmentName
         });
 
-        room.setupGame();
-        room.startGame(true, tmpPlayerList.id.getAllKeys());
+        // Setup and start game.
+        gameRoom.setupGame();
+        gameRoom.startGame(true, tmpPlayerList.id.getAllKeys());
     }
 
     function monitorReconnects(p) {
@@ -229,6 +222,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
         },
         plot: stager.getState(),
         debug: settings.debug || false,
-        verbosity: 0
+        verbosity: 0,
+        //clientConnects: clientConnects
     };
 };

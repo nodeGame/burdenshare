@@ -1,42 +1,13 @@
 /**
- * # Authorization functions for Burden-share Game
- * Copyright(c) 2014 Stefano Balietti
+ * # Authorization functions for Burdenshare Game
+ * Copyright(c) 2015 Stefano Balietti
  * MIT Licensed
  *
- * Sets authorizations for accessing the Burden-share channels.
+ * Sets authorizations for accessing the Burdenshare channels.
  * ---
  */
-module.exports = function(auth, treatments) {
+module.exports = function(auth, settings) {
 
-    // TODO. Change.
-    var settings = {};
-
-    var path = require('path');
-
-    // Reads in descil-mturk configuration.
-    var confPath = path.resolve(__dirname, 'descil.conf.js');
-    var dk = require('descil-mturk')();
-
-    dk.readConfiguration(confPath);
-
-    // Load code database
-    if (settings.AUTH !== 'none') {
-        if (settings.AUTH === 'remote') {
-            dk.getCodes(function() {
-                if (!dk.codes.size()) {
-                    throw new Error('requirements.room: no codes found.');
-                }
-                console.log(dk.codes.db);
-            });
-        }
-        else {
-            dk.readCodes(function() {
-                if (!dk.codes.size()) {
-                    throw new Error('requirements.room: no codes found.');
-                }
-            });
-        }
-    }
 
     /////////////////////////////// MTurk Version ///////////////////////////
     // Creating an authorization function for the players.
@@ -50,25 +21,7 @@ module.exports = function(auth, treatments) {
         playerId = info.cookies.player;
         token = info.cookies.token;
 
-        console.log('game.room: checking auth.');
-
-        if (settings.AUTH === 'none') {
-            return true;
-        }
-
-        // Weird thing.
-        if ('string' !== typeof playerId) {
-            console.log('no player: ', player)
-            return false;
-        }
-
-        // Weird thing.
-        if ('string' !== typeof token) {
-            console.log('no token: ', token)
-            return false;
-        }
-
-        code = dk.codeExists(token);
+        // code = dk.codeExists(token);
 
         // Code not existing.
         if (!code) {
@@ -112,8 +65,8 @@ module.exports = function(auth, treatments) {
             return cid;
         }
 
-        // // Return the id only if token was validated.
-        // // More checks could be done here to ensure that token is unique in ids.
+        // Return the id only if token was validated.
+        // More checks could be done here to ensure that token is unique in ids.
         ids = channel.registry.getIds();
         cookies  = info.cookies;
         if (cookies.token) {
@@ -128,8 +81,8 @@ module.exports = function(auth, treatments) {
         }
     }
 
-    function decorateClientObj(co, info) {
-        if (info.headers) co.userAgent = info.headers['user-agent'];
+    function decorateClientObj(clientObject, info) {
+        if (info.headers) clientObject.userAgent = info.headers['user-agent'];
     }
 
     /////////////////////////////// MTurk Version ///////////////////////////
