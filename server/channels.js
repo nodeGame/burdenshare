@@ -40,33 +40,4 @@ module.exports = [
         enableReconnections: true
     }
 
-    ,
-
-    // Requirements channel.
-    {
-        name: 'requirements',
-
-        admin: 'requirements/admin',
-
-        player: 'requirements',
-
-        verbosity: 100,
-
-        getFromAdmins: true,
-
-        waitingRoom: {
-            logicPath: 'requirements.room.js',
-            name: 'requirementsBurden'
-        },
-
-        notify: {
-            onConnect: false,
-            onStageUpdate: false,
-            onStageLevelUpdate: false,
-            onStageLoadedUpdate: false
-        },
-
-        enableReconnections: false
-
-    }
 ];

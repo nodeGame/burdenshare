@@ -159,15 +159,16 @@ window.onload = function() {
     });
 
     node.on('SOCKET_DISCONNECT', function() {
-
+        var connStatus;
         // Terminate countdown.
         clearInterval(timeCheck);
         // Write about disconnection in page.
-        document.getElementById('connectionStatus').innerHTML = 
-            '<span style="color: red">You have been ' +
-            '<strong>disconnected</strong>. Please try again later.' +
-            '</span><br><br>';
-
+        connStatus = document.getElementById('connectionStatus');
+        if (connStatus) {
+            connStatus. innerHTML = '<span style="color: red">You have been ' +
+                '<strong>disconnected</strong>. Please try again later.' +
+                '</span><br><br>';
+        }
         // Enough to not display it in case of page refresh.
         setTimeout(function() {
             alert('Disconnection from server detected!');

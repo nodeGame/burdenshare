@@ -86,9 +86,9 @@ module.exports = function(auth, settings) {
     // auth.clientObjDecorator('burdenshare', 'player', decorateClientObj);
 
 
-    var a = 0;
-    auth.clientIdGenerator('requirements', 'player', function() {
-        return "" + ++a; 
-    });
+//     var a = 0;
+//     auth.clientIdGenerator('requirements', 'player', function() {
+//         return "" + ++a; 
+//     });
 
 };
