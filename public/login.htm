@@ -1,13 +1,27 @@
-<form action="/login" method="post">
-    <div>
+<!doctype html>
+<title>Login Room</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<link rel="stylesheet" href="css/bootstrap.min.css" />
+<body>
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap.js"></script>
+  <div style="margin:-100px 0 0 -200px; top:50%; left:50%; position: fixed;">
+    <h2 id="h2title">Login Page</h2>
+    You need to have cookies and JavaScript enabled in your browser.
+    <br/><br/>
+    <form action="/burdenshare/auth" method="post">
+      <div>
         <label>Username:</label>
         <input type="text" name="username"/>
-    </div>
-    <div>
+      </div>
+      <div>
         <label>Password:</label>
         <input type="password" name="password"/>
-    </div>
-    <div>
-        <input type="submit" value="Log In"/>
-    </div>
-</form>
+      </div>
+      <div>
+        <br/>
+        <input type="submit" value="Log In" class="btn btn-primary" />
+      </div>
+    </form>
+  </div>
+</body>
