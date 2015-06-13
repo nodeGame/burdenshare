@@ -22,7 +22,6 @@ module.exports = function(settings, waitRoom, runtimeConf) {
     var treatments = Object.keys(channel.gameInfo.settings);
     var tLen = treatments.length;
 
-    // Keep timeouts for all 4 players.
     var timeOuts = {};
 
     var stager = new node.Stager();
@@ -135,19 +134,30 @@ module.exports = function(settings, waitRoom, runtimeConf) {
         var treatmentName;
         var nPlayers;
 
+        console.log('Client connected to waiting room: ', p.id);
+
         // Mark code as used.
         channel.registry.markInvalid(p.id);
-
-        // Send the number of minutes to wait.
-        node.say('WAITTIME', p.id, MAX_WAIT_TIME);
 
         pList = waitRoom.clients.player;
         nPlayers = pList.size();
 
-        // Notify other players of new connection.
-        for (i = 0; i < nPlayers; i++) {
-            node.say("PLAYERSCONNECTED", pList.db[i].id, nPlayers);
-        }
+        node.remoteSetup('widgets', p.id, {
+            destroyAll: true,
+            append: { 'WaitingRoom': {} } 
+        });
+
+        // Send the number of minutes to wait.
+        node.remoteSetup('waitroom', p.id, {
+            poolSize: settings.POOL_SIZE,
+            groupSize: settings.GROUP_SIZE,
+            maxWaitTime: settings.MAX_WAIT_TIME
+        });
+        console.log('NPL ', nPlayers);
+
+        // Notify all players of new connection.        
+        node.say("PLAYERSCONNECTED", 'ROOM', nPlayers);
+        
 
         // Start counting a timeout for max stay in waiting room.
         makeTimeOut(p.id);
@@ -162,6 +172,9 @@ module.exports = function(settings, waitRoom, runtimeConf) {
             };
 
             node.say("TIME", pList.db[i].id, timeOutData);
+            
+            // Clear body.
+            node.remoteSetup('page', pList.db[i].id, { clearBody: true });
 
             // Clear timeout for players.
             clearTimeout(timeOuts[i]);

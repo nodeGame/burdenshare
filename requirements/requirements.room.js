@@ -8,11 +8,10 @@
  * ---
  */
 module.exports = function(settings, room, runtimeConf) {
-
     var node = room.node;
     var channel = room.channel;
     var registry = channel.registry;
-
+debugger
     // Creates a stager object to define the game stages.
     var stager = new node.Stager();
 
@@ -22,13 +21,38 @@ module.exports = function(settings, room, runtimeConf) {
 
     function connectingPlayer(player) {
         console.log('Player connected to Requirements room.', player.id);
+
         setTimeout(function() {
+//
+//             node.remoteSetup('frame', player.id, {
+//                 generate: { root: 'body' },
+//                 load: {
+//                     url: '/burdenshare/req2.htm',
+//                     cb: function() { console.log('AAAAAAAAAA'); }
+//                 }
+//             });
+            node.remoteSetup('widgets', player.id, {
+                append: { 'Requirements': { 
+                    root: 'widgets_div',
+                    sayResults: true
+                } }
+            });
             node.remoteSetup('requirements', player.id, settings);
-        }, 500);
+
+        }, 1000);
+
+//         node.on.data('loaded', function(msg) {
+//             node.remoteSetup('widgets', msg.from, {
+//                 append: { 'Requirements': { root: 'widgets_div' } }
+//             });
+//
+//             node.remoteSetup('requirements', msg.from, settings);
+//         });
     }
 
     function init() {
         var that = this;
+    console.log('AAAAAAAAAAAAA');
 
         node.on.preconnect(function(player) {
             console.log('Player re-connected to Requirements room.');
@@ -36,7 +60,7 @@ module.exports = function(settings, room, runtimeConf) {
             connectingPlayer(player);
             //node.remoteCommand('start', player.id);
         });
-
+debugger
         node.on.pconnect(connectingPlayer);
 
         node.on.pdisconnect(function(player) {
@@ -47,11 +71,18 @@ module.exports = function(settings, room, runtimeConf) {
         node.on.data('requirements', function(msg) {
             console.log('requirements');
             console.log(msg.data);
-            if (msg.data.success) {                
+            if (msg.data.success) {
                 // Mark client as requirements passed.
                 registry.updateClient(msg.from, {apt: true});
-                //registry.moveClient(msg.from, channel.waitingRoom.name);
-                node.redirect('/' + channel.gameName, msg.from);
+                
+                 setTimeout(function() {
+                     // node.remoteSetup('page', msg.from, { clearBody: true });
+                     // When it reconnects, it is placed in waitingRoom.
+                     // channel.registry.moveClient(msg.from, channel.waitingRoom.name);
+
+                     // node.redirect('/burdenshare/index.htm', msg.from);
+                     channel.movePlayer(msg.from, channel.waitingRoom.name);
+                 }, 1000);
             }
         });
 
@@ -66,7 +97,7 @@ module.exports = function(settings, room, runtimeConf) {
 
     stager.addStage({
         id: 'requirements',
-        cb: function() {          
+        cb: function() {
             console.log('Requirements: AH!');
         }
     });

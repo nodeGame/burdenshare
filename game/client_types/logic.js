@@ -65,12 +65,13 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
         // Register player disconnection, and wait for him...
         node.on.pdisconnect(function(p) {
-            dk.updateCode(p.id, {
-                disconnected: true,
-                // stage: p.stage
-                stage: node.player.stage
-
-            });
+// TODO: ste check here:
+//             dk.updateCode(p.id, {
+//                 disconnected: true,
+//                 // stage: p.stage
+//                 stage: node.player.stage
+// 
+//             });
 
             console.log('Disconnection in Stage: ' + node.player.stage);
         });
@@ -178,11 +179,12 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         node.on.preconnect(cbs.playerReconnects);
 
         node.on.data('add_questionnaire_bonus', function(msg) {
-            var code = dk.codes.id.get(msg.from);
-            if (checkoutFlag || code.checkout) {
-                console.log('Already checked-out, **not** adding quest bonus.');
-                return;
-            }
+// TODO: ste: check here.
+//            var code = dk.codes.id.get(msg.from);
+//             if (checkoutFlag || code.checkout) {
+//                 console.log('Already checked-out, **not** adding quest bonus.');
+//                 return;
+//             }
             console.log('Adding questionnaire bonus.');
             addQuestionnaireBonus(msg);
         });
@@ -193,11 +195,12 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         });
 
         node.on.data('bsc_quest', function(msg) {
-            var code = dk.codes.id.get(msg.from);
-            if (checkoutFlag || code.checkout) {
-                console.log('Already checked-out, **not** adding quest data.');
-                return;
-            }
+// TODO: ste: check here.
+//             var code = dk.codes.id.get(msg.from);
+//             if (checkoutFlag || code.checkout) {
+//                 console.log('Already checked-out, **not** adding quest data.');
+//                 return;
+//             }
             // console.log('Writing Questionnaire Data!!!');
             dbs.mdbWrite_quest.store(msg.data);
         });
@@ -400,6 +403,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             var bonusFromOther;
             var bonusFromSelf;
             var writeProfitUpdate;
+
+
+            console.log('STE: fix...');
+            return;
 
             for (i = 0; i < idList.length; ++i) {
                 code = dk.codes.id.get(idList[i]);
@@ -642,6 +649,9 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
             node.on.data('QUEST_DONE', function(msg) {
                 var i, len, id, code;
+
+                console.log('STE: fix...');
+                return;
 
                 // Checkout the player code.
                 code = dk.codes.id.get(msg.from);

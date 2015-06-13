@@ -9,7 +9,7 @@
 
 module.exports = {
 
-    enabled: false, // [false] Default: TRUE.
+    enabled: true, // [false] Default: TRUE.
 
     mode: 'auto', // 'remote', 'local'
 
@@ -17,6 +17,9 @@ module.exports = {
     // or asynchronously. Default: 'auth.codes.js'
     codes: 'auth.codes.js', 
 
-    login_page: 'login.htm',
+    // Used to sign json tokens.
+    secret: 'this is my secret',
+
+    page: 'login.htm',
 
 };

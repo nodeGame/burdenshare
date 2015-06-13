@@ -26,6 +26,10 @@ function playerReconnects(p) {
     var GameStage = ngc.GameStage;
 
     console.log('Oh...somebody reconnected!', p);
+
+
+    console.log('STE...fix!');
+
     code = dk.codeExists(p.id);
 
     if (!code) {

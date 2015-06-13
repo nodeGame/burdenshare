@@ -27,7 +27,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         steprule: stepRules.SYNC_STAGE,
         syncOnLoaded: false,
         done: cbs.clearFrame
-    });3
+    });
 
     stager.addStep({
         id: "initialSituation",

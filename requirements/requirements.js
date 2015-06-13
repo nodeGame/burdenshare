@@ -44,7 +44,7 @@ module.exports = function(requirements, settings) {
 
         div = this.summary;
 
-        node.emit('HIDE', 'unsupported');
+        // node.emit('HIDE', 'unsupported');
         str = '%spanYou are allowed to take the HIT.%span';
         args = {
             '%span': {
@@ -65,7 +65,7 @@ module.exports = function(requirements, settings) {
         link.appendChild(button);
         div.appendChild(link);
 
-        clientType = J.getQueryString('clientType');
+        clientType = JSUS.getQueryString('clientType');
         if (clientType === 'autoplay') {
             link.href = link.href + '?clientType=autoplay';
             setTimeout(function() {

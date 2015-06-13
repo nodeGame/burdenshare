@@ -15,14 +15,12 @@ module.exports = {
 
     mode: 'auto', // 'remote', 'local' 
 
-    requirementsPage: 'requirements.htm',
+    page: 'requirements.htm',
 
     maxExecTime: 8000,
 
     excludeBrowsers: {
         browser: 'netscape'
     }
-
-    
 
 };
