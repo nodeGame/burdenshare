@@ -11,7 +11,7 @@ module.exports = function(settings, room, runtimeConf) {
     var node = room.node;
     var channel = room.channel;
     var registry = channel.registry;
-debugger
+
     // Creates a stager object to define the game stages.
     var stager = new node.Stager();
 
@@ -52,7 +52,6 @@ debugger
 
     function init() {
         var that = this;
-    console.log('AAAAAAAAAAAAA');
 
         node.on.preconnect(function(player) {
             console.log('Player re-connected to Requirements room.');
@@ -60,11 +59,12 @@ debugger
             connectingPlayer(player);
             //node.remoteCommand('start', player.id);
         });
-debugger
+
         node.on.pconnect(connectingPlayer);
 
         node.on.pdisconnect(function(player) {
-            console.log('Player disconnected from Requirements room: ' + player.id);
+            console.log('Player disconnected from Requirements room: ' +
+                        player.id);
         });
 
         // Results of the requirements check.
@@ -85,13 +85,6 @@ debugger
                  }, 1000);
             }
         });
-
-        // In case a user is using the feedback form display the action.
-//         node.on.data('FEEDBACK', function(msg) {
-//             console.log('Feedback received.');
-//             console.log(msg.data);
-//         });
-
 
     }
 

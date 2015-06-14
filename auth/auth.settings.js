@@ -9,7 +9,7 @@
 
 module.exports = {
 
-    enabled: true, // [false] Default: TRUE.
+    enabled: false, // [false] Default: TRUE.
 
     mode: 'auto', // 'remote', 'local'
 
