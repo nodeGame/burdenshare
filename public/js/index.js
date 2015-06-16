@@ -30,5 +30,13 @@ window.onload = function() {
             reconnect : false
         }
     });
-    node.connect("/burdenshare");
-}
+    
+    // Connecting.
+    if (location.search) {
+        // Pass query arguments on.
+        node.connect("/burdenshare", { query: location.search.substr(1) });
+    }
+    else {
+        node.connect("/burdenshare");
+    }
+};

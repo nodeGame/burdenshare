@@ -81,7 +81,7 @@ module.exports = function(settings, room, runtimeConf) {
                      // channel.registry.moveClient(msg.from, channel.waitingRoom.name);
 
                      // node.redirect('/burdenshare/index.htm', msg.from);
-                     channel.movePlayer(msg.from, channel.waitingRoom.name);
+                     channel.moveClient(msg.from, channel.waitingRoom.name);
                  }, 1000);
             }
         });

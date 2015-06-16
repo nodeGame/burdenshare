@@ -34,7 +34,7 @@
 
     node.setup('nodegame', conf);
 
-    node.connect(conf.url, { query: 'clientType=mymonitor' });
+    node.connect(conf.url, { query: 'clientType=mymonitor&startingRoom=burdenshare1' });
 
     node.once('PLAYER_CREATED', function(player) {
       node.game.start();
