@@ -16,7 +16,6 @@ var node = module.parent.exports.node;
 var channel = module.parent.exports.channel;
 var gameRoom = module.parent.exports.gameRoom;
 var settings = module.parent.exports.settings;
-var dk = module.parent.exports.dk;
 var ngc = module.parent.exports.ngc;
 
 

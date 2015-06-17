@@ -406,10 +406,11 @@ function questionnaire() {
                                 );
                          W.write(
                              (node.game.bonus.newAmountUCE -
-                              node.game.bonus.oldAmountUCE) || 0,
+                              node.game.bonus.oldAmountUCE).toFixed(2) || 0,
                              W.getElementById("ECUfromQuest")
                          );
-                         W.write(((node.game.bonus.newAmountUSD || 0) + 1.0).toFixed(2) + ' $',
+                         W.write(((node.game.bonus.newAmountUSD || 0) + 1.0)
+                                 .toFixed(2) + ' $',
                                  W.getElementById("amountUSD")
                                 );
                      });
