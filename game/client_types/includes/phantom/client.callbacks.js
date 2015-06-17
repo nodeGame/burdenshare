@@ -78,10 +78,9 @@ function writeOfferAccepted() {
     W.write('Accept',respDecision);
     var remain = node.game.endowment_own - resp;
     if (remain < 0) remain = 0;
-    node.game.remainResp = remain.toString();
-    node.game.remainNum = remain;
+    node.game.remainResp = remain;
     var remainResp = W.getElementById('remainResp');
-    W.write(remain,remainResp);
+    W.write(remain, remainResp);
     remProp = node.game.endowment_responder - node.game.offer;
     if (remProp < 0) remProp = 0;
     var remainProp = W.getElementById('remainProp');

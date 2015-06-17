@@ -524,8 +524,8 @@ function questionnaire() {
                                     W.getElementById("ECUfromGame")
                                    );
                             W.write(
-                                node.game.bonus.newAmountUCE -
-                                    node.game.bonus.oldAmountUCE,
+                                (node.game.bonus.newAmountUCE -
+                                 node.game.bonus.oldAmountUCE).toFixed(2),
                                 W.getElementById("ECUfromQuest")
                             );
                             W.write((node.game.bonus.newAmountUSD + 1.0).toFixed(2) + ' $',

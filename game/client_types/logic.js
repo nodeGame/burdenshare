@@ -136,11 +136,11 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 // Exchange rate: 4 Points = 1 ECU.
                 var bonusFromSelf = SVOChoices[selectedRound].topRow[
                     choicesMade[selectedRound]
-                ]/4;
+                ];
 
                 var bonusToOther = SVOChoices[selectedRound].bottomRow[
                     choicesMade[selectedRound]
-                ]/4;
+                ];
 
                 node.game.otherBonus[
                     node.game.pl.id.resolve[msg.data.player]
@@ -148,8 +148,9 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
                 var oldUCE = profit.Amount_UCE === "NA" ? 0 : profit.Amount_UCE;
 
-                var newAmountUCE = oldUCE + bonusFromSelf;
-                var newAmountUSD = cbs.round((newAmountUCE/50),2);
+                // 200: 2 ECU 1 cent + conversion to dollars
+                var newAmountUCE = oldUCE + cbs.round(bonusFromSelf/200, 2);
+                var newAmountUSD = cbs.round((newAmountUCE/50), 2);
 
                 dbs.mdbWriteProfit.update({
                     playerID: {
@@ -159,10 +160,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                         SelfBonus_UCE: bonusFromSelf,
                     },
                 });
-
-                if ('number' !== typeof oldUCE) debugger
-                if ('number' !== typeof newAmountUCE) debugger
-                if ('number' !== typeof newAmountUSD) debugger
 
                 node.say('ADDED_QUESTIONNAIRE_BONUS', msg.data.player, {
                     oldAmountUCE: oldUCE || 0,
@@ -270,6 +267,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
                             if ('undefined' === typeof profitRound) {
                                 console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
+                                profitRound = 0;
                             }
 
                             J.mixin(write_profit, {
@@ -444,7 +442,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 // filled in correctly in the game.
                 if ('number' !== typeof bonus) bonus = 0;
 
-                // Self bonus from SVO.
+                // Self bonus from SVO (200: 2 ECU 1 cent, dollar conversion).
                 bonusFromSelf = item.SelfBonus_UCE;
 
                 // In case the SVO was not filled in.
@@ -464,7 +462,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                         // Random value 0-100 if other person did not give
                         // a bonus to other. 0.75 discounts the fact that
                         // is unlikely that bonus to other is very high.
-                        bonusFromOther = J.randomInt(-1, 100) * 0.75;
+                        bonusFromOther =  J.randomInt(-1, 100) * 0.75;
                         writeProfitUpdate.randomBonus = 1;
                     }
 
@@ -472,7 +470,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
                     bonusSVO = bonusFromSelf + bonusFromOther;
 
-                    profit = cbs.round((bonus + (bonusSVO / 50)), 2);
+                    profit = cbs.round((bonus + (bonusSVO / 200)), 2);
 
                     dbs.mdbWriteProfit.update({
                         playerID: {

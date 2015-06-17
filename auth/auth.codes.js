@@ -28,10 +28,9 @@ module.exports = function(settings, done) {
             codes.push({
                 id: i + '_access',
                 pwd: i + '_pwd',
-                exitCode: i + '_exit'
+                ExitCode: i + '_exit'
             });
         }
-        
         return codes;
     }
     
