@@ -17,9 +17,11 @@ var channel = module.parent.exports.channel;
 var gameRoom = module.parent.exports.gameRoom;
 var settings = module.parent.exports.settings;
 var dk = module.parent.exports.dk;
-var client = module.parent.exports.client;
-var autoplay = module.parent.exports.autoplay;
 var ngc = module.parent.exports.ngc;
+
+
+var client = gameRoom.getClientType('player');
+var autoplay = gameRoom.getClientType('autoplay');
 
 function playerReconnects(p) {
     var code, isQuest;
@@ -27,27 +29,12 @@ function playerReconnects(p) {
 
     console.log('Oh...somebody reconnected!', p);
 
+    // console.log('STE...fix!');
+    // code = dk.codeExists(p.id);
 
-    console.log('STE...fix!');
-
-    code = dk.codeExists(p.id);
-
-    if (!code) {
-        console.log('game.logic: reconnecting player not found in ' +
-                    'code db: ' + p.id);
-        return;
-    }
-
-    if (!code.disconnected) {
-        console.log('game.logic: reconnecting player that was not ' +
-                    'marked disconnected: ' + p.id);
-        return;
-    }
+    code = channel.registry.getClient(p.id);
 
     isQuest = node.game.getCurrentStepObj().id === 'questionnaire';
-
-    // Mark code as connected.
-    code.disconnected = false;
 
     if (!isQuest) {
         // Delete countdown to terminate the game.
@@ -70,15 +57,14 @@ function playerReconnects(p) {
     // Send currently connected players to reconnecting one.
     node.socket.send(node.msg.create({
         target: 'PLIST',
-        // TODO: this sends a bit too much.
-        data: node.game.pl.db,
+        data: node.game.pl.fetchSubObj('id'),
         to: p.id
     }));
     
-
     // We could slice the game plot, and send just what we need
     // however here we resend all the stages, and move their game plot.
     console.log('** Player reconnected: ' + p.id + ' **');
+    
     // Setting metadata, settings, and plot.
 
     // TODO: better way of recovering the client type settings.

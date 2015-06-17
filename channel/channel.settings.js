@@ -36,8 +36,6 @@ module.exports =  {
         onStageLevelUpdate: true,
     },
 
-    enableReconnections: false
+    enableReconnections: true
 
 };
-
-

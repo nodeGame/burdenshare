@@ -20,18 +20,12 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     var channel = gameRoom.channel;
     var node = gameRoom.node;
 
-    var client = gameRoom.getClientType('player');
-    var autoplay = gameRoom.getClientType('autoplay');
-
     // Reads in descil-mturk configuration.
     var dk = require('descil-mturk')();
 
     // Requiring additiinal functions.
     var cbs = channel.require(__dirname + '/includes/logic.callbacks.js', {
         ngc: ngc,
-        client: client,
-        autoplay: autoplay,
-        dk: dk,
         settings: settings,
         gameRoom: gameRoom,
         node: node
@@ -166,6 +160,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     },
                 });
 
+                if ('number' !== typeof oldUCE) debugger
+                if ('number' !== typeof newAmountUCE) debugger
+                if ('number' !== typeof newAmountUSD) debugger
+
                 node.say('ADDED_QUESTIONNAIRE_BONUS', msg.data.player, {
                     oldAmountUCE: oldUCE || 0,
                     newAmountUCE: newAmountUCE || 0,
@@ -179,12 +177,13 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         node.on.preconnect(cbs.playerReconnects);
 
         node.on.data('add_questionnaire_bonus', function(msg) {
-// TODO: ste: check here.
-//            var code = dk.codes.id.get(msg.from);
-//             if (checkoutFlag || code.checkout) {
-//                 console.log('Already checked-out, **not** adding quest bonus.');
-//                 return;
-//             }
+            var code;
+            // code = dk.codes.id.get(msg.from);
+            code = channel.registry.getClient(msg.from);
+             if (checkoutFlag || code.checkout) {
+                 console.log('Already checked-out, **not** adding quest bonus.');
+                 return;
+             }
             console.log('Adding questionnaire bonus.');
             addQuestionnaireBonus(msg);
         });
@@ -195,13 +194,13 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         });
 
         node.on.data('bsc_quest', function(msg) {
-// TODO: ste: check here.
-//             var code = dk.codes.id.get(msg.from);
-//             if (checkoutFlag || code.checkout) {
-//                 console.log('Already checked-out, **not** adding quest data.');
-//                 return;
-//             }
-            // console.log('Writing Questionnaire Data!!!');
+            var code;
+            //  code = dk.codes.id.get(msg.from);
+            code = channel.registry.getClient(msg.from);
+            if (checkoutFlag || code.checkout) {
+                console.log('Already checked-out, **not** adding quest data.');
+                return;
+            }
             dbs.mdbWrite_quest.store(msg.data);
         });
 
@@ -404,12 +403,9 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             var bonusFromSelf;
             var writeProfitUpdate;
 
-
-            console.log('STE: fix...');
-            return;
-
             for (i = 0; i < idList.length; ++i) {
-                code = dk.codes.id.get(idList[i]);
+                // code = dk.codes.id.get(idList[i]);
+                code = channel.registry.getClient(idList[i]);
 
                 // Player disconnected before finishing the questionnaire.
                 if (!code.checkout) {
@@ -489,9 +485,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 console.log(idList[i], ' bonus: ', profit);
 
                 postPayoffs.push({
-                    "AccessCode": code.AccessCode,
-                    "Bonus": profit,
-                    "BonusReason": "Full Bonus"
+                    // AccessCode: code.AccessCode,
+                    AccessCode: code.id,
+                    Bonus: profit,
+                    BonusReason: 'Full Bonus'
                 });
             }
 
@@ -650,11 +647,9 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             node.on.data('QUEST_DONE', function(msg) {
                 var i, len, id, code;
 
-                console.log('STE: fix...');
-                return;
-
                 // Checkout the player code.
-                code = dk.codes.id.get(msg.from);
+                // code = dk.codes.id.get(msg.from);
+                code = channel.registry.getClient(msg.from);
                 console.log('Checkout code of player: ' + msg.from);
                 code.checkout = true;
 
@@ -672,7 +667,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 for ( ; ++i < len ; ) {
                     id = node.game.playerIDs[i];
                     if (id === msg.from) continue;
-                    if (!dk.codes.id.get(id).checkout) return;
+                    // if (!dk.codes.id.get(id).checkout) return;
+                    if (!channel.registry.getClient(id).checkout) return;
                 }
                 questTimer.stop();
                 adjustPayoffAndCheckout();

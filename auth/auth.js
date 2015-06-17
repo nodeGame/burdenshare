@@ -61,13 +61,13 @@ module.exports = function(auth, settings) {
         // More checks could be done here to ensure that token is unique in ids.
         ids = channel.registry.getIds();
         cookies = info.cookies;
-        if (cookies.token) {
+        if (cookies.player) {
 
-            if (!ids[cookies.token] || ids[cookies.token].disconnected) {
-                return cookies.token;
+            if (!ids[cookies.player] || ids[cookies.player].disconnected) {
+                return cookies.player;
             }
             else {
-                console.log("already in ids", cookies.token)
+                console.log("already in ids", cookies.player);
                 return false;
             }
         }
@@ -81,14 +81,9 @@ module.exports = function(auth, settings) {
 
 
     // Assigning the auth callbacks to the player server.
-    // auth.authorization('burdenshare', 'player', authPlayers);
-    // auth.clientIdGenerator('burdenshare', 'player', idGen);
-    // auth.clientObjDecorator('burdenshare', 'player', decorateClientObj);
+    // auth.authorization('player', authPlayers);
+    auth.clientIdGenerator('player', idGen);
+    auth.clientObjDecorator('player', decorateClientObj);
 
-
-//     var a = 0;
-//     auth.clientIdGenerator('requirements', 'player', function() {
-//         return "" + ++a; 
-//     });
 
 };

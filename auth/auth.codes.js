@@ -45,6 +45,12 @@ module.exports = function(settings, done) {
 
     // Load code database.
     if (settings.mode === 'remote') {
+
+        // Convert format.
+        dk.codes.on('insert', function(o) {
+            o.id = o.AccessCode;
+        });
+
         dk.getCodes(function() {            
             if (!dk.codes.size()) {
                 done('Auth.codes: no codes found!');

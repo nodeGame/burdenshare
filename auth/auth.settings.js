@@ -1,5 +1,5 @@
 /**
- * # Auth settings: Burdenshare
+ * # Auth settings
  * Copyright(c) 2015 Stefano Balietti
  * MIT Licensed
  *
@@ -9,17 +9,13 @@
 
 module.exports = {
 
-    enabled: true, // [false] Default: TRUE.
+    enabled: false, // [true, false] Default: TRUE.
 
-    mode: 'auto', // 'remote', 'local'
+    mode: 'remote', // 'remote', 'local'
 
     // Must export a function that returns an array of codes synchronously
     // or asynchronously. Default: 'auth.codes.js'
     codes: 'auth.codes.js', 
 
-    // Used to sign json tokens.
-    secret: 'this is my secret',
-
-    page: 'login.htm',
-
+    page: 'login.htm'
 };
