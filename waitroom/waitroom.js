@@ -142,6 +142,11 @@ module.exports = function(settings, waitRoom, runtimeConf) {
         pList = waitRoom.clients.player;
         nPlayers = pList.size();
 
+        node.remoteSetup('page', p.id, {
+            clearBody: true,
+            title: { title: 'Welcome!', addToBody: true }
+        });
+
         node.remoteSetup('widgets', p.id, {
             destroyAll: true,
             append: { 'WaitingRoom': {} } 
@@ -153,12 +158,12 @@ module.exports = function(settings, waitRoom, runtimeConf) {
             groupSize: settings.GROUP_SIZE,
             maxWaitTime: settings.MAX_WAIT_TIME
         });
+
         console.log('NPL ', nPlayers);
 
         // Notify all players of new connection.        
         node.say("PLAYERSCONNECTED", 'ROOM', nPlayers);
         
-
         // Start counting a timeout for max stay in waiting room.
         makeTimeOut(p.id);
 

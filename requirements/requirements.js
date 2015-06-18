@@ -11,11 +11,13 @@ module.exports = function(requirements, settings) {
     var ngr = require('nodegame-requirements');
 
     requirements.add(ngr.nodegameBasic);
-    // requirements.add(ngr.nodegameSetup);
     requirements.add(ngr.speedTest, settings.speedTest);
     requirements.add(ngr.browserDetect, settings.excludeBrowsers);
     requirements.add(ngr.loadFrameTest);
     requirements.add(ngr.cookieSupport);
+
+    // requirements.add(ngr.testFail);
+    // requirements.add(ngr.testSuccess);
 
     requirements.setMaxExecutionTime(settings.maxExecTime);
 
@@ -29,49 +31,21 @@ module.exports = function(requirements, settings) {
                 'class': 'requirements-fail'
             }
         };
-        W.sprintf(str, args, this.summary);
+        W.sprintf(str, args, this.summaryResults);
 
         // You can leave a feedback using the form below.
         // window.feedback = node.widgets.append('Feedback', div);
     });
 
     requirements.onSuccess(function() {
-        var str, args;
-        var button, link;
-        var clientType;
-        var div;
-        var gameLink = '/';
-
-        div = this.summary;
-
-        // node.emit('HIDE', 'unsupported');
+        var str;
         str = '%spanYou are allowed to take the HIT.%span';
         args = {
             '%span': {
                 'class': 'requirements-success'
             }
         };
-        W.sprintf(str, args, div);
-        // node.store.cookie('token', token);
-
-        div.appendChild(document.createElement('br'));
-        div.appendChild(document.createElement('br'));
-
-        link = document.createElement('a');
-        link.href = gameLink;
-        button = document.createElement('button');
-        button.innerHTML = 'Proceed to the game';
-        button.className = 'btn btn-lg btn-primary';
-        link.appendChild(button);
-        div.appendChild(link);
-
-        clientType = JSUS.getQueryString('clientType');
-        if (clientType === 'autoplay') {
-            link.href = link.href + '?clientType=autoplay';
-            setTimeout(function() {
-                button.click();
-            }, 3000);
-        }
+        W.sprintf(str, args, this.summaryResults);
     });
 
     // Either success or failure.

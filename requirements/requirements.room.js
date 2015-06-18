@@ -15,7 +15,7 @@ module.exports = function(settings, room, runtimeConf) {
     // Creates a stager object to define the game stages.
     var stager = new node.Stager();
 
-    // Functions
+    // Functions.
 
     settings.doChecking = true;
 
@@ -23,14 +23,12 @@ module.exports = function(settings, room, runtimeConf) {
         console.log('Player connected to Requirements room.', player.id);
 
         setTimeout(function() {
-//
-//             node.remoteSetup('frame', player.id, {
-//                 generate: { root: 'body' },
-//                 load: {
-//                     url: '/burdenshare/req2.htm',
-//                     cb: function() { console.log('AAAAAAAAAA'); }
-//                 }
-//             });
+
+            node.remoteSetup('page', player.id, {
+                clearBody: true,
+                title: { title: 'Welcome!', addToBody: true }
+            });
+
             node.remoteSetup('widgets', player.id, {
                 append: { 'Requirements': { 
                     root: 'widgets_div',
@@ -39,15 +37,7 @@ module.exports = function(settings, room, runtimeConf) {
             });
             node.remoteSetup('requirements', player.id, settings);
 
-        }, 1000);
-
-//         node.on.data('loaded', function(msg) {
-//             node.remoteSetup('widgets', msg.from, {
-//                 append: { 'Requirements': { root: 'widgets_div' } }
-//             });
-//
-//             node.remoteSetup('requirements', msg.from, settings);
-//         });
+        }, 500);
     }
 
     function init() {
@@ -57,7 +47,6 @@ module.exports = function(settings, room, runtimeConf) {
             console.log('Player re-connected to Requirements room.');
             node.game.pl.add(player);
             connectingPlayer(player);
-            //node.remoteCommand('start', player.id);
         });
 
         node.on.pconnect(connectingPlayer);
@@ -75,12 +64,7 @@ module.exports = function(settings, room, runtimeConf) {
                 // Mark client as requirements passed.
                 registry.updateClient(msg.from, {apt: true});
                 
-                 setTimeout(function() {
-                     // node.remoteSetup('page', msg.from, { clearBody: true });
-                     // When it reconnects, it is placed in waitingRoom.
-                     // channel.registry.moveClient(msg.from, channel.waitingRoom.name);
-
-                     // node.redirect('/burdenshare/index.htm', msg.from);
+                 setTimeout(function() {                
                      channel.moveClient(msg.from, channel.waitingRoom.name);
                  }, 1000);
             }
