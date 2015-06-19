@@ -24,7 +24,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStep('instructions', {
         cb: cbs.instructions,
-        steprule: stepRules.SYNC_STAGE,
+        // Ste 19.06
+        // steprule: stepRules.SYNC_STAGE,
         syncOnLoaded: false,
         done: cbs.clearFrame
     });
@@ -76,7 +77,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStage('burdenSharingControl', {
         steps: ["syncGroups", "initialSituation", "decision"],
-        steprule:  stepRules.SYNC_STEP,
+        // Ste 19.06
+        // steprule:  stepRules.SYNC_STEP,
         done: cbs.clearFrame
     });
 
@@ -88,7 +90,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             makeChoiceSPAN: cbs.makeChoiceSPAN,
             makeChoiceSELECT: cbs.makeChoiceSELECT
         },
-        publishLevel: publishLevels.FEW
+        publishLevel: publishLevels.FEW,
+        steprule:  stepRules.SOLO
     });
 
     stager.setDefaultGlobals({
@@ -108,6 +111,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         publishLevel: publishLevels.REGULAR,
         syncStepping: false
     });
+
+    stager.setDefaultStepRule(stepRules.WAIT);
 
     // Set auto = true;
     game.env.auto = true;

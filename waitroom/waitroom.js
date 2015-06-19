@@ -190,7 +190,10 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
         // Setup and start game.
         gameRoom.setupGame();
-        gameRoom.startGame(true, tmpPlayerList.id.getAllKeys());
+        gameRoom.startGame(true, []);
+        
+        // Ste 19.06
+        // gameRoom.startGame(true, tmpPlayerList.id.getAllKeys());
     }
 
     function monitorReconnects(p) {

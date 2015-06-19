@@ -611,11 +611,12 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager.extendStage('burdenSharingControl', {
         steps: ["syncGroups", "initialSituation", "decision"],
         minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
-        stepRule: node.stepRules.SYNC_STAGE
+        // stepRule: node.stepRules.SYNC_STAGE
     });
 
     var questTimer;
     stager.extendStep('questionnaire', {
+        stepRule: stepRules.SOLO,
         cb: function() {
 
             // Upon reconnection the stage is repeated, not sure why.
@@ -637,7 +638,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 code = channel.registry.getClient(msg.from);
                 console.log('Checkout code of player: ' + msg.from);
                 code.checkout = true;
-debugger
                 node.say('win', msg.from, code.ExitCode);
 
                 if (checkoutFlag) {
@@ -657,6 +657,8 @@ debugger
                 }
                 questTimer.stop();
                 adjustPayoffAndCheckout();
+                // DONE. (check if need it).
+                // node.done();
             });
             console.log('********************** Questionaire - SessionID: ' +
                         gameRoom.name);
