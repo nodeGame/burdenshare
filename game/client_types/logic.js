@@ -55,23 +55,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
         ++counter;
 
-        var disconnectedState;
-
         // Register player disconnection, and wait for him...
         node.on.pdisconnect(function(p) {
-// TODO: ste check here:
-//             dk.updateCode(p.id, {
-//                 disconnected: true,
-//                 // stage: p.stage
-//                 stage: node.player.stage
-// 
-//             });
-
             console.log('Disconnection in Stage: ' + node.player.stage);
         });
-
-        var disconnected;
-        disconnected = {};
 
         // Contains the bonuses that players assign to other players
         // in the questionnaire.
@@ -507,7 +494,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.setDefaultProperties({
         publishLevel: 0,
-        syncStepping: false
+        syncStepping: true
     });
 
     stager.extendStep('instructions', {
@@ -675,6 +662,7 @@ debugger
                         gameRoom.name);
         }
     });
+
 
 
     // Ste: TODO: use setup.

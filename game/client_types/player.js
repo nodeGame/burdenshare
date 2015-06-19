@@ -24,7 +24,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStep('instructions', {
         cb: cbs.instructions,
-        steprule: stepRules.SYNC_STAGE,
+        // Ste commented 19 june.
+        // steprule: stepRules.SYNC_STAGE,
         syncOnLoaded: false,
         done: cbs.clearFrame
     });
@@ -76,7 +77,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStage('burdenSharingControl', {
         steps: ["syncGroups", "initialSituation", "decision"],
-        steprule:  stepRules.SYNC_STEP,
+        // Ste: commented 19 June.
+        // steprule:  stepRules.SYNC_STEP,
         done: cbs.clearFrame
     });
 
@@ -108,6 +110,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         publishLevel: publishLevels.REGULAR,
         syncStepping: false
     });
+
+    stager.setDefaultStepRule(stepRules.WAIT);
 
     //We serialize the game sequence before sending it
     game.plot = stager.getState();

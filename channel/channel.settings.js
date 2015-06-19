@@ -30,10 +30,12 @@ module.exports =  {
     accessDeniedUrl: '/burdenshare/unauth.htm',
     
     notify: {
-        onStageUpdate: true,
+        onConnect: false, // 19.06 true,
+
+        onStageUpdate: false, // 19.06 true,
 
         // A client changes stageLevel (e.g. INIT, CALLBACK_EXECUTED);
-        onStageLevelUpdate: true,
+        onStageLevelUpdate: false // 19.06 true,
     },
 
     enableReconnections: true
