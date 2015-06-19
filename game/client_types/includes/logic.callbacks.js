@@ -8,8 +8,7 @@
 
 module.exports = {
     round: round,
-    playerReconnects: playerReconnects,
-    //    writePlayerData: writePlayerData
+    playerReconnects: playerReconnects
 };
 
 var node = module.parent.exports.node;
@@ -18,18 +17,15 @@ var gameRoom = module.parent.exports.gameRoom;
 var settings = module.parent.exports.settings;
 var ngc = module.parent.exports.ngc;
 
-
 var client = gameRoom.getClientType('player');
 var autoplay = gameRoom.getClientType('autoplay');
 
 function playerReconnects(p) {
     var code, isQuest;
+    var RECON_STAGE;
     var GameStage = ngc.GameStage;
 
     console.log('Oh...somebody reconnected!', p);
-
-    // console.log('STE...fix!');
-    // code = dk.codeExists(p.id);
 
     code = channel.registry.getClient(p.id);
 
@@ -66,19 +62,23 @@ function playerReconnects(p) {
     
     // Setting metadata, settings, and plot.
 
-    // TODO: better way of recovering the client type settings.
-    if (p.clientType === 'autoplay') {
-        node.remoteSetup('metadata',  p.id, autoplay.metadata);
-        node.remoteSetup('game_settings', p.id, autoplay.settings);
-        node.remoteSetup('plot', p.id, autoplay.plot);
-        node.remoteSetup('env', p.id, autoplay.env);
-    }
-    else {
-        node.remoteSetup('metadata',  p.id, client.metadata);
-        node.remoteSetup('game_settings', p.id, client.settings);
-        node.remoteSetup('plot', p.id, client.plot);
-        node.remoteSetup('env', p.id, client.env);
-    }
+    node.remoteSetup('env', p.id, { recon: true });
+
+    gameRoom.setupClient(p.id);
+
+//     // TODO: better way of recovering the client type settings.
+//     if (p.clientType === 'autoplay') {
+//         node.remoteSetup('metadata',  p.id, autoplay.metadata);
+//         node.remoteSetup('game_settings', p.id, autoplay.settings);
+//         node.remoteSetup('plot', p.id, autoplay.plot);
+//         node.remoteSetup('env', p.id, autoplay.env);
+//     }
+//     else {
+//         node.remoteSetup('metadata',  p.id, client.metadata);
+//         node.remoteSetup('game_settings', p.id, client.settings);
+//         node.remoteSetup('plot', p.id, client.plot);
+//         node.remoteSetup('env', p.id, client.env);
+//     }
 
     // Start the game on the reconnecting client.
     node.remoteCommand('start', p.id, { step: false });
@@ -88,7 +88,7 @@ function playerReconnects(p) {
     // both in the alias and the real event handler
     node.game.pl.add(p);
 
-    var RECON_STAGE = node.player.stage;
+    RECON_STAGE = node.player.stage;
 
     // If logic is in questionnaire send WIN message and exit.
     if (isQuest) {
@@ -98,9 +98,6 @@ function playerReconnects(p) {
             node.remoteAlert('Hi! It looks like you have already completed ' +
                              'this game. This is your Exit code: ' + 
                              code.ExitCode, p.id);
-//            setTimeout(function() {
-//                node.say("win", p.id, code.ExitCode);
-//            }, 1000);
         }
         else {            
             node.remoteCommand('goto_step', p.id, RECON_STAGE);
@@ -115,7 +112,6 @@ function playerReconnects(p) {
             return;
         }
         
-
         if (!GameStage.compare(node.player.stage, '2.2.1') ||
             !GameStage.compare(node.player.stage, '2.2.2') ||
             !GameStage.compare(node.player.stage, '2.2.3')) {

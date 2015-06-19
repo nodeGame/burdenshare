@@ -9,7 +9,7 @@
 module.exports = function(settings, waitRoom, runtimeConf) {
 
     // Load the code database.
-    // var dk = require('descil-mturk')();
+    var dk = require('descil-mturk')();
     var J = require('JSUS').JSUS;
 
     var node = waitRoom.node;
@@ -40,43 +40,31 @@ module.exports = function(settings, waitRoom, runtimeConf) {
     function makeTimeOut(playerID) {
 
         timeOuts[playerID] = setTimeout(function() {            
-            var timeOutData, clientObj;
+            var timeOutData, code;
 
             channel.sysLogger.log("Timeout has not been cleared!!!");
 
-            clientObj = channel.registry.getClient(playerID);
+            channel.registry.checkOut(playerID);            
 
+            // See if an access code is defined, if so checkout remotely also.
+            code = channel.registry.getClient(playerID);           
+            if (code.AccessCode) {
+                dk.checkOut(code.id, code.ExitCode, 0.0, function(
+                    err, response, body) {
+                    
+                    if (err) {
+                        // Retry the Checkout
+                        setTimeout(function() {
+                            dk.checkOut(code.AccessCode, code.ExitCode, 0.0);
+                        }, 2000);
+                    }
+                });
+            }
             timeOutData = {
                 over: "Time elapsed!!!",
-                exit: clientObj.exitCode
+                exit: code.ExitCode
             };
-
-            // dk.checkOut(code.AccessCode, code.ExitCode, 0.0, function(
-            // err, response, body) {
-            //
-            //     if (err) {
-            //         // Retry the Checkout
-            //         setTimeout(function() {
-            //             dk.checkOut(code.AccessCode, code.ExitCode, 0.0);
-            //         }, 2000);
-            //     }
-            // });
-
             node.say("TIME", playerID, timeOutData);
-
-            // for (i = 0; i < channel.waitingRoom.clients.player.size(); i++) {
-            //     if (channel.waitingRoom.clients.player.db[i].id ==
-            // playerID) {
-            //
-            //         delete channel.waitingRoom.clients.player.db[i];
-            //         channel.waitingRoom.clients.player.db =
-            //             channel.waitingRoom.clients.player.db.filter(
-            //                 function(a) {
-            //                     return typeof a !== 'undefined';
-            //                 }
-            //             );
-            //     }
-            // }
 
         }, MAX_WAIT_TIME);
 
@@ -156,7 +144,8 @@ module.exports = function(settings, waitRoom, runtimeConf) {
         node.remoteSetup('waitroom', p.id, {
             poolSize: settings.POOL_SIZE,
             groupSize: settings.GROUP_SIZE,
-            maxWaitTime: settings.MAX_WAIT_TIME
+            maxWaitTime: settings.MAX_WAIT_TIME,
+            onTimeout: settings.ON_TIMEOUT
         });
 
         console.log('NPL ', nPlayers);

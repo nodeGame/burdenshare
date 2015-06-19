@@ -64,16 +64,10 @@ function init() {
     }
 
     // Clear the WaitPage, if still there.
-    var waitingForPlayers = W.getElementById('waitingForPlayers');
     var that = this;
 
     var gameName = node.game.settings.gameName;
     var chosenTreatment = node.game.settings.treatmentName;
-
-    // Hide unused div from waiting room.
-    if (waitingForPlayers) {
-        waitingForPlayers.style.display = 'none';
-    }
 
     // Clear countdown interval.
     if ('undefined' !== typeof timeCheck) {

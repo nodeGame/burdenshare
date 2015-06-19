@@ -9,9 +9,9 @@
 
 module.exports = {
 
-    enabled: false, // [true, false] Default: TRUE.
+    enabled: true, // [true, false] Default: TRUE.
 
-    mode: 'remote', // 'remote', 'local'
+    mode: 'auto', // ['remote', 'local', 'auto'] Default: 'auto'
 
     // Must export a function that returns an array of codes synchronously
     // or asynchronously. Default: 'auth.codes.js'

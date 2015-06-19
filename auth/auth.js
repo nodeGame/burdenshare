@@ -82,8 +82,8 @@ module.exports = function(auth, settings) {
 
     // Assigning the auth callbacks to the player server.
     // auth.authorization('player', authPlayers);
-    auth.clientIdGenerator('player', idGen);
-    auth.clientObjDecorator('player', decorateClientObj);
+    // auth.clientIdGenerator('player', idGen);
+    // auth.clientObjDecorator('player', decorateClientObj);
 
 
 };

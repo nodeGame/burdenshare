@@ -27,8 +27,10 @@ module.exports = function(settings, done) {
         for (i = 0 ; i < nCodes; i ++) {
             codes.push({
                 id: i + '_access',
-                pwd: i + '_pwd',
-                ExitCode: i + '_exit'
+                // Add pwd field for extra security.
+                // pwd: i + '_pwd',
+                ExitCode: i + '_exit',
+                AccessCode: i + '_access'
             });
         }
         return codes;

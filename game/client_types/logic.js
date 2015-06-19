@@ -650,7 +650,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 code = channel.registry.getClient(msg.from);
                 console.log('Checkout code of player: ' + msg.from);
                 code.checkout = true;
-
+debugger
                 node.say('win', msg.from, code.ExitCode);
 
                 if (checkoutFlag) {
