@@ -60,7 +60,7 @@ function playerReconnects(p) {
     // however here we resend all the stages, and move their game plot.
     console.log('** Player reconnected: ' + p.id + ' **');
     
-    // Setting metadata, settings, and plot.
+    // Setting Metadata, Settings, And plot.
 
     node.remoteSetup('env', p.id, { recon: true });
 
