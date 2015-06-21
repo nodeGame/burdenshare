@@ -20,8 +20,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     var channel = gameRoom.channel;
     var node = gameRoom.node;
 
+    var descilConfPath = channel.getGameDir() + 'auth/descil.conf.js';
+
     // Reads in descil-mturk configuration.
-    var dk = require('descil-mturk')();
+    var dk = require('descil-mturk')(descilConfPath);
 
     // Requiring additiinal functions.
     var cbs = channel.require(__dirname + '/includes/logic.callbacks.js', {

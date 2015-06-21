@@ -29,8 +29,8 @@ function initialSituation() {
         var respEnd, propEnd;
 
         if (msg.data === -1) {
-            alert('An error occurred.');
-            return;
+            // alert('An error occurred.');
+            // return;
         }
 
         initialEndow = msg.data.init_Endow;
