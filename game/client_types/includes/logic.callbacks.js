@@ -41,20 +41,20 @@ function playerReconnects(p) {
     // Notify other player he is back.
     // TODO: add it automatically if we return TRUE? It must be done
     // both in the alias and the real event handler
-    node.game.pl.each(function(player) {
-        node.socket.send(node.msg.create({
-            target: 'PCONNECT',
-            data: { id: p.id },
-            to: player.id
-        }));
-    });
+   // node.game.pl.each(function(player) {
+   //     node.socket.send(node.msg.create({
+   //         target: 'PCONNECT',
+   //         data: { id: p.id },
+   //         to: player.id
+   //     }));
+   // });
 
     // Send currently connected players to reconnecting one.
-    node.socket.send(node.msg.create({
-        target: 'PLIST',
-        data: node.game.pl.fetchSubObj('id'),
-        to: p.id
-    }));
+  //   node.socket.send(node.msg.create({
+  //       target: 'PLIST',
+  //       data: node.game.pl.fetchSubObj('id'),
+  //       to: p.id
+  //   }));
     
     // We could slice the game plot, and send just what we need
     // however here we resend all the stages, and move their game plot.
@@ -112,15 +112,20 @@ function playerReconnects(p) {
             return;
         }
         
+        // If we are in the game stage, we need to restart the first
+        // step of the stage.
+
         if (!GameStage.compare(node.player.stage, '2.2.1') ||
             !GameStage.compare(node.player.stage, '2.2.2') ||
-            !GameStage.compare(node.player.stage, '2.2.3')) {
+            !GameStage.compare(node.player.stage, '2.2.3') ||
+            !GameStage.compare(node.player.stage, '2.2.4')) {
 
             RECON_STAGE = node.game.plot.previous(RECON_STAGE);
         }
         else if (!GameStage.compare(node.player.stage, '2.3.1') ||
                  !GameStage.compare(node.player.stage, '2.3.2') ||
-                 !GameStage.compare(node.player.stage, '2.3.3')) {
+                 !GameStage.compare(node.player.stage, '2.3.3') ||
+                 !GameStage.compare(node.player.stage, '2.3.4')) {
 
             RECON_STAGE = node.game.plot.jump(RECON_STAGE, -2);
         }

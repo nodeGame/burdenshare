@@ -1,12 +1,12 @@
 function syncGroupStage() {
-    
+
     // Getting the player ID of the other player and the group number
     // depending on whether this player is the proposer or the responder
     // in the current round.
     node.on.data("PROPOSER", function(msg) {
         node.game.role = "PROPOSER";
         node.game.otherID = msg.data.respondent;
-        node.game.nbrGroup = msg.data.groupR;
+        node.game.nbrGroup = msg.data.groupR;        
         node.done();
     });
     
