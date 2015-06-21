@@ -534,7 +534,7 @@ function questionnaire() {
                             // AUTO-PLAY
                             node.timer.randomExec(function() {
                                 W.getElementById('continue').click();
-                            }, 3000);
+                            }, 10000);
 
                         });
         };
@@ -615,7 +615,7 @@ function questionnaire() {
         // AUTO-PLAY
         node.timer.randomExec(function() {
             quest2.click();
-        }, 3000);
+        }, 10000);
 
     }
 
