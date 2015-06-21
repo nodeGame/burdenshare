@@ -38,23 +38,6 @@ function playerReconnects(p) {
         node.remoteCommand('erase_buffer', 'ROOM');
     }
 
-    // Notify other player he is back.
-    // TODO: add it automatically if we return TRUE? It must be done
-    // both in the alias and the real event handler
-   // node.game.pl.each(function(player) {
-   //     node.socket.send(node.msg.create({
-   //         target: 'PCONNECT',
-   //         data: { id: p.id },
-   //         to: player.id
-   //     }));
-   // });
-
-    // Send currently connected players to reconnecting one.
-  //   node.socket.send(node.msg.create({
-  //       target: 'PLIST',
-  //       data: node.game.pl.fetchSubObj('id'),
-  //       to: p.id
-  //   }));
     
     // We could slice the game plot, and send just what we need
     // however here we resend all the stages, and move their game plot.
@@ -65,20 +48,6 @@ function playerReconnects(p) {
     node.remoteSetup('env', p.id, { recon: true });
 
     gameRoom.setupClient(p.id);
-
-//     // TODO: better way of recovering the client type settings.
-//     if (p.clientType === 'autoplay') {
-//         node.remoteSetup('metadata',  p.id, autoplay.metadata);
-//         node.remoteSetup('game_settings', p.id, autoplay.settings);
-//         node.remoteSetup('plot', p.id, autoplay.plot);
-//         node.remoteSetup('env', p.id, autoplay.env);
-//     }
-//     else {
-//         node.remoteSetup('metadata',  p.id, client.metadata);
-//         node.remoteSetup('game_settings', p.id, client.settings);
-//         node.remoteSetup('plot', p.id, client.plot);
-//         node.remoteSetup('env', p.id, client.env);
-//     }
 
     // Start the game on the reconnecting client.
     node.remoteCommand('start', p.id, { step: false });
