@@ -7,7 +7,7 @@
  * ---
  */
 
-module.exports = function(settings) {
+module.exports = function(settings, stages) {
     
     var game = {};
 
