@@ -90,7 +90,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             makeChoiceSPAN: cbs.makeChoiceSPAN,
             makeChoiceSELECT: cbs.makeChoiceSELECT
         },
-        publishLevel: publishLevels.FEW
+        publishLevel: publishLevels.FEW,
+        steprule:  stepRules.SOLO
     });
 
     stager.setDefaultGlobals({

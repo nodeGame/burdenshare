@@ -30,10 +30,10 @@ function questionnaire() {
     var gameName = node.game.settings.gameName;
     var chosenTreatment = node.game.settings.treatmentName;
     var randomBlockExecutor;
-    // var socialValueOrientation, newEcologicalParadigm, risk;
-    // var makePageLoad, makeBlockArray;
-    // var Page, SVOPage, RiskPage, NEPPage, DemographicsPage;
-    // var finalize;
+    var socialValueOrientation, newEcologicalParadigm, risk;
+    var makePageLoad, makeBlockArray;
+    var Page, SVOPage, RiskPage, NEPPage, DemographicsPage;
+    var finalize;
 
     // The first time this stage is executed, we set all listeners and callbacks
     // We also initialize node.game.questionnaire, which is why we use it for

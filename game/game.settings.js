@@ -30,8 +30,12 @@ module.exports = {
             if (node.game.pgCounter && node.game.pgCounter> 2) return 20000;
             return 45000; // 1 minutes
         },
-        proposer: function() {
+        initialSituation: function() {
             if (node.player.stage.round > 2) return 60000;
+            return 90000; // 1.5 minutes
+        },
+        proposer: function() {
+            if (node.player.stage.round > 2) return 45000;
             return 90000; // 1.5 minutes
         },
         reply2Prop: function() {
@@ -39,7 +43,7 @@ module.exports = {
             return 60000; // 1.5 minutes
         },
         respondent: function() {
-            if (node.player.stage.round > 2) return 60000;
+            if (node.player.stage.round > 2) return 45000;
             return 90000; // 1.5 minutes
         },
         proposerDone: function() {
