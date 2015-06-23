@@ -25,18 +25,18 @@ module.exports = {
 
         // Game.
         endOfPractice: 10000, // 10 seconds
-        initialSituation: function() {
-            if (node.player.stage.round > 2) return 30000;
-            return 90000; // 1.5 minutes
+
+        econGrowth: function() {
+            if (node.game.pgCounter && node.game.pgCounter> 2) return 20000;
+            return 45000; // 1 minutes
         },
-        econGrowth: 60000, // 1 minute
         proposer: function() {
             if (node.player.stage.round > 2) return 60000;
             return 90000; // 1.5 minutes
         },
         reply2Prop: function() {
-            if (node.player.stage.round > 2) return 60000;
-            return 90000; // 1.5 minutes
+            if (node.player.stage.round > 2) return 30000;
+            return 60000; // 1.5 minutes
         },
         respondent: function() {
             if (node.player.stage.round > 2) return 60000;
@@ -50,7 +50,10 @@ module.exports = {
             if (node.player.stage.round > 2) return 60000;
             return 90000; // 1.5 minutes
         },
-        responseDone: 60000, // 2 minutes
+        responseDone: function() {
+            if (node.player.stage.round > 2) return 30000;
+            return 60000; // 1.5 minutes
+        },
 
         // Questionnaire.
         questionnaire: 720000, // 12 minutes.

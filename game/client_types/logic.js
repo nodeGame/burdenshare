@@ -250,14 +250,32 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
                         // Choose a random round to extract payoff.
                         if (nbrRounds >= 1) {
+
                             // Possible payout rounds: 2,3,4.
                             payoutRound = J.randomInt(1, (nbrRounds+1));
                             profitRound = profit[payoutRound-1].Profit;
 
+                            ///////////////////////////////////////////////////
+                            // This should not happen.
                             if ('undefined' === typeof profitRound) {
                                 console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
-                                profitRound = 0;
+
+                                payoutRound = 2;
+                                profitRound = profit[payoutRound-1].Profit;
+
+                                if ('undefined' === typeof profitRound) {
+                                    payoutRound = 3;
+                                    profitRound = profit[payoutRound-1].Profit;
+
+                                    if ('undefined' === typeof profitRound) {
+                                        payoutRound = 4;
+                                        profitRound =
+                                            profit[payoutRound-1].Profit || 0;
+                                    }
+                                }
+
                             }
+                            ///////////////////////////////////////////////////
 
                             J.mixin(write_profit, {
                                 Payout_Round: payoutRound,
