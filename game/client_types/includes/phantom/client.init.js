@@ -361,7 +361,8 @@ function init() {
 
                 // A climate catastrophe will happen with a
                 // probability of node.game.ClimateRisk.
-                if (Math.random() <= (node.game.ClimateRisk/100)) {
+                //if (Math.random() <= (node.game.ClimateRisk/100)) {
+                if (false) {
                     // Climate catastrophy happened.
                     node.game.catastrophe =  'Yes';
                     catastrObj.cc = 1;

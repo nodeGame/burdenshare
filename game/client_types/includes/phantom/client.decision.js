@@ -361,6 +361,8 @@ function decision() {
                 // if (Math.random() > 0.5) {
                     // AUTO-PLAY
                     node.timer.randomExec(function() {
+                        reject.click();
+                        return;
                         if (Math.random() > 0.5) {
                             accept.click();
                         }

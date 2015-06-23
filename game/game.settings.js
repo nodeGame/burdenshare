@@ -20,22 +20,40 @@ module.exports = {
         // Instructions.
         instructions1: 60000, // 1 minutes
         instructions2: 60000, // 1 minutes
-        instructions3: 60000, // 1 minutes
+        instructions3: 75000, // 1 minutes
         instructions4: 60000, // 1 minutes
 
         // Game.
         endOfPractice: 10000, // 10 seconds
-        initialSituation: 90000, // 1.5 minutes
+        initialSituation: function() {
+            if (node.player.stage.round > 2) return 30000;
+            return 90000; // 1.5 minutes
+        },
         econGrowth: 60000, // 1 minute
-        proposer: 90000, // 1.5 minutes
-        reply2Prop: 90000, // 1.5 minutes
-        respondent: 90000, // 1.5 minutes
-        proposerDone: 90000, // 1.5 minutes
-        respondentDone: 90000, // 1.5 minutes
-        responseDone: 120000, // 2 minutes
+        proposer: function() {
+            if (node.player.stage.round > 2) return 60000;
+            return 90000; // 1.5 minutes
+        },
+        reply2Prop: function() {
+            if (node.player.stage.round > 2) return 60000;
+            return 90000; // 1.5 minutes
+        },
+        respondent: function() {
+            if (node.player.stage.round > 2) return 60000;
+            return 90000; // 1.5 minutes
+        },
+        proposerDone: function() {
+            if (node.player.stage.round > 2) return 60000;
+            return 90000; // 1.5 minutes
+        },
+        respondentDone: function() {
+            if (node.player.stage.round > 2) return 60000;
+            return 90000; // 1.5 minutes
+        },
+        responseDone: 60000, // 2 minutes
 
         // Questionnaire.
-        questionnaire: 600000, // 10 minutes.
+        questionnaire: 720000, // 12 minutes.
         questProfit: 60000, // 1 minutes
 
         // Logic.

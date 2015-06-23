@@ -256,6 +256,8 @@ function checkID(msg) {
 function writeRoundResults(data, accept, remain, who) {
     var proceed, timeDecision;
 
+    if (!remain) debugger
+
     timeDecision = who === 'PROPOSER' ?
         node.game.timeMakingOffer : node.game.timeResponse;
 
