@@ -20,7 +20,7 @@ function questionnaire() {
 
     // Displays the last page.
     node.on.data("win", function(msg) {
-        W.loadFrame('/burdenshare/html/ended.html', function() {
+        W.loadFrame('html/ended.html', function() {
             W.writeln("Exit code: " + msg.data);
             node.game.timer.stop();
             node.game.timer.setToZero();
@@ -117,7 +117,7 @@ function questionnaire() {
 
     Page = function(block, name) {
         this.name = block + '_' + name;
-        this.html = '/burdenshare/html/questionnaire/' + block + '/' +
+        this.html = 'html/questionnaire/' + block + '/' +
             name + '.html';
     };
 
@@ -374,7 +374,7 @@ function questionnaire() {
         });
 
         // At the beginning of the block is an instructions page.
-        W.loadFrame('/burdenshare/html/questionnaire/' +
+        W.loadFrame('html/questionnaire/' +
                     'socialValueOrientation/instructions.html', function() {
                         W.getElementById('done').onclick = function() {
                             randomPageExecutor.execute();
@@ -399,7 +399,7 @@ function questionnaire() {
         };
 
         // At the beginning of the block is an instructions page.
-        W.loadFrame('/burdenshare/html/questionnaire/' +
+        W.loadFrame('html/questionnaire/' +
                     'newEcologicalParadigm/instructions.html', function() {
                         W.getElementById('done').onclick = function() {
                             loadAllNEP();
@@ -509,7 +509,7 @@ function questionnaire() {
                 timeElapsed:    node.timer.getTimeSince("BEGIN_QUESTIONNAIRE"),
                 blockOrder:     node.game.questionnaire.blocks
             });
-            W.loadFrame('/burdenshare/html/questionnaire' +
+            W.loadFrame('html/questionnaire' +
                         '/profit_adjustment.html', function() {
 
                             W.getElementById('continue').onclick = function() {
@@ -658,7 +658,7 @@ function questionnaire() {
         if (msg.data.Payout_Round !== "none") {
             node.game.bonus = node.game.globals.round((msg.data.Profit/50),2);
             console.log("Bonus: " + node.game.bonus);
-            W.loadFrame('/burdenshare/html/questionnaire1.html', function() {
+            W.loadFrame('html/questionnaire1.html', function() {
 
                 var round = W.getElementById("payoutRound");
                 W.write(msg.data.Payout_Round , round);
@@ -675,7 +675,7 @@ function questionnaire() {
 
         else {
             node.game.bonus = 0.0;
-            W.loadFrame('/burdenshare/html/questionnaire12.html', function() {
+            W.loadFrame('html/questionnaire12.html', function() {
                 displayWin();
             });
 

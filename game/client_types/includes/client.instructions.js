@@ -25,7 +25,7 @@ function instructions() {
         });
     }
 
-    W.loadFrame('/burdenshare/html/instructions.html', function() {
+    W.loadFrame('html/instructions.html', function() {
         node.timer.setTimestamp('instr1');
         var options = {
             milliseconds: node.game.globals.timer.instructions1,
@@ -52,7 +52,7 @@ function instructions() {
     });
 
     function instructions2() {
-        W.loadFrame('/burdenshare/html/' + gameName + '/instructions2.html', function() {
+        W.loadFrame('html/' + gameName + '/instructions2.html', function() {
             node.timer.setTimestamp('instr2');
             var options = {
                 milliseconds: node.game.globals.timer.instructions2,
@@ -82,7 +82,7 @@ function instructions() {
     }
 
     function instructions3() {
-        W.loadFrame('/burdenshare/html/' + gameName + '/instructions3.html', function() {
+        W.loadFrame('html/' + gameName + '/instructions3.html', function() {
             node.timer.setTimestamp('instr3');
             var options = {
                 milliseconds: node.game.globals.timer.instructions3,
@@ -122,7 +122,7 @@ function instructions() {
 
     function instructions4() { 
 
-        W.loadFrame('/burdenshare/html/instructions4.html', function() {
+        W.loadFrame('html/instructions4.html', function() {
             node.timer.setTimestamp('instr4');
             var options = {
                 milliseconds: node.game.globals.timer.instructions4,

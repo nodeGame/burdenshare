@@ -145,21 +145,21 @@ function init() {
 
     // condition for one of the two game versions
     if (node.game.costGE === 30) {
-        node.game.url_bidder = '/burdenshare/html/bidder_30.html';
-        node.game.url_resp = '/burdenshare/html/resp_30.html';
-        node.game.url_initprop = '/burdenshare/html/initialSituationProp_30.htm';
-        node.game.url_initresp = '/burdenshare/html/initialSituationResp_30.htm';
-        node.game.url_preGame = '/burdenshare/html/preGame_30.html';
-        node.game.url_instructionsFrame = '/burdenshare/html/' + gameName +
+        node.game.url_bidder = 'html/bidder_30.html';
+        node.game.url_resp = 'html/resp_30.html';
+        node.game.url_initprop = 'html/initialSituationProp_30.htm';
+        node.game.url_initresp = 'html/initialSituationResp_30.htm';
+        node.game.url_preGame = 'html/preGame_30.html';
+        node.game.url_instructionsFrame = 'html/' + gameName +
             '/instructions_full_30.html';
     }
     else if (node.game.costGE === 80) {
-        node.game.url_bidder = '/burdenshare/html/bidder_80.html';
-        node.game.url_resp = '/burdenshare/html/resp_80.html';
-        node.game.url_initprop = '/burdenshare/html/initialSituationProp_80.htm';
-        node.game.url_initresp = '/burdenshare/html/initialSituationResp_80.htm';
-        node.game.url_preGame = '/burdenshare/html/preGame_80.html';
-        node.game.url_instructionsFrame = '/burdenshare/html/' + gameName +
+        node.game.url_bidder = 'html/bidder_80.html';
+        node.game.url_resp = 'html/resp_80.html';
+        node.game.url_initprop = 'html/initialSituationProp_80.htm';
+        node.game.url_initresp = 'html/initialSituationResp_80.htm';
+        node.game.url_preGame = 'html/preGame_80.html';
+        node.game.url_instructionsFrame = 'html/' + gameName +
             '/instructions_full_80.html';
     }
 
@@ -204,7 +204,7 @@ function init() {
         node.game.timeResultProp = node.timer.getTimeSince('resultDisplayed');
 
         // short question at the end of each round
-        W.loadFrame('/burdenshare/html/questionRounds_prop.html', function() {
+        W.loadFrame('html/questionRounds_prop.html', function() {
             var options, quest, string, next;
 
             node.timer.setTimestamp('questionRound');
@@ -260,7 +260,7 @@ function init() {
 
         // Check if data for playerID
         // and current round already exists.
-        W.loadFrame('/burdenshare/html/questionRounds_resp.html', function() {
+        W.loadFrame('html/questionRounds_resp.html', function() {
             var options, next, quest, string;
 
             node.timer.setTimestamp('questionRound');
@@ -306,7 +306,7 @@ function init() {
     node.on('RESPONSE_DONE', function(response) {
         node.game.timeResponse = node.timer.getTimeSince('offerArrived');
 
-        W.loadFrame('/burdenshare/html/resultResponder.html', function() {
+        W.loadFrame('html/resultResponder.html', function() {
             var options, proceed;
             var catastrObj;
 
@@ -391,7 +391,7 @@ function init() {
             node.game.timer.updateDisplay();
             node.game.timer.start(options);
 
-            W.loadFrame('/burdenshare/html/practiceDone.html', function() {
+            W.loadFrame('html/practiceDone.html', function() {
                 W.getElementById('continue').onclick = function() {
                     node.done();
                 };
