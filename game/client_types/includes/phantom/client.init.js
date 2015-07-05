@@ -151,7 +151,7 @@ function init() {
         node.game.url_initprop = 'html/initialSituationProp_30.htm';
         node.game.url_initresp = 'html/initialSituationResp_30.htm';
         node.game.url_preGame = 'html/preGame_30.html';
-        node.game.url_instructionsFrame = 'html/' + gameName +
+        node.game.url_instructionsFrame = '/burdenshare/html/' + gameName +
             '/instructions_full_30.html';
     }
     else if (node.game.costGE === 80) {

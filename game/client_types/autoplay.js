@@ -27,7 +27,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // Ste 19.06
         // steprule: stepRules.SYNC_STAGE,
         syncOnLoaded: false,
-        done: cbs.clearFrame
+        done: cbs.clearFrame,
+        frame: 'html/instructions.html'
     });
 
     stager.addStep({
