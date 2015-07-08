@@ -25,7 +25,7 @@ function instructions() {
         });
     }
 
-    // W.loadFrame('html/instructions.html', function() {
+    W.loadFrame('html/instructions.html', function() {
         node.timer.setTimestamp('instr1');
         var options = {
             milliseconds: node.game.globals.timer.instructions1,
@@ -49,7 +49,7 @@ function instructions() {
             sendTimeInstr(1);
             instructions2();
         };
-    //});
+    });
 
     function instructions2() {
         W.loadFrame('html/' + gameName + '/instructions2.html', function() {
