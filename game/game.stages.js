@@ -7,7 +7,7 @@
 
 module.exports = function(stager, settings) {
 
-    stager.init()
+    stager
         .next('instructions')
         .repeat('burdenSharingControl', settings.REPEAT)
         .repeat('questionnaire', 23);
