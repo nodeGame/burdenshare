@@ -150,7 +150,7 @@ function questionnaire() {
 
     Page.prototype.onValidAnswer = function() {
         var q = node.game.questionnaire;
-        node.set('bsc_quest', {
+        node.set(bsc_quest: {
             player:         node.player.id,
             question:       this.name,
             answer:         q.currentAnswer,
