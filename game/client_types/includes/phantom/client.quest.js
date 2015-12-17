@@ -371,10 +371,9 @@ function questionnaire() {
 
         randomPageExecutor.setOnDone(function() {
             node.set({
-                add_questionnaire_bonus: {
-                    choices: node.game.questionnaire.SVOChoices,
-                    player: node.player.id
-                }
+                add_questionnaire_bonus: true,
+                choices: node.game.questionnaire.SVOChoices,
+                player: node.player.id                
             });
             randomBlockExecutor.next();
         });

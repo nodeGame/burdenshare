@@ -74,21 +74,49 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // Adds treatment name to incoming SET messages.
         // Must be registered before other listeners.
         node.on('in.set.DATA', function(msg) {
+            var code;
+            code = channel.registry.getClient(msg.from);
+            if (checkoutFlag || code.checkout) {
+                console.log('Already checked-out, **not** adding quest data ',
+                           msg.data);
+                return;
+            }
             msg.data.treatment = treatmentName;
             msg.data.costGE = settings.COSTGE;
             msg.data.Session_ID = gameRoom.name;
+
+            if (msg.data.add_questionnaire_bonus) {
+                addQuestionnaireBonus(msg);
+            }
+            else if (msg.data.bsc_data) {
+                dbs.mdbWrite.store(msg.data.bsc_data);
+            }
+            else if (msg.data.bsc_quest) {                
+                dbs.mdbWrite_quest.store(msg.data);
+            }
+            else if (msg.data.delete_data) {
+                dbs.mdbWrite.deleting(msg.from, msg.data.delete_data);
+            }
+            else if (msg.data.econGrowth) {
+                dbs.mdbWrite_idData.update(msg.data.econGrowth);                
+            }
+            else if (msg.data.initEndow) {
+                dbs.mdbWrite_idData.updateEndow(msg.data.initEndow);            
+            }
         });
 
 
         // Stores the SELF BONUS to DB, and keeps a copy of the BONUS TO OTHER
         // in node.game.otherBonus. Sends a message to client.
-        function addQuestionnaireBonus(msg) {
+        function addQuestionnaireBonus(msg) {            
+            console.log('Adding questionnaire bonus.');
+
             dbs.mdbWriteProfit.checkProfit(msg.data.player, function(rows, items) {
                 // Adds to the profit a bonus depending on the
                 // choice made in the SVO questionnaire block.
                 var choicesMade = msg.data.choices;
 
-                // TODO: This is a direct copy-paste from the context file for the html
+                // TODO: This is a direct copy-paste from html
                 // page used in the experiment. This should not be hard-coded.
                 var SVOChoices =  {
                     1 :  {
@@ -162,44 +190,11 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // Reconnections must be handled by the game developer.
         node.on.preconnect(cbs.playerReconnects);
 
-        node.on.data('add_questionnaire_bonus', function(msg) {
-            var code;
-            // code = dk.codes.id.get(msg.from);
-            code = channel.registry.getClient(msg.from);
-             if (checkoutFlag || code.checkout) {
-                 console.log('Already checked-out, **not** adding quest bonus.');
-                 return;
-             }
-            console.log('Adding questionnaire bonus.');
-            addQuestionnaireBonus(msg);
-        });
-
-        node.on.data('bsc_data', function(msg) {
-            // console.log('Writing Result Data!!!');
-            dbs.mdbWrite.store(msg.data);
-        });
-
-        node.on.data('bsc_quest', function(msg) {
-            var code;
-            //  code = dk.codes.id.get(msg.from);
-            code = channel.registry.getClient(msg.from);
-            if (checkoutFlag || code.checkout) {
-                console.log('Already checked-out, **not** adding quest data.');
-                return;
-            }
-            dbs.mdbWrite_quest.store(msg.data);
-        });
 
         node.on.data('check_Data', function(msg) {
             dbs.mdbWrite.checkData(msg.data, function(rows, items) {
                 node.say('CheckData', msg.data.Player_ID, items);
             });
-        });
-
-        // Delete data from the database.
-        node.on.data('delete_data', function(msg) {
-            dbs.mdbWrite.deleting(msg.from, msg.data.Current_Round);
-            //dbs.mdbDelet.deleting(msg.data.Player_ID, msg.data.Current_Round);
         });
 
         // Check whether profit data has been saved already.
@@ -315,14 +310,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 }
 
             });
-        });
-
-        node.on.data("econGrowth", function(msg) {
-            dbs.mdbWrite_idData.update(msg.data);
-        });
-
-        node.on.data("initEndow", function(msg) {
-            dbs.mdbWrite_idData.updateEndow(msg.data);
         });
 
         node.on.data('get_InitEndow', function(msg) {

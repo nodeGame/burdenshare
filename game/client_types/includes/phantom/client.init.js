@@ -89,14 +89,18 @@ function init() {
 
         // Call data base and check existence of data.
         // Triggers a msg CheckData.
-        node.set({check_Data: dataExist });
+        // was:
+        // node.set({check_Data: dataExist });
+        node.say('check_Data', 'SERVER',  dataExist);
 
         node.on.data('CheckData', function(msg) {
             console.log('Current Round: ' + msg.data[0]);
             if ('undefined' !== typeof msg.data[0]) {
                 // If data already exists, delete and save the new data
                 console.log('Data Exist: ' + dataExist.Player_ID);
-                node.set({ delete_data: dataExist });
+                // was:
+                // node.set({ delete_data: dataExist });
+                node.set({ delete_data: node.player.stage.round });
                 console.log('Player already finished this round.');
             }
             // if (node.game.results.Decision_Response === 0) debugger
