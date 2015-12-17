@@ -18,10 +18,12 @@ function instructions() {
 
     function sendTimeInstr(page) {
         node.game.timeInstruction = node.timer.getTimeSince('instr' + page);
-        node.set('bsc_data', {
-            Player_ID: node.game.ownID,
-            Current_Round: "Instructions" + page,
-            timeDecision: node.game.timeInstruction
+        node.set({
+            bsc_data: {
+                Player_ID: node.game.ownID,
+                Current_Round: "Instructions" + page,
+                timeDecision: node.game.timeInstruction
+            }
         });
     }
 
@@ -163,7 +165,7 @@ function instructions() {
         initEndow.addEndow.Initial_Endowment = 0;
         initEndow.addEndow.Climate_Risk = 0;
 
-        node.set('initEndow', initEndow);
+        node.set({ initEndow: initEndow });
 
         setDBEconGrowth = {
             playerID : { Player_ID: node.player.id },
@@ -174,7 +176,7 @@ function instructions() {
             node.game.EGRnd[j] = 0;
             setDBEconGrowth.add['EGRnd' + j] = node.game.EGRnd[j];
         }
-        node.set("econGrowth", setDBEconGrowth);
+        node.set({ econGrowth: setDBEconGrowth });
         chooseEconGrowth();
     }
 
@@ -302,7 +304,7 @@ function instructions() {
         setDBEconGrowth.add['EGRnd' + node.game.pgCounter] = 
             node.game.EGRnd[node.game.pgCounter];
 
-        node.set("econGrowth", setDBEconGrowth);
+        node.set({ econGrowth: setDBEconGrowth });
 
         node.game.timer.stop();
 
@@ -319,7 +321,7 @@ function instructions() {
             W.getElementById("clRiskOwn").innerHTML = node.game.risk - 7.5;
             initEndow.addEndow.Initial_Endowment = node.game.endowment_own;
             initEndow.addEndow.Climate_Risk = node.game.risk;
-            node.set('initEndow', initEndow);
+            node.set({ initEndow: initEndow });
             node.game.pgCounter = 0;
             node.done();
         }
@@ -358,7 +360,7 @@ function instructions() {
         initEndow.addEndow.Initial_Endowment = node.game.endowment_own + endowment_assigned;
         node.game.endowment_own += endowment_assigned;
         initEndow.addEndow.Climate_Risk = node.game.risk;
-        node.set('initEndow', initEndow);
+        node.set({ initEndow: initEndow });
         node.done();
     }
 

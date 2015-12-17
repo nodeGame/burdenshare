@@ -150,13 +150,15 @@ function questionnaire() {
 
     Page.prototype.onValidAnswer = function() {
         var q = node.game.questionnaire;
-        node.set(bsc_quest: {
-            player:         node.player.id,
-            question:       this.name,
-            answer:         q.currentAnswer,
-            timeElapsed:    node.timer.getTimeSince(this.name),
-            clicks:         q.numberOfClicks,
-            pageOrder:      q.pageExecutor.index
+        node.set({
+            bsc_quest: {
+                player:         node.player.id,
+                question:       this.name,
+                answer:         q.currentAnswer,
+                timeElapsed:    node.timer.getTimeSince(this.name),
+                clicks:         q.numberOfClicks,
+                pageOrder:      q.pageExecutor.index
+            }
         });
         this.cleanUp();
     };
@@ -275,14 +277,16 @@ function questionnaire() {
     NEPPage.prototype.onValidAnswer = function() {
         this.questionsDone += this.questionsPerPage;
         if (this.questionsDone >= this.numberOfQuestions) {            
-            node.set('bsc_quest',{
-                player: node.player.id,
-                question: this.name,
-                answer: node.game.questionnaire.currentAnswer,
-                timeElapsed:
-                node.timer.getTimeSince(this.name),
-                clicks: node.game.questionnaire.numberOfClicks,
-                order: this.order
+            node.set({
+                bsc_quest: {                 
+                    player: node.player.id,
+                    question: this.name,
+                    answer: node.game.questionnaire.currentAnswer,
+                    timeElapsed:
+                    node.timer.getTimeSince(this.name),
+                    clicks: node.game.questionnaire.numberOfClicks,
+                    order: this.order
+                }
             });
             this.cleanUp();
         }
@@ -366,9 +370,11 @@ function questionnaire() {
         randomPageExecutor.setCallbacks(callbacks);
 
         randomPageExecutor.setOnDone(function() {
-            node.set('add_questionnaire_bonus',{
-                choices: node.game.questionnaire.SVOChoices,
-                player: node.player.id
+            node.set({
+                add_questionnaire_bonus: {
+                    choices: node.game.questionnaire.SVOChoices,
+                    player: node.player.id
+                }
             });
             randomBlockExecutor.next();
         });
@@ -504,10 +510,12 @@ function questionnaire() {
         ];
         var i;
         var finalize = function() {
-            node.set('bsc_quest', {
-                player:         node.player.id,
-                timeElapsed:    node.timer.getTimeSince("BEGIN_QUESTIONNAIRE"),
-                blockOrder:     node.game.questionnaire.blocks
+            node.set({
+                bsc_quest: {
+                    player:      node.player.id,
+                    timeElapsed: node.timer.getTimeSince("BEGIN_QUESTIONNAIRE"),
+                    blockOrder:  node.game.questionnaire.blocks
+                }
             });
             W.loadFrame('html/questionnaire' +
                         '/profit_adjustment.html', function() {
@@ -684,5 +692,7 @@ function questionnaire() {
     });
 
     // Request profit. Triggers a PROFIT message.
-    node.set('get_Profit', node.player.id);
+    // was:
+    // node.set('get_Profit', node.player.id);
+    node.say('get_Profit');
 }

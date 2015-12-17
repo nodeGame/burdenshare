@@ -205,7 +205,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // Check whether profit data has been saved already.
         // If not, save it, otherwise ignore it
         node.on.data('get_Profit', function(msg) {
-            dbs.mdbWriteProfit.checkProfit(msg.data, function(rows, items) {
+            dbs.mdbWriteProfit.checkProfit(msg.from, function(rows, items) {
                 var profit_data;
 
                 // Client has already a payoff assigned.
@@ -215,11 +215,11 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                         Profit: items[0].Amount_UCE
                     };
                     // Sending to client.
-                    node.say('PROFIT', msg.data, profit_data);
+                    node.say('PROFIT', msg.from, profit_data);
                 }
                 // Payoff must be computed.
                 else {
-                    dbs.mdbWrite.getCollectionObj(msg.data, function(
+                    dbs.mdbWrite.getCollectionObj(msg.from, function(
                         rows, items) {
 
                         var profit, nbrRounds, write_profit, profit_data;
@@ -232,7 +232,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                         write_profit = {
                             treatment: treatmentName,
                             costGE: settings.COSTGE,
-                            Player_ID: msg.data,
+                            Player_ID: msg.from,
                             Session_ID: gameRoom.name
                         };
 
@@ -310,7 +310,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                         dbs.mdbWriteProfit.store(write_profit);
 
                         // Sending to client.
-                        node.say('PROFIT', msg.data, profit_data);
+                        node.say('PROFIT', msg.from, profit_data);
                     });
                 }
 
@@ -326,17 +326,19 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         });
 
         node.on.data('get_InitEndow', function(msg) {
-            dbs.mdbWrite_idData.getInitEndow(msg.data.otherPlayerId, function(rows, items) {
-                var data;
-                data = -1;
-                if (!J.isEmpty(items[0])) {
-                    data = {
-                        init_Endow: items[0].Initial_Endowment,
-                        cl_Risk: items[0].Climate_Risk
-                    };
-                }
-                node.say('Endow', msg.from, data);
-            });
+            dbs.mdbWrite_idData.getInitEndow(
+                msg.data.otherPlayerId,
+                function(rows, items) {
+                    var data;
+                    data = -1;
+                    if (!J.isEmpty(items[0])) {
+                        data = {
+                            init_Endow: items[0].Initial_Endowment,
+                            cl_Risk: items[0].Climate_Risk
+                        };
+                    }
+                    node.say('Endow', msg.from, data);
+                });
         });
 
         setTimeout(function() {

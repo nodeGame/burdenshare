@@ -22,7 +22,9 @@ function initialSituation() {
                                           'COUNT_UP_ROUNDS_TO_TOTAL']);
 
     // This triggers the server to send a data msg with label "Endow".
-    node.set('get_InitEndow', IDs);
+    // was:
+    // node.set('get_InitEndow', IDs);
+    node.say('get_InitEndow', 'SERVER', IDs);
 
     node.on.data("Endow", function(msg) {        
         var url, initialEndow;
