@@ -30,8 +30,64 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         done: cbs.clearFrame
     });
 
-    stager.addStep({
-        id: "initialSituation",
+// old:
+
+//   stager.addStep({
+//       id: "initialSituation",
+//       cb: cbs.initialSituation,
+//       // stepRule: cbs.syncGroup,
+//       timer: {
+//           milliseconds: settings.timer.initialSituation,
+//           update: 1000,
+//           timeup: function() {
+//               node.game.timeInitialSituation =
+//                   node.timer.getTimeSince('initialSituation');
+//               node.done();
+//           },
+//       }
+//   });
+//
+//   stager.addStep({
+//       id: "decision",
+//       cb: cbs.decision,
+//       // stepRule: cbs.syncGroup
+//   });
+//
+//   stager.addStep({
+//       id: "syncGroups",
+//       cb: function() {
+//
+//           // Getting the player ID of the other player and the group number
+//           // depending on whether this player is the proposer or the responder
+//           // in the current round.
+//           node.on.data("PROPOSER", function(msg) {
+//               node.game.role = "PROPOSER";
+//               node.game.otherID = msg.data.respondent;
+//               node.game.nbrGroup = msg.data.groupR;
+//               node.done();
+//           });
+//
+//           node.on.data("RESPONDENT", function(msg) {
+//               node.game.role = "RESPONDENT";
+//               node.game.otherID = msg.data.proposer;
+//               node.game.nbrGroup = msg.data.groupP;
+//               node.done();
+//           });
+//       },
+//       // stepRule: cbs.syncGroup
+//   });
+//
+//   stager.extendStage('burdenSharingControl', {
+//       steps: ["syncGroups", "initialSituation", "decision"],
+//       // Ste: commented 19 June.
+//       // steprule:  stepRules.SYNC_STEP,
+//       done: cbs.clearFrame
+//   });
+
+
+// new:
+
+    stager.extendStep("initialSituation", {
         cb: cbs.initialSituation,
         // stepRule: cbs.syncGroup,
         timer: {
@@ -41,18 +97,16 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 node.game.timeInitialSituation =
                     node.timer.getTimeSince('initialSituation');
                 node.done();
-            },
+            }
         }
     });
 
-    stager.addStep({
-        id: "decision",
+    stager.extendStep("decision", {
         cb: cbs.decision,
         // stepRule: cbs.syncGroup
     });
 
-    stager.addStep({
-        id: "syncGroups",
+    stager.extendStep("syncGroups", {
         cb: function() {
 
             // Getting the player ID of the other player and the group number
@@ -76,7 +130,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStage('burdenSharingControl', {
-        steps: ["syncGroups", "initialSituation", "decision"],
+        // steps: ["syncGroups", "initialSituation", "decision"],
         // Ste: commented 19 June.
         // steprule:  stepRules.SYNC_STEP,
         done: cbs.clearFrame

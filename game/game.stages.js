@@ -10,6 +10,9 @@ module.exports = function(stager, settings) {
     stager
         .next('instructions')
         .repeat('burdenSharingControl', settings.REPEAT)
+        .step('syncGroups')
+        .step('initialSituation')
+        .step('decision')
         .repeat('questionnaire', 23);
 
     // Modify the stager to skip one stage.

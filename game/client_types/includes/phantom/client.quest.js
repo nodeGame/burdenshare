@@ -33,6 +33,7 @@ function questionnaire() {
     var socialValueOrientation, newEcologicalParadigm, risk;
     var makePageLoad, makeBlockArray;
     var Page, SVOPage, RiskPage, NEPPage, DemographicsPage;
+    var demographics;
 
     // The first time this stage is executed, we set all listeners and callbacks
     // We also initialize node.game.questionnaire, which is why we use it for

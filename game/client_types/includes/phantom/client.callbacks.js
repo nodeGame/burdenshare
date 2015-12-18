@@ -81,7 +81,7 @@ function writeOfferAccepted() {
     node.game.remainResp = remain;
     var remainResp = W.getElementById('remainResp');
     W.write(remain, remainResp);
-    remProp = node.game.endowment_responder - node.game.offer;
+    var remProp = node.game.endowment_responder - node.game.offer;
     if (remProp < 0) remProp = 0;
     var remainProp = W.getElementById('remainProp');
     W.write(remProp, remainProp);
@@ -327,7 +327,7 @@ function makeChoiceTD(i, td) {
 
 // i is answer to question number j.
 function makeChoiceTDRow(i, j, td) {
-    var input, questionnaire;
+    var input, questionnaire, oldSelected;
     questionnaire = node.game.questionnaire;
     oldSelected = questionnaire.oldSelected;
 

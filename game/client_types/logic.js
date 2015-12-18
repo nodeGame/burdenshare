@@ -533,8 +533,110 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         minPlayers: [ MIN_PLAYERS, notEnoughPlayers ]
     });
 
-    stager.addStep({
-        id: 'syncGroups',
+    // old:
+
+//     stager.addStep({
+//         id: 'syncGroups',
+//         cb: function() {
+//             console.log('********************** Syncing all Players - ' +
+//                         'SessionID: ' + gameRoom.name);
+// 
+//             var group, proposer, respondent;
+//             var props, resps;
+//             var round, i;
+// 
+//             round = node.player.stage.round;
+// 
+//             // Round 1 is a testround for the player
+//             // (The same matching of players and groups in
+//             // round 1 will be repeated in round 4)
+//             // Round 1 will be evaluated
+// 
+//             if (round === 1 || round === 4) {
+//                 node.game.groups[0][0] = node.game.playerID[0];
+//                 node.game.groups[0][1] = node.game.playerID[1];
+//                 node.game.groups[1][0] = node.game.playerID[2];
+//                 node.game.groups[1][1] = node.game.playerID[3];
+// 
+//             }
+// 
+//             else if (round === 2) {
+//                 node.game.groups[0][0] = node.game.playerID[0];
+//                 node.game.groups[0][1] = node.game.playerID[2];
+//                 node.game.groups[1][0] = node.game.playerID[1];
+//                 node.game.groups[1][1] = node.game.playerID[3];
+// 
+//             }
+// 
+//             // Round 3.
+//             else {
+// 
+//                 if (round !== 3) console.log('Weird round: ', round);
+// 
+//                 node.game.groups[0][0] = node.game.playerID[3];
+//                 node.game.groups[0][1] = node.game.playerID[0];
+//                 node.game.groups[1][0] = node.game.playerID[1];
+//                 node.game.groups[1][1] = node.game.playerID[2];
+// 
+//             }
+// 
+//             for (i = 0; i < node.game.groups.length; i++) {
+//                 group = node.game.groups[i];
+//                 props = {
+//                     groupP: i+1,
+//                     proposer: node.game.groups[i][0]
+//                 };
+//                 resps = {
+//                     groupR: i+1,
+//                     respondent: node.game.groups[i][1]
+//                 };
+//                 proposer = node.game.groups[i][0];
+//                 respondent = node.game.groups[i][1];
+// 
+//                 node.say('RESPONDENT', respondent, props);
+//                 node.say('PROPOSER', proposer, resps);
+//             }
+//         },
+//     });
+//
+//    stager.addStep({
+//        id: "initialSituation",
+//        cb: function() {
+//            console.log('********************** Initial Situation - SessionID: ' +
+//                gameRoom.name
+//            );
+//        }
+//    });
+//
+//    stager.addStep({
+//        id: "decision",
+//        cb: function() {
+//            var round = node.player.stage.round;
+//            console.log('********************** Burden-Sharing-Control stage ' +
+//                round + ' - SessionID: ' + gameRoom.name
+//            );
+//        }
+//    });
+//
+//    stager.extendStage('burdenSharingControl', {
+//        steps: ["syncGroups", "initialSituation", "decision"],
+//        minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
+//        // stepRule: node.stepRules.SYNC_STAGE
+//    });
+//
+//
+//    stager.addStep({
+//        id: "initialSituation",
+//        cb: function() {
+//            console.log('********************** Initial Situation - SessionID: ' +
+//                gameRoom.name
+//            );
+//        }
+//    });
+
+    // new:
+
+    stager.extendStep('syncGroups', {
         cb: function() {
             console.log('********************** Syncing all Players - ' +
                         'SessionID: ' + gameRoom.name);
@@ -596,19 +698,16 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             }
         },
     });
-
-
-    stager.addStep({
-        id: "initialSituation",
+ 
+    stager.extendStep("initialSituation", {
         cb: function() {
             console.log('********************** Initial Situation - SessionID: ' +
-                gameRoom.name
-            );
+                        gameRoom.name
+                       );
         }
     });
 
-    stager.addStep({
-        id: "decision",
+    stager.extendStep("decision", {
         cb: function() {
             var round = node.player.stage.round;
             console.log('********************** Burden-Sharing-Control stage ' +
@@ -618,7 +717,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStage('burdenSharingControl', {
-        steps: ["syncGroups", "initialSituation", "decision"],
+        // steps: ["syncGroups", "initialSituation", "decision"],
         minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
         // stepRule: node.stepRules.SYNC_STAGE
     });

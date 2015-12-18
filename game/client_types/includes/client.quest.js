@@ -33,6 +33,7 @@ function questionnaire() {
     var socialValueOrientation, newEcologicalParadigm, risk;
     var makePageLoad, makeBlockArray;
     var Page, SVOPage, RiskPage, NEPPage, DemographicsPage;
+    var demographics;
     var finalize;
 
     // The first time this stage is executed, we set all listeners and callbacks
@@ -103,7 +104,7 @@ function questionnaire() {
 
     Page.prototype.onValidAnswer = function() {
         var q = node.game.questionnaire;
-        node.set(
+        node.set({
             bsc_quest: {
                 player:         node.player.id,
                 question:       this.name,
@@ -206,7 +207,7 @@ function questionnaire() {
     NEPPage.prototype.onValidAnswer = function() {
         this.questionsDone += this.questionsPerPage;
         if (this.questionsDone >= this.numberOfQuestions) {
-            node.set(
+            node.set({
                 bsc_quest: {
                     player: node.player.id,
                     question: this.name,
