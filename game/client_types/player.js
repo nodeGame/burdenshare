@@ -80,7 +80,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 //   stager.extendStage('burdenSharingControl', {
 //       steps: ["syncGroups", "initialSituation", "decision"],
 //       // Ste: commented 19 June.
-//       // steprule:  stepRules.SYNC_STEP,
+//       // stepRule:  stepRules.SYNC_STEP,
 //       done: cbs.clearFrame
 //   });
 
@@ -132,7 +132,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager.extendStage('burdenSharingControl', {
         // steps: ["syncGroups", "initialSituation", "decision"],
         // Ste: commented 19 June.
-        // steprule:  stepRules.SYNC_STEP,
+        // stepRule:  stepRules.SYNC_STEP,
         done: cbs.clearFrame
     });
 
@@ -145,7 +145,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             makeChoiceSELECT: cbs.makeChoiceSELECT
         },
         publishLevel: publishLevels.FEW,
-        steprule:  stepRules.SOLO
+        stepRule:  stepRules.SOLO
     });
 
     stager.setDefaultGlobals({
